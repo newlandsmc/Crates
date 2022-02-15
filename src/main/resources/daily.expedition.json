@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:diamond"
+        }
+      ]
+    },
+    {
+      "rolls": 4,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "minecraft:enchant_with_levels",
+              "levels": {
+                "min": 25.0,
+                "max": 39.0,
+                "type": "minecraft:uniform"
+              },
+              "treasure": false
+            }
+          ],
+          "name": "minecraft:diamond_helmet"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+services:
+  - "Test1"
+  - "Test2"
+  - "Test3"
+items:
+  daily:
+    name: '<green>Daily Expeditions'
+    material: 'CHEST'
+    lore:
+      - '<gray>Click here to open the daily expeditions!'
+  premium:
+    name: '<green>Premium Expeditions'
+    material: 'CHEST'
+    lore:
+      - '<gray>Click here to open the premium expeditions!'
+  vote:
+    name: '<green>Vote'
+    material: 'CHEST'
+    lore:
+      - '<gray>Click here to open the vote expeditions!'
+  super-vote:
+    name: '<green>Super Vote'
+    material: 'CHEST'
+    lore:
+      - '<gray>Click here to open the super vote expeditions!'
