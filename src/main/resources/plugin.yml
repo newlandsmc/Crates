@@ -1,0 +1,4 @@
+name: Expeditions
+version: '${project.version}'
+main: com.semivanilla.expeditions.Expeditions
+api-version: 1.18
