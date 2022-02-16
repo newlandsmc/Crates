@@ -9,11 +9,12 @@ import java.lang.reflect.Type;
 import java.util.Map;
 
 public class ItemStackAdapter implements JsonSerializer<ItemStack>, JsonDeserializer<ItemStack> {
-    private Gson gson = Expeditions.getGson();
+    private final Gson gson = Expeditions.getGson();
 
     @Override
     public ItemStack deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
-        Map<String, Object> map = gson.fromJson(jsonElement, new TypeToken<Map<String, Object>>(){}.getType());
+        Map<String, Object> map = gson.fromJson(jsonElement, new TypeToken<Map<String, Object>>() {
+        }.getType());
         return ItemStack.deserialize(map);
     }
 

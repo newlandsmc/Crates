@@ -21,7 +21,7 @@ public class VoteListener implements Listener {
             Logger.info("Received vote from not allowed service (%1). Ignoring.", vote.getServiceName());
             return;
         }
-        Tasks.runAsync(()->{
+        Tasks.runAsync(() -> {
             String username = vote.getUsername();
             UUID uuid = Bukkit.getOfflinePlayer(username).getUniqueId();
             PlayerData data = PlayerManager.getData(uuid);

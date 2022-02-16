@@ -14,5 +14,6 @@ public interface StorageProvider {
     PlayerData getDataNow(UUID uuid);
 
     void saveData(PlayerData data);
+
     void saveData(PlayerData data, boolean async);
 }

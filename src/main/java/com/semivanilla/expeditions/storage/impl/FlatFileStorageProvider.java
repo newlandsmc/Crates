@@ -13,6 +13,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class FlatFileStorageProvider implements StorageProvider {
     private static File dataFolder;
+
     @Override
     public void init(Expeditions plugin) {
         dataFolder = new File(plugin.getDataFolder(), "data");
@@ -55,6 +56,7 @@ public class FlatFileStorageProvider implements StorageProvider {
             save(data);
         }
     }
+
     @SneakyThrows
     public void save(PlayerData data) {
         File file = new File(dataFolder, data.getUuid().toString() + ".json");

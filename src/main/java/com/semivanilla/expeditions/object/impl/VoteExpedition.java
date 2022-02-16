@@ -5,17 +5,16 @@ import com.semivanilla.expeditions.object.Expedition;
 import com.semivanilla.expeditions.object.ExpeditionType;
 import com.semivanilla.expeditions.object.ItemConfig;
 import org.bukkit.entity.Player;
-import org.bukkit.loot.LootTable;
 
-public class DailyExpedition extends Expedition {
+public class VoteExpedition extends Expedition {
     @Override
     public boolean stackable() {
-        return false;
+        return true;
     }
 
     @Override
     public ExpeditionType getType() {
-        return ExpeditionType.DAILY;
+        return ExpeditionType.VOTE;
     }
 
     @Override
@@ -25,6 +24,6 @@ public class DailyExpedition extends Expedition {
 
     @Override
     public ItemConfig getItem() {
-        return ConfigManager.getDailyItem();
+        return ConfigManager.getVoteItem();
     }
 }

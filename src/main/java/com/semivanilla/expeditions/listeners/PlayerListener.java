@@ -9,15 +9,17 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener implements Listener {
     @EventHandler
-    public void onPreJoin(AsyncPlayerPreLoginEvent event){
+    public void onPreJoin(AsyncPlayerPreLoginEvent event) {
         PlayerManager.load(event.getUniqueId());
     }
+
     @EventHandler
-    public void onJoin(PlayerJoinEvent event){
+    public void onJoin(PlayerJoinEvent event) {
 
     }
+
     @EventHandler
-    public void onQuit(PlayerQuitEvent event){
+    public void onQuit(PlayerQuitEvent event) {
         PlayerManager.leave(event.getPlayer().getUniqueId());
     }
 }
