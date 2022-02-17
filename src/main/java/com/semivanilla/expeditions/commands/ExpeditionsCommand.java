@@ -8,13 +8,20 @@ import net.badbird5907.blib.command.BaseCommand;
 import net.badbird5907.blib.command.Command;
 import net.badbird5907.blib.command.CommandResult;
 import net.badbird5907.blib.command.Sender;
+import net.badbird5907.blib.util.ItemBuilder;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 
 public class ExpeditionsCommand extends BaseCommand {
     @Command(name = "expeditions", aliases = {"spoils"})
     public CommandResult execute(Sender sender, String[] args) {
-        ClaimExpeditionMenu menu = new ClaimExpeditionMenu(new ArrayList<>());
+        ArrayList<ItemStack> stacks = new ArrayList<>();
+        for (int i = 0; i < 9; i++) {
+            stacks.add(new ItemBuilder(Material.DIAMOND).name("test").build());
+        }
+        ClaimExpeditionMenu menu = new ClaimExpeditionMenu(stacks);
         menu.open(sender);
         new MenuUpdateTask(menu,sender.getPlayer()).runTaskTimer(Expeditions.getInstance(),10l,10l);
         return CommandResult.SUCCESS;
