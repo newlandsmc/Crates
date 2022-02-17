@@ -24,7 +24,7 @@ public class ClaimExpeditionMenu extends Menu {
     private final Stack<ItemStack> toShow;
     private List<ItemStack> shown = new ArrayList<>();
     private int stage = 0;
-    public static final int STAGE_MAX = 30;
+    public static final int STAGE_MAX = 20;
     private static final int CENTER = 22;
     private boolean closed = false;
     private static final Material[] PANES = {
@@ -36,12 +36,12 @@ public class ClaimExpeditionMenu extends Menu {
             22,
             21,
             23,
-            24,
             20,
-            25,
+            24,
             19,
-            26,
-            18
+            25,
+            18,
+            26
     );
     boolean b = true;
 
@@ -61,7 +61,6 @@ public class ClaimExpeditionMenu extends Menu {
             ItemStack toShowItem = toShow.pop();
             if (toShowItem != null) {
                 shown.add(toShowItem);
-
             }
             if (!toShow.isEmpty())
                 shown.add(toShow.pop()); //show two items at once
