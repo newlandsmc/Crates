@@ -12,17 +12,14 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 @Getter
 @Setter
 public class ClaimExpeditionMenu extends Menu {
     private final Collection<ItemStack> items;
     private final Stack<ItemStack> toShow;
-    private List<ItemStack> shown = new ArrayList<>();
+    private Map<Integer,ItemStack> shown = new HashMap<>();
     private int stage = 0;
     public static final int STAGE_MAX = 20;
     private static final int CENTER = 22;
@@ -32,16 +29,12 @@ public class ClaimExpeditionMenu extends Menu {
             Material.ORANGE_STAINED_GLASS_PANE,
             Material.RED_STAINED_GLASS_PANE
     };
-    private static final List<Integer> CENTER_ITEMS = List.of( // immutable
-            22,
-            21,
-            23,
-            20,
-            24,
-            19,
-            25,
-            18,
-            26
+    private static final List<int[]> CENTER_ITEMS = List.of( // immutable
+            new int[]{22},
+            new int[]{21, 23},
+            new int[]{20, 24},
+            new int[]{19, 25},
+            new int[]{18, 26}
     );
     boolean b = true;
 
@@ -51,6 +44,7 @@ public class ClaimExpeditionMenu extends Menu {
         toShow = new Stack<>();
         toShow.addAll(items);
     }
+    int g = 0;
 
     @Override
     public List<Button> getButtons(Player player) {
@@ -59,17 +53,17 @@ public class ClaimExpeditionMenu extends Menu {
         boolean shouldShow = stage != 1 && stage % 2 == 0;
         if (shouldShow && !toShow.isEmpty()) {
             ItemStack toShowItem = toShow.pop();
+            int[] k = CENTER_ITEMS.get(g++);
             if (toShowItem != null) {
-                shown.add(toShowItem);
+                shown.put(k[0], toShowItem);
             }
-            if (!toShow.isEmpty())
-                shown.add(toShow.pop()); //show two items at once
+            if (!toShow.isEmpty() && k.length > 1)
+                shown.put(k[1], toShow.pop()); //show two items at once
         }
-        int g = 0;
-        for (ItemStack itemStack : shown) {
+        for (Map.Entry<Integer, ItemStack> entry : shown.entrySet()) {
             //show every item starting from the center
-            int slot = CENTER_ITEMS.get(g++);
-            buttons.add(new ItemButton(itemStack, slot));
+            int slot = entry.getKey();
+            buttons.add(new ItemButton(entry.getValue(), slot));
             usedSlots.add(slot);
         }
         for (int i = 0; i < 45; i++) {
