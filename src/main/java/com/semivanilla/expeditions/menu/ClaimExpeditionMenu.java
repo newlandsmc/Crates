@@ -23,7 +23,7 @@ public class ClaimExpeditionMenu extends Menu {
     private int stage = 0;
     public static final int STAGE_MAX = 20;
     private static final int CENTER = 22;
-    private boolean closed = false;
+    private boolean closed = false, animationDone = false;
     private static final Material[] PANES = {
             Material.YELLOW_STAINED_GLASS_PANE,
             Material.ORANGE_STAINED_GLASS_PANE,
@@ -60,6 +60,7 @@ public class ClaimExpeditionMenu extends Menu {
             if (!toShow.isEmpty() && k.length > 1)
                 shown.put(k[1], toShow.pop()); //show two items at once
         }
+        animationDone = toShow.isEmpty();
         for (Map.Entry<Integer, ItemStack> entry : shown.entrySet()) {
             //show every item starting from the center
             int slot = entry.getKey();
@@ -82,11 +83,22 @@ public class ClaimExpeditionMenu extends Menu {
     }
 
     public boolean tick(Player player) {
-        if (closed)
+        Logger.debug("Closed: %1 | AnimDone: %2", closed, animationDone);
+        if (closed && animationDone) //cancel the runnable once the player closes the menu and the animation is done
             return true;
         b = !b;
         update(player);
         return false;
+    }
+
+    @Override
+    public void onClose(Player player) {
+        closed = true;
+    }
+
+    @Override
+    public void onOpen(Player player) {
+        closed = false;
     }
 
     @RequiredArgsConstructor
