@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.badbird5907.blib.menu.buttons.Button;
+import net.badbird5907.blib.menu.buttons.PlaceholderButton;
 import net.badbird5907.blib.menu.menu.Menu;
 import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.ItemBuilder;
@@ -18,7 +19,7 @@ import java.util.*;
 @Setter
 public class ClaimExpeditionMenu extends Menu {
     private final Collection<ItemStack> items;
-    private final Stack<ItemStack> toShow;
+    private final Stack<ItemStack> toShow; // why am I using a stack??
     private Map<Integer,ItemStack> shown = new HashMap<>();
     private int stage = 0;
     public static final int STAGE_MAX = 20;
@@ -71,7 +72,22 @@ public class ClaimExpeditionMenu extends Menu {
             if (usedSlots.contains(i)) {
                 continue;
             }
-            buttons.add(new PanesButton(b ? PANES[0] : PANES[1], i));
+            if (!animationDone)
+                buttons.add(new PanesButton(b ? PANES[0] : PANES[1], i));
+            else {
+                int finalI = i;
+                buttons.add(new PlaceholderButton() {
+                    @Override
+                    public int[] getSlots() {
+                        return new int[]{};
+                    }
+
+                    @Override
+                    public int getSlot() {
+                        return finalI;
+                    }
+                });
+            }
             b = !b;
         }
         return buttons;
@@ -83,7 +99,6 @@ public class ClaimExpeditionMenu extends Menu {
     }
 
     public boolean tick(Player player) {
-        Logger.debug("Closed: %1 | AnimDone: %2", closed, animationDone);
         if (closed && animationDone) //cancel the runnable once the player closes the menu and the animation is done
             return true;
         b = !b;

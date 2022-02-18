@@ -20,6 +20,10 @@ public class MessageManager {
         }
     }
 
+    public static Component parse(String s) {
+        return parse(s, null);
+    }
+
     public static Component parse(String s, Map<String, String> placeholders) {
         String a = s;
         if (placeholders != null)
