@@ -1,45 +1,56 @@
-services:
-  - "Test1"
-  - "Test2"
-  - "Test3"
-items:
+loot:
   daily:
-    name: '<green>Daily Expeditions'
-    material: 'CHEST'
-    can-use:
-      lore:
-        - '<green>You have %count% expeditions to claim!'
-        - '<gray>Click to claim the daily expeditions!'
-    cant-use:
-      lore:
-        - '<red>You have already opened the daily expedition today!'
-  premium:
-    name: '<green>Premium Expeditions'
-    material: 'CHEST'
-    can-use:
-      lore:
-        - '<green>You have %count% expeditions to claim!'
-        - '<gray>Click to claim the premium expeditions!'
-    cant-use:
-      lore:
-        - '<red>You don''t have any premium expeditions! Buy more at <gradient:yellow:orange>store.semivanilla.com</gradient>'
-  vote:
-    name: '<green>Vote'
-    material: 'CHEST'
-    can-use:
-      lore:
-        - '<green>You have %count% expeditions to claim!'
-        - '<gray>Click to claim the vote expeditions!'
-    cant-use:
-      lore:
-        - '<red>You don''t have any vote expeditions! Do <gradient:yellow:orange>/vote</gradient> to get more!'
-  super-vote:
-    name: '<green>Super Vote'
-    material: 'CHEST'
-    can-use:
-      lore:
-        - '<green>You have %count% expeditions to claim!'
-        - '<gray>Click to claim the super vote expeditions!'
-    cant-use:
-      lore:
-        - '<red>You don''t have any super vote expeditions! Vote at all sites to obtain one!'
+    amount: 2
+    files:
+      - 'daily.json'
+
+services:
+  - 'Test1'
+  - 'Test2'
+  - 'Test3'
+menu:
+  enable-animation: false
+  items:
+    daily:
+      name: '<green>Daily Expeditions'
+      material: 'CHEST'
+      can-use:
+        lore:
+          - '<green>You have %count% expeditions to claim!'
+          - '<gray>Click to claim the daily expeditions!'
+      cant-use:
+        lore:
+          - '<red>You have already opened the daily expedition today!'
+    premium:
+      name: '<green>Premium Expeditions'
+      material: 'CHEST'
+      can-use:
+        lore:
+          - '<green>You have %count% expeditions to claim!'
+          - '<gray>Click to claim the premium expeditions!'
+      cant-use:
+        lore:
+          - '<red>You don''t have any premium expeditions! Buy more at <gradient:yellow:orange>store.semivanilla.com</gradient>'
+    vote:
+      name: '<green>Vote'
+      material: 'CHEST'
+      can-use:
+        lore:
+          - '<green>You have %count% expeditions to claim!'
+          - '<gray>Click to claim the vote expeditions!'
+      cant-use:
+        lore:
+          - '<red>You don''t have any vote expeditions! Do <gradient:yellow:orange>/vote</gradient> to get more!'
+    super-vote:
+      name: '<green>Super Vote'
+      material: 'CHEST'
+      can-use:
+        lore:
+          - '<green>You have %count% expeditions to claim!'
+          - '<gray>Click to claim the super vote expeditions!'
+      cant-use:
+        lore:
+          - '<red>You don''t have any super vote expeditions! Vote at all sites to obtain one!'
+messages:
+  expeditions-left: '<green>You still have %count% expeditions to claim! use <gradient:yellow:orange>/expeditions</gradient> to claim them!</green>'
+  expedition-earned: '<green>You completed %count% %type% Expedition(s) while away! Use <gradient:yellow:orange>/spoils</gradient> to claim your rewards.</green>'

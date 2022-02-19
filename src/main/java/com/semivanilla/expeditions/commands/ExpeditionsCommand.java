@@ -1,7 +1,7 @@
 package com.semivanilla.expeditions.commands;
 
 import com.semivanilla.expeditions.Expeditions;
-import com.semivanilla.expeditions.manager.PlayerManager;
+import com.semivanilla.expeditions.manager.LootManager;
 import com.semivanilla.expeditions.menu.ClaimExpeditionMenu;
 import com.semivanilla.expeditions.object.MenuUpdateTask;
 import net.badbird5907.blib.command.BaseCommand;
@@ -24,6 +24,11 @@ public class ExpeditionsCommand extends BaseCommand {
         ClaimExpeditionMenu menu = new ClaimExpeditionMenu(stacks);
         menu.open(sender);
         new MenuUpdateTask(menu,sender.getPlayer()).runTaskTimer(Expeditions.getInstance(),10l,10l);
+        return CommandResult.SUCCESS;
+    }
+    @Command(name = "rollloot",playerOnly = true)
+    public CommandResult rollLoot(Sender sender, String[] args) {
+        LootManager.test(sender.getPlayer());
         return CommandResult.SUCCESS;
     }
 }

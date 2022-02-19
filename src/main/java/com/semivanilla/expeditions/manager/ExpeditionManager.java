@@ -20,6 +20,8 @@ public class ExpeditionManager {
         expeditions.add(new PremiumExpedition());
         expeditions.add(new SuperVoteExpedition());
         expeditions.add(new VoteExpedition());
+
+        expeditions.forEach(Expedition::init);
     }
 
     public static Expedition getByType(ExpeditionType type) {

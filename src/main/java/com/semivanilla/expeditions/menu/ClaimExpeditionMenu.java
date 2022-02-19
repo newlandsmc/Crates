@@ -1,5 +1,6 @@
 package com.semivanilla.expeditions.menu;
 
+import com.semivanilla.expeditions.manager.ConfigManager;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -20,7 +21,7 @@ import java.util.*;
 public class ClaimExpeditionMenu extends Menu {
     private final Collection<ItemStack> items;
     private final Stack<ItemStack> toShow; // why am I using a stack??
-    private Map<Integer,ItemStack> shown = new HashMap<>();
+    private Map<Integer, ItemStack> shown = new HashMap<>();
     private int stage = 0;
     public static final int STAGE_MAX = 20;
     private static final int CENTER = 22;
@@ -39,12 +40,17 @@ public class ClaimExpeditionMenu extends Menu {
     );
     boolean b = true;
 
-    public ClaimExpeditionMenu(Collection<ItemStack> items) {
+    public ClaimExpeditionMenu(List<ItemStack> items) {
         this.items = items;
         Logger.debug("Size: %1", items.size());
         toShow = new Stack<>();
-        toShow.addAll(items);
+        for (int i = 0; i < items.size(); i++) {
+            if (i >= 10)
+                break;
+            toShow.push(items.get(i));
+        }
     }
+
     int g = 0;
 
     @Override
@@ -72,7 +78,7 @@ public class ClaimExpeditionMenu extends Menu {
             if (usedSlots.contains(i)) {
                 continue;
             }
-            if (!animationDone)
+            if (!animationDone && ConfigManager.isEnableAnimation())
                 buttons.add(new PanesButton(b ? PANES[0] : PANES[1], i));
             else {
                 int finalI = i;
