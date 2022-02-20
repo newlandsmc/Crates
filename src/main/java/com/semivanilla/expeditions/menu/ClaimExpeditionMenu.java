@@ -1,156 +1,82 @@
 package com.semivanilla.expeditions.menu;
 
 import com.semivanilla.expeditions.manager.ConfigManager;
-import lombok.Getter;
+import com.semivanilla.expeditions.manager.MessageManager;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import net.badbird5907.blib.menu.buttons.Button;
-import net.badbird5907.blib.menu.buttons.PlaceholderButton;
-import net.badbird5907.blib.menu.menu.Menu;
-import net.badbird5907.blib.util.CC;
-import net.badbird5907.blib.util.ItemBuilder;
-import net.badbird5907.blib.util.Logger;
-import org.bukkit.Material;
+import net.badbird5907.blib.menu.menu.PaginatedMenu;
+import net.badbird5907.blib.objects.Callback;
+import net.badbird5907.blib.objects.TypeCallback;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
-@Getter
-@Setter
-public class ClaimExpeditionMenu extends Menu {
-    private final Collection<ItemStack> items;
-    private final Stack<ItemStack> toShow; // why am I using a stack??
-    private Map<Integer, ItemStack> shown = new HashMap<>();
-    private int stage = 0;
-    public static final int STAGE_MAX = 20;
-    private static final int CENTER = 22;
-    private boolean closed = false, animationDone = false;
-    private static final Material[] PANES = {
-            Material.YELLOW_STAINED_GLASS_PANE,
-            Material.ORANGE_STAINED_GLASS_PANE,
-            Material.RED_STAINED_GLASS_PANE
-    };
-    private static final List<int[]> CENTER_ITEMS = List.of( // immutable
-            new int[]{22},
-            new int[]{21, 23},
-            new int[]{20, 24},
-            new int[]{19, 25},
-            new int[]{18, 26}
-    );
-    boolean b = true;
-
-    public ClaimExpeditionMenu(List<ItemStack> items) {
-        this.items = items;
-        Logger.debug("Size: %1", items.size());
-        toShow = new Stack<>();
-        for (int i = 0; i < items.size(); i++) {
-            if (i >= 10)
-                break;
-            toShow.push(items.get(i));
-        }
+@RequiredArgsConstructor
+public class ClaimExpeditionMenu extends PaginatedMenu {
+    private final ArrayList<ItemStack> items;
+    private final Consumer<ArrayList<ItemStack>> callback;
+    @Override
+    public String getPagesTitle(Player player) {
+        return "Claim Expeditions";
     }
 
-    int g = 0;
-
     @Override
-    public List<Button> getButtons(Player player) {
+    public List<Button> getPaginatedButtons(Player player) {
         List<Button> buttons = new ArrayList<>();
-        List<Integer> usedSlots = new ArrayList<>();
-        boolean shouldShow = stage != 1 && stage % 2 == 0;
-        if (shouldShow && !toShow.isEmpty()) {
-            ItemStack toShowItem = toShow.pop();
-            int[] k = CENTER_ITEMS.get(g++);
-            if (toShowItem != null) {
-                shown.put(k[0], toShowItem);
-            }
-            if (!toShow.isEmpty() && k.length > 1)
-                shown.put(k[1], toShow.pop()); //show two items at once
-        }
-        animationDone = toShow.isEmpty();
-        for (Map.Entry<Integer, ItemStack> entry : shown.entrySet()) {
-            //show every item starting from the center
-            int slot = entry.getKey();
-            buttons.add(new ItemButton(entry.getValue(), slot));
-            usedSlots.add(slot);
-        }
-        for (int i = 0; i < 45; i++) {
-            if (usedSlots.contains(i)) {
-                continue;
-            }
-            if (!animationDone && ConfigManager.isEnableAnimation())
-                buttons.add(new PanesButton(b ? PANES[0] : PANES[1], i));
-            else {
-                int finalI = i;
-                buttons.add(new PlaceholderButton() {
-                    @Override
-                    public int[] getSlots() {
-                        return new int[]{};
-                    }
-
-                    @Override
-                    public int getSlot() {
-                        return finalI;
-                    }
-                });
-            }
-            b = !b;
+        for (ItemStack item : items) {
+            buttons.add(new ItemButton(item));
         }
         return buttons;
     }
 
     @Override
-    public String getName(Player player) {
-        return "Test";
-    }
-
-    public boolean tick(Player player) {
-        if (closed && animationDone) //cancel the runnable once the player closes the menu and the animation is done
-            return true;
-        b = !b;
-        update(player);
-        return false;
+    public List<Button> getEveryMenuSlots(Player player) {
+        return null;
     }
 
     @Override
     public void onClose(Player player) {
-        closed = true;
-    }
-
-    @Override
-    public void onOpen(Player player) {
-        closed = false;
+        super.onClose(player);
+        callback.accept(items);
     }
 
     @RequiredArgsConstructor
     private class ItemButton extends Button {
         private final ItemStack item;
-        private final int slot;
 
         @Override
         public ItemStack getItem(Player player) {
+            List<Component> lore = item.lore();
+            List<Component> addLore = new ArrayList<>();
+            for (String s : ConfigManager.getClaimLore()) {
+                Map<String, String> map = new HashMap<>();
+                map.put("%player%", player.getName());
+                addLore.add(MessageManager.parse(s, map));
+            }
+            lore.addAll(addLore);
+            ItemStack clone = item.clone();
+            clone.lore(lore);
             return item;
         }
 
         @Override
         public int getSlot() {
-            return slot;
-        }
-    }
-
-    @RequiredArgsConstructor
-    private class PanesButton extends Button {
-        private final Material material;
-        private final int slot;
-
-        @Override
-        public ItemStack getItem(Player player) {
-            return new ItemBuilder(material).name(CC.GRAY).build();
+            return 0;
         }
 
         @Override
-        public int getSlot() {
-            return slot;
+        public void onClick(Player player, int slot, ClickType clickType) {
+            super.onClick(player, slot, clickType);
+            player.getInventory().addItem(item);
+            items.remove(item);
+            update(player);
         }
     }
 }

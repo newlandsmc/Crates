@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.semivanilla.expeditions.Expeditions;
 import lombok.Getter;
 
 import java.io.File;
@@ -16,8 +17,16 @@ public class LootFile {
     private File file;
     @Getter
     private List<LootPool> pools = new ArrayList<>();
+
     public LootFile(File file) {
         this.file = file;
+        if (!file.exists()) {
+            try {
+                Files.copy(Expeditions.getInstance().getResource("loot.base.json"), file.toPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         try {
             String json = new String(Files.readAllBytes(file.toPath()));
             JsonObject obj = JsonParser.parseString(json).getAsJsonObject();

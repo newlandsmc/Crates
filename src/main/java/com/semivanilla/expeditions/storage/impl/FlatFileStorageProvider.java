@@ -1,13 +1,16 @@
 package com.semivanilla.expeditions.storage.impl;
 
 import com.semivanilla.expeditions.Expeditions;
+import com.semivanilla.expeditions.object.Expedition;
 import com.semivanilla.expeditions.object.PlayerData;
 import com.semivanilla.expeditions.storage.StorageProvider;
 import lombok.SneakyThrows;
+import net.badbird5907.blib.util.Logger;
 import net.badbird5907.blib.util.Tasks;
 
 import java.io.File;
 import java.io.PrintStream;
+import java.nio.file.Files;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -29,6 +32,7 @@ public class FlatFileStorageProvider implements StorageProvider {
         return future;
     }
 
+    @SneakyThrows
     @Override
     public PlayerData getDataNow(UUID uuid) {
         File file = new File(dataFolder, uuid.toString() + ".json");
@@ -37,7 +41,7 @@ public class FlatFileStorageProvider implements StorageProvider {
             data = new PlayerData(uuid);
             saveData(data);
         } else {
-            data = Expeditions.getGson().fromJson(file.getAbsolutePath(), PlayerData.class);
+            data = Expeditions.getGson().fromJson(new String(Files.readAllBytes(file.toPath())), PlayerData.class);
         }
         data.onLoad();
         return data;
@@ -63,8 +67,10 @@ public class FlatFileStorageProvider implements StorageProvider {
         if (!file.exists()) {
             file.createNewFile();
         }
+        String json  = Expeditions.getGson().toJson(data);
+        Logger.debug("Saving data: %1", json);
         PrintStream ps = new PrintStream(file);
-        ps.print(Expeditions.getGson().toJson(data));
+        ps.print(json);
         ps.close();
     }
 }

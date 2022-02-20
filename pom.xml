@@ -12,7 +12,7 @@
     <name>Expeditions</name>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -83,13 +83,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>io.papermc.paper</groupId>
-            <artifactId>paper-server</artifactId>
-            <version>1.18.1-R0.1-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/run/versions/1.18.1/paper-1.18.1.jar</systemPath>
-        </dependency>
-        <dependency>
             <groupId>net.badbird5907</groupId>
             <artifactId>bLib-Bukkit</artifactId>
             <version>2.1.2-REL</version>
@@ -109,7 +102,7 @@
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-minimessage</artifactId>
-            <version>4.10.0-SNAPSHOT</version>
+            <version>4.1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

@@ -1,19 +1,31 @@
-loot:
+loot: # specifies what files to pull the loot tables from (in loot folder)
   daily:
-    amount: 2
     files:
       - 'daily.json'
-
+  premium:
+    files:
+      - 'premium.json'
+  vote:
+    files:
+      - 'vote.json'
+  super-vote:
+    files:
+      - 'super-vote.json'
 services:
   - 'Test1'
   - 'Test2'
   - 'Test3'
 menu:
   enable-animation: false
+  claim-lore: #lore added when claiming items
+    - '<green>Click to claim this item!'
+  unclaimed-items:
+    - '<green>You still have unclaimed items!'
+    - '<gray>Click to claim them!'
   items:
     daily:
       name: '<green>Daily Expeditions'
-      material: 'CHEST'
+      material: 'BARREL'
       can-use:
         lore:
           - '<green>You have %count% expeditions to claim!'
@@ -23,14 +35,14 @@ menu:
           - '<red>You have already opened the daily expedition today!'
     premium:
       name: '<green>Premium Expeditions'
-      material: 'CHEST'
+      material: 'ENDER_CHEST'
       can-use:
         lore:
           - '<green>You have %count% expeditions to claim!'
           - '<gray>Click to claim the premium expeditions!'
       cant-use:
         lore:
-          - '<red>You don''t have any premium expeditions! Buy more at <gradient:yellow:orange>store.semivanilla.com</gradient>'
+          - '<red>You don''t have any premium expeditions! Buy more at <gradient:yellow:red>store.semivanilla.com</gradient>'
     vote:
       name: '<green>Vote'
       material: 'CHEST'
@@ -40,7 +52,7 @@ menu:
           - '<gray>Click to claim the vote expeditions!'
       cant-use:
         lore:
-          - '<red>You don''t have any vote expeditions! Do <gradient:yellow:orange>/vote</gradient> to get more!'
+          - '<red>You don''t have any vote expeditions! Do <gradient:yellow:red>/vote</gradient> to get more!'
     super-vote:
       name: '<green>Super Vote'
       material: 'CHEST'
@@ -52,5 +64,5 @@ menu:
         lore:
           - '<red>You don''t have any super vote expeditions! Vote at all sites to obtain one!'
 messages:
-  expeditions-left: '<green>You still have %count% expeditions to claim! use <gradient:yellow:orange>/expeditions</gradient> to claim them!</green>'
-  expedition-earned: '<green>You completed %count% %type% Expedition(s) while away! Use <gradient:yellow:orange>/spoils</gradient> to claim your rewards.</green>'
+  expeditions-left: '<green>You still have %count% expeditions to claim! use <gradient:yellow:red>/expeditions</gradient> to claim them!</green>'
+  expedition-earned: '<green>You completed %count% %type% Expedition(s) while away! Use <gradient:yellow:red>/spoils</gradient> to claim your rewards.</green>'

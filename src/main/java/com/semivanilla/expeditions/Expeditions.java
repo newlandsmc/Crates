@@ -2,6 +2,7 @@ package com.semivanilla.expeditions;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.semivanilla.expeditions.listeners.PlayerListener;
 import com.semivanilla.expeditions.manager.ConfigManager;
 import com.semivanilla.expeditions.manager.ExpeditionManager;
 import com.semivanilla.expeditions.object.DataUpdateRunnable;
@@ -61,6 +62,7 @@ public final class Expeditions extends JavaPlugin {
         if (!getDataFolder().exists())
             getDataFolder().mkdir();
         configManager.init();
+        storageProvider.init(this);
 
         ExpeditionManager.init();
 
@@ -71,8 +73,11 @@ public final class Expeditions extends JavaPlugin {
                 if (contents.isEmpty()) {
                     lastReset = LocalDate.now();
                 }else {
+                    /*
                     Date date = new Date(Long.parseLong(contents));
                     lastReset = LocalDate.from(date.toInstant());
+                     */
+                    lastReset = gson.fromJson(contents, LocalDate.class);
                 }
             } catch (IOException | NumberFormatException | DateTimeException e) {
                 getLogger().severe("Could not parse last data reset time!");
@@ -82,16 +87,28 @@ public final class Expeditions extends JavaPlugin {
 
         new DataUpdateRunnable().runTaskTimerAsynchronously(this, 20 * 120, 20 * 60);
 
+        getServer().getPluginManager().registerEvents(new PlayerListener(),this);
+
         //storageProvider.init(this);
     }
 
     @Override
     public void onDisable() {
         try {
-            Files.write(lastMidnight.toPath(), String.valueOf(System.currentTimeMillis()).getBytes());
+            if (!lastMidnight.exists())
+                lastMidnight.createNewFile();
+            //Files.write(lastMidnight.toPath(), String.valueOf(System.currentTimeMillis()).getBytes());
+            Files.write(lastMidnight.toPath(), gson.toJson(lastReset).getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void reloadConfig() {
+        super.reloadConfig();
+        this.config = null;
+        configManager.loadConfig();
     }
 
     @Override

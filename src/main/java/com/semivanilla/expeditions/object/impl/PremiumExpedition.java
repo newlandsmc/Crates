@@ -1,10 +1,13 @@
 package com.semivanilla.expeditions.object.impl;
 
+import com.semivanilla.expeditions.loot.LootFile;
 import com.semivanilla.expeditions.manager.ConfigManager;
 import com.semivanilla.expeditions.object.Expedition;
 import com.semivanilla.expeditions.object.ExpeditionType;
 import com.semivanilla.expeditions.object.ItemConfig;
 import org.bukkit.entity.Player;
+
+import java.util.List;
 
 public class PremiumExpedition extends Expedition {
     @Override
@@ -28,7 +31,8 @@ public class PremiumExpedition extends Expedition {
     }
 
     @Override
-    public String getInternalName() {
-        return "premium";
+    public List<LootFile> getLootFiles() {
+        return ConfigManager.getPremiumLoot();
     }
+
 }

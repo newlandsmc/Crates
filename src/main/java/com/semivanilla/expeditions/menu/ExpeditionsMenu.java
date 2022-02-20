@@ -1,8 +1,10 @@
 package com.semivanilla.expeditions.menu;
 
+import com.semivanilla.expeditions.Expeditions;
 import com.semivanilla.expeditions.manager.ExpeditionManager;
 import com.semivanilla.expeditions.object.Expedition;
 import com.semivanilla.expeditions.object.ItemConfig;
+import com.semivanilla.expeditions.object.MenuUpdateTask;
 import com.semivanilla.expeditions.object.PlayerData;
 import lombok.RequiredArgsConstructor;
 import net.badbird5907.blib.menu.buttons.Button;
@@ -10,11 +12,13 @@ import net.badbird5907.blib.menu.buttons.PlaceholderButton;
 import net.badbird5907.blib.menu.menu.Menu;
 import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.ItemBuilder;
+import net.badbird5907.blib.util.Logger;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -23,7 +27,7 @@ import java.util.stream.IntStream;
 public class ExpeditionsMenu extends Menu {
     private static final ItemStack PLACEHOLDER_ITEM = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).name(CC.GRAY).build();
     private final PlayerData data;
-    private int[] slots = {10, 11, 12, 13, 14, 15, 16};
+    private int[] slots = {10, 12, 14, 16};
 
     @Override
     public List<Button> getButtons(Player player) {
@@ -50,7 +54,7 @@ public class ExpeditionsMenu extends Menu {
         private final Expedition expedition;
         private final ItemConfig item;
         private final int slot;
-        private boolean canUse;
+        private boolean canUse, unclaimedItems;
         private int count;
 
         public ExpeditionButton(Expedition expedition, ItemConfig item, int slot) {
@@ -59,11 +63,12 @@ public class ExpeditionsMenu extends Menu {
             this.slot = slot;
             canUse = data.getExpeditionTypes().contains(expedition.getType());
             count = data.countExpeditions(expedition.getType());
+            unclaimedItems = data.getUnclaimedRewards().containsKey(expedition.getType());
         }
 
         @Override
         public ItemStack getItem(Player player) {
-            return item.generateItem(canUse, count);
+            return item.generateItem(canUse,unclaimedItems, count);
         }
 
         @Override
@@ -73,8 +78,20 @@ public class ExpeditionsMenu extends Menu {
 
         @Override
         public void onClick(Player player, int slot, ClickType clickType) {
+            if (unclaimedItems) {
+                ArrayList<ItemStack> items = data.getUnclaimedRewards().get(expedition.getType());
+                new ClaimExpeditionMenu(items,(l)-> {
+                    if (l.isEmpty()) return;
+                    data.getUnclaimedRewards().put(expedition.getType(),l);
+                }).open(player);
+                return;
+            }
             if (canUse) {
-
+                ArrayList<ItemStack> items = expedition.genLoot(player);
+                Logger.debug("Generated loot: Size: %1 | %2", items.size(), items);
+                ClaimExpeditionAnimationMenu menu = new ClaimExpeditionAnimationMenu(items,expedition.getType());
+                menu.open(player);
+                new MenuUpdateTask(menu,player).runTaskTimer(Expeditions.getInstance(),10l,10l);
             }
         }
     }
@@ -82,7 +99,7 @@ public class ExpeditionsMenu extends Menu {
     private class Placeholder extends PlaceholderButton {
         @Override
         public int[] getSlots() {
-            return genPlaceholderSpots(IntStream.range(0, 26), slots);
+            return genPlaceholderSpots(IntStream.range(0, 27), slots);
         }
 
         @Override

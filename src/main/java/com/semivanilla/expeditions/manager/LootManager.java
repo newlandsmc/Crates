@@ -21,8 +21,9 @@ public class LootManager {
         lootFiles.add(new LootFile(f2));
         rollLoot(lootFiles,player);
     }
-    public static void rollLoot(List<LootFile> lootFiles, Player player) {
-        List<LootPool> pools = new ArrayList<>();
+    public static ArrayList<ItemStack> rollLoot(List<LootFile> lootFiles, Player player) {
+        ArrayList<LootPool> pools = new ArrayList<>();
+        ArrayList<ItemStack> items = new ArrayList<>();
         Random random = new Random();
 
         for (LootFile lootFile : lootFiles) {
@@ -42,9 +43,10 @@ public class LootManager {
                 LootEntry entry = entries.get(random.nextInt(entries.size()));
                 ItemStack stack = entry.generate(player,random);
                 if (stack != null) {
-                    player.getInventory().addItem(stack);
+                    items.add(stack);
                 }
             }
         }
+        return items;
     }
 }

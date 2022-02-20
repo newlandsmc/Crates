@@ -7,12 +7,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -28,6 +26,7 @@ public class PlayerData {
     private int totalVotes = 0;
     private transient long lastNameLoad = -1;
     private ArrayList<ExpeditionType> expeditions = new ArrayList<>();
+    private HashMap<ExpeditionType,ArrayList<ItemStack>> unclaimedRewards = new HashMap<>();
 
     public void onLoad() {
         getName();

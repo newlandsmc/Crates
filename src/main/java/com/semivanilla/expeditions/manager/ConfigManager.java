@@ -1,12 +1,14 @@
 package com.semivanilla.expeditions.manager;
 
 import com.semivanilla.expeditions.Expeditions;
+import com.semivanilla.expeditions.loot.LootFile;
 import com.semivanilla.expeditions.object.ItemConfig;
 import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigManager {
@@ -15,7 +17,11 @@ public class ConfigManager {
     private static ItemConfig dailyItem, premiumItem, voteItem, superVoteItem;
 
     @Getter
-    private static List<String> voteServices;
+    private static List<String> voteServices, claimLore = new ArrayList<>(), unclaimedItems = new ArrayList<>();
+
+    @Getter
+    private static List<LootFile> dailyLoot = new ArrayList<>(), premiumLoot = new ArrayList<>(),
+            voteLoot = new ArrayList<>(), superVoteLoot = new ArrayList<>();
 
     @Getter
     private static boolean enableAnimation;
@@ -56,7 +62,34 @@ public class ConfigManager {
 
         voteServices = getConfig().getStringList("services");
 
-        enableAnimation = getConfig().getBoolean("menu.enable-animation",false);
+        enableAnimation = getConfig().getBoolean("menu.enable-animation", false);
+
+        claimLore.clear();
+        claimLore.addAll(getConfig().getStringList("menu.claim-lore"));
+
+        unclaimedItems.clear();
+        unclaimedItems.addAll(getConfig().getStringList("menu.unclaimed-items"));
+
+        File lootFolder = new File(Expeditions.getInstance().getDataFolder(), "loot");
+        if (!lootFolder.exists()) {
+            lootFolder.mkdir();
+        }
+        dailyLoot.clear();
+        premiumLoot.clear();
+        voteLoot.clear();
+        superVoteLoot.clear();
+        for (String s : getConfig().getStringList("loot.daily.files")) {
+            dailyLoot.add(new LootFile(new File(lootFolder, s)));
+        }
+        for (String s : getConfig().getStringList("loot.premium.files")) {
+            premiumLoot.add(new LootFile(new File(lootFolder, s)));
+        }
+        for (String s : getConfig().getStringList("loot.vote.files")) {
+            voteLoot.add(new LootFile(new File(lootFolder, s)));
+        }
+        for (String s : getConfig().getStringList("loot.super-vote.files")) {
+            superVoteLoot.add(new LootFile(new File(lootFolder, s)));
+        }
     }
 
     public FileConfiguration getConfig() {

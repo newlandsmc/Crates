@@ -30,7 +30,7 @@ public class MessageManager {
             for (Map.Entry<String, String> stringStringEntry : placeholders.entrySet()) {
                 a = a.replace(stringStringEntry.getKey(), stringStringEntry.getValue());
             }
-        return MINI_MESSAGE.deserialize(a);
+        return MINI_MESSAGE.parse(a);
     }
 
     public static List<Component> parse(Collection<String> messages, Map<String, String> placeholders) {

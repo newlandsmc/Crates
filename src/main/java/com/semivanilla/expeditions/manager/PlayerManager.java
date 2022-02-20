@@ -18,9 +18,12 @@ public class PlayerManager {
     }
 
     public static void leave(UUID uuid) {
-        PlayerData data = dataMap.remove(uuid);
+        Map.Entry<UUID,PlayerData> entry = dataMap.entrySet().stream().filter(e -> e.getKey().equals(uuid)).findFirst().orElse(null);
+        if (entry == null)
+            return;
+        PlayerData data = entry.getValue();
         if (data != null) {
-            Expeditions.getStorageProvider().saveData(data);
+            Expeditions.getStorageProvider().saveData(data, false);
         }
     }
 
