@@ -1,8 +1,6 @@
 package com.semivanilla.expeditions.util;
 
-import com.google.common.reflect.TypeToken;
 import com.google.gson.*;
-import com.semivanilla.expeditions.Expeditions;
 import lombok.SneakyThrows;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
@@ -12,7 +10,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Type;
 import java.util.Base64;
-import java.util.Map;
 
 public class ItemStackAdapter implements JsonSerializer<ItemStack>, JsonDeserializer<ItemStack> {
     @SneakyThrows

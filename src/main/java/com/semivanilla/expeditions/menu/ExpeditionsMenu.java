@@ -6,6 +6,7 @@ import com.semivanilla.expeditions.object.Expedition;
 import com.semivanilla.expeditions.object.ItemConfig;
 import com.semivanilla.expeditions.object.MenuUpdateTask;
 import com.semivanilla.expeditions.object.PlayerData;
+import com.semivanilla.expeditions.object.impl.DailyExpedition;
 import lombok.RequiredArgsConstructor;
 import net.badbird5907.blib.menu.buttons.Button;
 import net.badbird5907.blib.menu.buttons.PlaceholderButton;
@@ -18,14 +19,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import java.lang.reflect.Array;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 public class ExpeditionsMenu extends Menu {
-    private static final ItemStack PLACEHOLDER_ITEM = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).name(CC.GRAY).build();
+    public static final ItemStack PLACEHOLDER_ITEM = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).name(CC.GRAY).build();
     private final PlayerData data;
     private int[] slots = {10, 12, 14, 16};
 
@@ -54,21 +56,23 @@ public class ExpeditionsMenu extends Menu {
         private final Expedition expedition;
         private final ItemConfig item;
         private final int slot;
-        private boolean canUse, unclaimedItems;
+        private boolean canUse, unclaimedItems, daily;
         private int count;
 
         public ExpeditionButton(Expedition expedition, ItemConfig item, int slot) {
             this.expedition = expedition;
             this.item = item;
             this.slot = slot;
-            canUse = data.getExpeditionTypes().contains(expedition.getType());
+            daily = expedition instanceof DailyExpedition;
+
+            canUse = daily ? data.canClaimDaily() : data.getExpeditionTypes().contains(expedition.getType());
             count = data.countExpeditions(expedition.getType());
             unclaimedItems = data.getUnclaimedRewards().containsKey(expedition.getType());
         }
 
         @Override
         public ItemStack getItem(Player player) {
-            return item.generateItem(canUse,unclaimedItems, count);
+            return item.generateItem(canUse, unclaimedItems, count);
         }
 
         @Override
@@ -80,18 +84,25 @@ public class ExpeditionsMenu extends Menu {
         public void onClick(Player player, int slot, ClickType clickType) {
             if (unclaimedItems) {
                 ArrayList<ItemStack> items = data.getUnclaimedRewards().get(expedition.getType());
-                new ClaimExpeditionMenu(items,(l)-> {
-                    if (l.isEmpty()) return;
-                    data.getUnclaimedRewards().put(expedition.getType(),l);
-                }).open(player);
+                new ClaimExpeditionMenu(items, (l) -> {
+                    if (l.isEmpty()) {
+                        data.getUnclaimedRewards().remove(expedition.getType());
+                        return;
+                    }
+                    data.getUnclaimedRewards().put(expedition.getType(), l);
+                },player).open(player);
                 return;
             }
             if (canUse) {
                 ArrayList<ItemStack> items = expedition.genLoot(player);
+                data.getUnclaimedRewards().put(expedition.getType(), items);
                 Logger.debug("Generated loot: Size: %1 | %2", items.size(), items);
-                ClaimExpeditionAnimationMenu menu = new ClaimExpeditionAnimationMenu(items,expedition.getType());
+                ClaimExpeditionAnimationMenu menu = new ClaimExpeditionAnimationMenu(items, expedition.getType());
                 menu.open(player);
-                new MenuUpdateTask(menu,player).runTaskTimer(Expeditions.getInstance(),10l,10l);
+                if (daily) {
+                    data.setLastDailyClaim(LocalDate.now());
+                } else data.getExpeditionTypes().remove(expedition.getType());
+                new MenuUpdateTask(menu, player).runTaskTimer(Expeditions.getInstance(), 5l, 5l);
             }
         }
     }

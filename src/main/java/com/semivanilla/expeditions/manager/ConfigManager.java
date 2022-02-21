@@ -20,6 +20,11 @@ public class ConfigManager {
     private static List<String> voteServices, claimLore = new ArrayList<>(), unclaimedItems = new ArrayList<>();
 
     @Getter
+    private static List<String> expeditionsLeftMessage = new ArrayList<>(),
+                                expeditionsOfflineMessage = new ArrayList<>(),
+                                expeditionsGainedMessage = new ArrayList<>();
+
+    @Getter
     private static List<LootFile> dailyLoot = new ArrayList<>(), premiumLoot = new ArrayList<>(),
             voteLoot = new ArrayList<>(), superVoteLoot = new ArrayList<>();
 
@@ -90,6 +95,12 @@ public class ConfigManager {
         for (String s : getConfig().getStringList("loot.super-vote.files")) {
             superVoteLoot.add(new LootFile(new File(lootFolder, s)));
         }
+        expeditionsLeftMessage.clear();
+        expeditionsLeftMessage.addAll(getConfig().getStringList("messages.expeditions-left"));
+        expeditionsOfflineMessage.clear();
+        expeditionsOfflineMessage.addAll(getConfig().getStringList("messages.expeditions-earned-offline"));
+        expeditionsGainedMessage.clear();
+        expeditionsGainedMessage.addAll(getConfig().getStringList("messages.expeditions-gained"));
     }
 
     public FileConfiguration getConfig() {

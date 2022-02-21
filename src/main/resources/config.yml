@@ -16,7 +16,7 @@ services:
   - 'Test2'
   - 'Test3'
 menu:
-  enable-animation: false
+  enable-animation: true # enables the 'animation' in the men
   claim-lore: #lore added when claiming items
     - '<green>Click to claim this item!'
   unclaimed-items:
@@ -64,5 +64,9 @@ menu:
         lore:
           - '<red>You don''t have any super vote expeditions! Vote at all sites to obtain one!'
 messages:
-  expeditions-left: '<green>You still have %count% expeditions to claim! use <gradient:yellow:red>/expeditions</gradient> to claim them!</green>'
-  expedition-earned: '<green>You completed %count% %type% Expedition(s) while away! Use <gradient:yellow:red>/spoils</gradient> to claim your rewards.</green>'
+  expeditions-left:
+    - '<green>You still have %count% expeditions to claim! use <gradient:yellow:red>/expeditions</gradient> to claim them!</green>'
+  expeditions-earned-offline:
+    - '<green>You completed %count% Expedition(s) while away! Use <gradient:yellow:red>/spoils</gradient> to claim your rewards.</green>'
+  expeditions-gained:
+    - '<green>You have been given %count% %type% Expedition(s)!'

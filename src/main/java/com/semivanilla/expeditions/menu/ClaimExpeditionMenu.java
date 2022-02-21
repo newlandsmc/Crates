@@ -4,9 +4,10 @@ import com.semivanilla.expeditions.manager.ConfigManager;
 import com.semivanilla.expeditions.manager.MessageManager;
 import lombok.RequiredArgsConstructor;
 import net.badbird5907.blib.menu.buttons.Button;
-import net.badbird5907.blib.menu.menu.PaginatedMenu;
-import net.badbird5907.blib.objects.Callback;
-import net.badbird5907.blib.objects.TypeCallback;
+import net.badbird5907.blib.menu.buttons.PlaceholderButton;
+import net.badbird5907.blib.menu.buttons.impl.BackButton;
+import net.badbird5907.blib.menu.buttons.impl.CloseButton;
+import net.badbird5907.blib.menu.menu.Menu;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -17,28 +18,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
-@RequiredArgsConstructor
-public class ClaimExpeditionMenu extends PaginatedMenu {
+public class ClaimExpeditionMenu extends Menu {
     private final ArrayList<ItemStack> items;
     private final Consumer<ArrayList<ItemStack>> callback;
-    @Override
-    public String getPagesTitle(Player player) {
-        return "Claim Expeditions";
-    }
+    private final Player player;
+    private int[] bottomSlots = genPlaceholderSpots(IntStream.range(36, 45), 38, 42);
+    private int[] topSlots = genPlaceholderSpots(IntStream.range(0, 9));
+    private int[] slots;
 
-    @Override
-    public List<Button> getPaginatedButtons(Player player) {
-        List<Button> buttons = new ArrayList<>();
-        for (ItemStack item : items) {
-            buttons.add(new ItemButton(item));
+    public ClaimExpeditionMenu(ArrayList<ItemStack> items, Consumer<ArrayList<ItemStack>> callback, Player player) {
+        this.items = items;
+        this.callback = callback;
+        this.player = player;
+        ArrayList<Integer> arr = new ArrayList<>();
+        for (int bottomSlot : bottomSlots) {
+            arr.add(bottomSlot);
         }
-        return buttons;
-    }
-
-    @Override
-    public List<Button> getEveryMenuSlots(Player player) {
-        return null;
+        for (int topSlot : topSlots) {
+            arr.add(topSlot);
+        }
+        slots = arr.stream().mapToInt(Integer::intValue).toArray();
     }
 
     @Override
@@ -47,9 +48,78 @@ public class ClaimExpeditionMenu extends PaginatedMenu {
         callback.accept(items);
     }
 
+    @Override
+    public List<Button> getButtons(Player player) {
+        List<Button> buttons = new ArrayList<>();
+        buttons.add(new Placeholder());
+        int g = 9;
+        for (ItemStack item : items) {
+            buttons.add(new ItemButton(item, g++));
+        }
+        buttons.add(getCloseButton());
+        buttons.add(getBackButton(player));
+        return buttons;
+    }
+
+    @Override
+    public String getName(Player player) {
+        return "Claim Expeditions";
+    }
+
+    @Override
+    public Button getCloseButton() {
+        return new CloseButton() {
+            @Override
+            public void onClick(Player player, int slot, ClickType clickType) {
+                if (clickType == ClickType.SHIFT_LEFT || clickType == ClickType.SHIFT_RIGHT) {
+                    return;
+                }
+                player.closeInventory();
+            }
+
+            @Override
+            public int getSlot() {
+                return 42;
+            }
+        };
+    }
+
+    @Override
+    public Button getBackButton(Player player) {
+        return new BackButton() {
+            @Override
+            public void clicked(Player player, int slot, ClickType clickType) {
+                player.closeInventory();
+                player.performCommand("expeditions");
+            }
+
+            @Override
+            public int getSlot() {
+                return 38;
+            }
+        };
+    }
+
+    private class Placeholder extends PlaceholderButton {
+        @Override
+        public int getSlot() {
+            return bottomSlots[0];
+        }
+
+        @Override
+        public int[] getSlots() {
+            return slots;
+        }
+
+        @Override
+        public ItemStack getItem(Player player) {
+            return ExpeditionsMenu.PLACEHOLDER_ITEM;
+        }
+    }
     @RequiredArgsConstructor
     private class ItemButton extends Button {
         private final ItemStack item;
+        private final int slot;
 
         @Override
         public ItemStack getItem(Player player) {
@@ -68,7 +138,7 @@ public class ClaimExpeditionMenu extends PaginatedMenu {
 
         @Override
         public int getSlot() {
-            return 0;
+            return slot;
         }
 
         @Override

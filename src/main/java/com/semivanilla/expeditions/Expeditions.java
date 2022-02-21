@@ -3,12 +3,14 @@ package com.semivanilla.expeditions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.semivanilla.expeditions.listeners.PlayerListener;
+import com.semivanilla.expeditions.listeners.VoteListener;
 import com.semivanilla.expeditions.manager.ConfigManager;
 import com.semivanilla.expeditions.manager.ExpeditionManager;
 import com.semivanilla.expeditions.object.DataUpdateRunnable;
 import com.semivanilla.expeditions.storage.StorageProvider;
 import com.semivanilla.expeditions.storage.impl.FlatFileStorageProvider;
 import com.semivanilla.expeditions.util.ItemStackAdapter;
+import com.semivanilla.expeditions.util.LocalDateAdapter;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -30,6 +32,7 @@ public final class Expeditions extends JavaPlugin {
     @Getter
     private static final Gson gson = new GsonBuilder().setPrettyPrinting()
             .registerTypeAdapter(ItemStack.class, new ItemStackAdapter())
+            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
             .create();
 
     @Getter
@@ -66,7 +69,7 @@ public final class Expeditions extends JavaPlugin {
 
         ExpeditionManager.init();
 
-        lastMidnight = new File(getDataFolder(), "lastmidnight.txt");
+        lastMidnight = new File(getDataFolder(), "lastmidnight.json");
         if (lastMidnight.exists()) {
             try {
                 String contents = new String(Files.readAllBytes(lastMidnight.toPath()));
@@ -88,6 +91,7 @@ public final class Expeditions extends JavaPlugin {
         new DataUpdateRunnable().runTaskTimerAsynchronously(this, 20 * 120, 20 * 60);
 
         getServer().getPluginManager().registerEvents(new PlayerListener(),this);
+        getServer().getPluginManager().registerEvents(new VoteListener(),this);
 
         //storageProvider.init(this);
     }

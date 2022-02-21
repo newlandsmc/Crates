@@ -10,14 +10,17 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PlayerManager {
     private static final Map<UUID, PlayerData> dataMap = new ConcurrentHashMap<>();
 
-    public static void load(UUID uuid) {
+    public static PlayerData load(UUID uuid) {
+        if (dataMap.containsKey(uuid))
+            return dataMap.get(uuid);
         PlayerData data = Expeditions.getStorageProvider().getDataNow(uuid);
         if (data != null) {
             dataMap.put(uuid, data);
         }
+        return data;
     }
 
-    public static void leave(UUID uuid) {
+    public static void unload(UUID uuid) {
         Map.Entry<UUID,PlayerData> entry = dataMap.entrySet().stream().filter(e -> e.getKey().equals(uuid)).findFirst().orElse(null);
         if (entry == null)
             return;
@@ -25,10 +28,14 @@ public class PlayerManager {
         if (data != null) {
             Expeditions.getStorageProvider().saveData(data, false);
         }
+        dataMap.remove(uuid);
     }
 
     public static PlayerData getData(UUID uuid) {
-        PlayerData data = dataMap.get(uuid);
+        Map.Entry<UUID,PlayerData> entry = dataMap.entrySet().stream().filter(e -> e.getKey().equals(uuid)).findFirst().orElse(null);
+        if (entry == null)
+            return Expeditions.getStorageProvider().getDataNow(uuid);
+        PlayerData data = entry.getValue();
         if (data == null) {
             return Expeditions.getStorageProvider().getDataNow(uuid);
         }

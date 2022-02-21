@@ -67,7 +67,7 @@ public class FlatFileStorageProvider implements StorageProvider {
         if (!file.exists()) {
             file.createNewFile();
         }
-        String json  = Expeditions.getGson().toJson(data);
+        String json  = Expeditions.getGson().toJson(data,PlayerData.class);
         Logger.debug("Saving data: %1", json);
         PrintStream ps = new PrintStream(file);
         ps.print(json);

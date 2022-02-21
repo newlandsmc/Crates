@@ -5,7 +5,9 @@ import com.google.gson.JsonObject;
 import com.semivanilla.expeditions.loot.LootEntry;
 import com.semivanilla.expeditions.manager.MessageManager;
 import lombok.Getter;
+import net.advancedplugins.ae.api.AEAPI;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -18,8 +20,8 @@ import java.util.*;
 public class ItemLootEntry extends LootEntry {
     private List<String> lore = new ArrayList<>();
     private List<EnchantmentEntry> enchantments = new ArrayList<>();
-    private boolean absoluteAmount;
-    private int minAmount, maxAmount, amountAbsolute;
+    private boolean absoluteAmount, absoluteEnchantments;
+    private int minAmount, maxAmount, amountAbsolute, minEnchants, maxEnchants, enchantsAbsolute;
     private String name;
     private Material material;
 
@@ -42,7 +44,7 @@ public class ItemLootEntry extends LootEntry {
                 JsonObject amount = jsonObject.get("amount").getAsJsonObject();
                 minAmount = amount.get("min").getAsInt();
                 maxAmount = amount.get("max").getAsInt();
-            }else {
+            } else {
                 absoluteAmount = true;
                 amountAbsolute = jsonObject.get("amount").getAsInt();
             }
@@ -51,10 +53,25 @@ public class ItemLootEntry extends LootEntry {
             for (JsonElement element : jsonObject.get("enchantments").getAsJsonArray()) {
                 enchantments.add(new EnchantmentEntry(element.getAsJsonObject()));
             }
-        }if (jsonObject.has("enchants")) {
+        }
+        if (jsonObject.has("enchants")) {
             for (JsonElement element : jsonObject.get("enchants").getAsJsonArray()) {
                 enchantments.add(new EnchantmentEntry(element.getAsJsonObject()));
             }
+        }
+        if (jsonObject.has("enchantsamount")) {
+            if (jsonObject.get("enchantsamount").isJsonObject()) {
+                JsonObject amount = jsonObject.get("enchantsamount").getAsJsonObject();
+                minEnchants = amount.get("min").getAsInt();
+                maxEnchants = amount.get("max").getAsInt();
+            } else {
+                absoluteEnchantments = true;
+                enchantsAbsolute = jsonObject.get("enchantsamount").getAsInt();
+            }
+        }else {
+            absoluteEnchantments = false;
+            minEnchants = 0;
+            maxEnchants = enchantments.size();
         }
 
     }
@@ -80,38 +97,52 @@ public class ItemLootEntry extends LootEntry {
         }
         if (absoluteAmount) {
             stack.setAmount(amountAbsolute);
-        }else {
+        } else {
             int amount = random.nextInt(maxAmount - minAmount + 1) + minAmount;
             stack.setAmount(amount);
         }
 
         stack.setItemMeta(meta);
-        if (enchantments.size() > 0) {
-            List<EnchantmentEntry> enchantmentWithWeight = new ArrayList<>();
-            for (EnchantmentEntry entry : enchantments) {
-                for (int i = 0; i < entry.getWeight(); i++) {
-                    enchantmentWithWeight.add(entry);
+        int enchantsToAdd = 0;
+        if (absoluteEnchantments) {
+            enchantsToAdd = enchantsAbsolute;
+        } else {
+            enchantsToAdd = random.nextInt(maxEnchants - minEnchants + 1) + minEnchants;
+        }
+        for (int g = 0; g < enchantsToAdd; g++) {
+            if (enchantments.size() > 0) {
+                List<EnchantmentEntry> enchantmentWithWeight = new ArrayList<>();
+                for (EnchantmentEntry entry : enchantments) {
+                    for (int i = 0; i < entry.getWeight(); i++) {
+                        enchantmentWithWeight.add(entry);
+                    }
                 }
+                EnchantmentEntry entry = enchantmentWithWeight.get(random.nextInt(enchantmentWithWeight.size()));
+                entry.addEnchantment(stack, random);
             }
-            EnchantmentEntry entry = enchantmentWithWeight.get(random.nextInt(enchantmentWithWeight.size()));
-            entry.addEnchantment(stack, random);
         }
         return stack;
     }
+
     @Getter
     public class EnchantmentEntry {
         private Enchantment enchantment;
         private int weight = 1, levelAbsolute;
-        private boolean absoluteLevel;
+        private boolean absoluteLevel, advancedEnchantments;
         private int minLevel, maxLevel;
+        private String name;
 
         public EnchantmentEntry(JsonObject jsonObject) {
-            String name = jsonObject.get("name").getAsString();
+            name = jsonObject.get("name").getAsString();
             enchantment = Enchantment.getByName(name);
             if (enchantment == null) {
                 enchantment = Enchantment.getByKey(NamespacedKey.minecraft(name.toLowerCase()));
                 if (enchantment == null) {
-                    throw new IllegalArgumentException("Invalid enchantment name: " + name);
+                    if (Bukkit.getPluginManager().isPluginEnabled("AdvancedEnchantments")) {
+                        if (AEAPI.getAllEnchantments().stream().filter(e -> e.equalsIgnoreCase(name)).findFirst().orElse(null) != null) {
+                            advancedEnchantments = true;
+                        } else throw new IllegalArgumentException("Invalid enchantment name: " + name);
+                    } else throw new IllegalArgumentException("Invalid enchantment name: " + name);
                 }
             }
             absoluteLevel = !jsonObject.get("level").isJsonObject();
@@ -126,13 +157,19 @@ public class ItemLootEntry extends LootEntry {
                 weight = jsonObject.get("weight").getAsInt();
             }
         }
-        public void addEnchantment(ItemStack stack,Random random) {
+
+        public void addEnchantment(ItemStack stack, Random random) {
             if (enchantment == null)
                 return;
+            int level;
             if (absoluteLevel) {
-                stack.addUnsafeEnchantment(enchantment, levelAbsolute);
+                level = levelAbsolute;
+            } else {
+                level = random.nextInt(maxLevel - minLevel + 1) + minLevel;
+            }
+            if (advancedEnchantments) {
+                AEAPI.applyEnchant(name, level, stack);
             }else {
-                int level = random.nextInt(maxLevel - minLevel + 1) + minLevel;
                 stack.addUnsafeEnchantment(enchantment, level);
             }
         }
