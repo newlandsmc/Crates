@@ -22,7 +22,8 @@ public class ConfigManager {
     @Getter
     private static List<String> expeditionsLeftMessage = new ArrayList<>(),
                                 expeditionsOfflineMessage = new ArrayList<>(),
-                                expeditionsGainedMessage = new ArrayList<>();
+                                expeditionsGainedMessage = new ArrayList<>(),
+                                superVoteMessage = new ArrayList<>();
 
     @Getter
     private static List<LootFile> dailyLoot = new ArrayList<>(), premiumLoot = new ArrayList<>(),
@@ -101,6 +102,8 @@ public class ConfigManager {
         expeditionsOfflineMessage.addAll(getConfig().getStringList("messages.expeditions-earned-offline"));
         expeditionsGainedMessage.clear();
         expeditionsGainedMessage.addAll(getConfig().getStringList("messages.expeditions-gained"));
+        superVoteMessage.clear();
+        superVoteMessage.addAll(getConfig().getStringList("messages.super-vote-broadcast"));
     }
 
     public FileConfiguration getConfig() {

@@ -1,11 +1,14 @@
 package com.semivanilla.expeditions.object;
 
 import com.semivanilla.expeditions.Expeditions;
+import com.semivanilla.expeditions.manager.ConfigManager;
 import com.semivanilla.expeditions.manager.ExpeditionManager;
+import com.semivanilla.expeditions.manager.MessageManager;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.badbird5907.blib.util.Logger;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -79,6 +82,12 @@ public class PlayerData {
             }
         }
         Logger.debug("Player " + getName() + " has voted at least once a day in the last week, giving them a super vote");
+        Map<String,String> placeholders = new HashMap<>();
+        placeholders.put("%player%",getName());
+        List<Component> messages = MessageManager.parse(ConfigManager.getSuperVoteMessage(),placeholders);
+        for (Component message : messages) {
+            Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(message));
+        }
         lastVotes.clear();
         expeditions.add(ExpeditionType.SUPER_VOTE);
         if (Bukkit.getPlayer(uuid) == null)
