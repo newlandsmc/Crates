@@ -2,28 +2,21 @@ package com.semivanilla.expeditions.commands;
 
 import com.semivanilla.expeditions.Expeditions;
 import com.semivanilla.expeditions.manager.ConfigManager;
-import com.semivanilla.expeditions.manager.LootManager;
 import com.semivanilla.expeditions.manager.MessageManager;
 import com.semivanilla.expeditions.manager.PlayerManager;
-import com.semivanilla.expeditions.menu.ClaimExpeditionAnimationMenu;
-import com.semivanilla.expeditions.menu.ClaimExpeditionMenu;
 import com.semivanilla.expeditions.menu.ExpeditionsMenu;
 import com.semivanilla.expeditions.object.ExpeditionType;
-import com.semivanilla.expeditions.object.MenuUpdateTask;
 import com.semivanilla.expeditions.object.PlayerData;
 import net.badbird5907.blib.command.BaseCommand;
 import net.badbird5907.blib.command.Command;
 import net.badbird5907.blib.command.CommandResult;
 import net.badbird5907.blib.command.Sender;
 import net.badbird5907.blib.util.CC;
-import net.badbird5907.blib.util.ItemBuilder;
 import net.badbird5907.blib.util.Logger;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -49,7 +42,7 @@ public class ExpeditionsCommand extends BaseCommand {
                     data.addVote(now.minusDays(2));
                     data.addVote(now.minusDays(1));
                     data.addVote(now);
-                    data.checkSuperVote();
+                    data.checkPremium();
                     sender.sendMessage(CC.GREEN + "done!");
                 }
                 PlayerManager.getData(sender.getPlayer().getUniqueId()).onVote();
@@ -111,7 +104,7 @@ public class ExpeditionsCommand extends BaseCommand {
                     try {
                         for (String arg : args) {
                             PlayerData data = PlayerManager.getData(Bukkit.getPlayer(arg).getUniqueId());
-                            data.checkSuperVote();
+                            data.checkPremium();
                             sender.sendMessage(CC.GREEN + "Checked " + data.getName());
                         }
                     } catch (Exception e) {
@@ -121,7 +114,7 @@ public class ExpeditionsCommand extends BaseCommand {
                 }else {
                     for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                         PlayerData data = PlayerManager.getData(onlinePlayer.getUniqueId());
-                        data.checkSuperVote();
+                        data.checkPremium();
                     }
                     sender.sendMessage(CC.GREEN + "Done!");
                 }

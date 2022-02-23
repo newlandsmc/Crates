@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -60,14 +59,14 @@ public class PlayerData {
     public void onVote() {
         totalVotes++;
         expeditions.add(ExpeditionType.VOTE);
-        checkSuperVote();
+        checkPremium();
         LocalDate timestamp = LocalDate.now();
         if (lastVotes.stream().filter(d -> d.isEqual(timestamp)).findFirst().orElse(null) != null) //if they have voted today
             return;
         addVote(timestamp);
     }
 
-    public void checkSuperVote() {
+    public void checkPremium() {
         //check if they have voted at least once a day in the last week
         LocalDate temp = null;
         if (lastVotes.size() < 7)
