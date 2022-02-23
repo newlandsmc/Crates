@@ -174,7 +174,7 @@ public class ClaimExpeditionAnimationMenu extends Menu {
     boolean temp = false;
 
     public boolean tick(Player player) {
-        Logger.debug("Closed: %1 | AnimDone: %2 | Temp: %3 | TickingCenter: %4 | CenterTicksLeft: %5", closed, animationDone, temp, tickingCenter, centerTicksLeft);
+        //Logger.debug("Closed: %1 | AnimDone: %2 | Temp: %3 | TickingCenter: %4 | CenterTicksLeft: %5", closed, animationDone, temp, tickingCenter, centerTicksLeft);
         if (closed && animationDone) //cancel the runnable once the player closes the menu and the animation is done
             return true;
         if (tickingCenter) {

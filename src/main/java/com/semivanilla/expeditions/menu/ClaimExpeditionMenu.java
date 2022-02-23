@@ -130,6 +130,8 @@ public class ClaimExpeditionMenu extends Menu {
                 map.put("%player%", player.getName());
                 addLore.add(MessageManager.parse(s, map));
             }
+            if (lore == null)
+                lore = new ArrayList<>();
             lore.addAll(addLore);
             ItemStack clone = item.clone();
             clone.lore(lore);
