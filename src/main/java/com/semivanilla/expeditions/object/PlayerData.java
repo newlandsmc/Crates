@@ -83,9 +83,10 @@ public class PlayerData {
         Logger.debug("Player " + getName() + " has voted at least once a day in the last week, giving them a super vote");
         Map<String,String> placeholders = new HashMap<>();
         placeholders.put("%player%",getName());
-        List<Component> messages = MessageManager.parse(ConfigManager.getSuperVoteMessage(),placeholders);
+        List<Component> messages = MessageManager.parse(ConfigManager.getExpeditionsGainedMessage(),placeholders);
+        Player player = Bukkit.getPlayer(uuid);
         for (Component message : messages) {
-            Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(message));
+            player.sendMessage(message);
         }
         lastVotes.clear();
         expeditions.add(ExpeditionType.SUPER_VOTE);

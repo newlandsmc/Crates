@@ -72,3 +72,5 @@ messages:
     - '<green>You have been given %count% %type% Expedition(s)!'
   super-vote-broadcast:
     - '<yellow> * %player% just received a Super Vote Expedition! Use /vote to get yours.'
+  vote:
+    - '<green>Thanks for voting! You completed a Vote Expedition!'

@@ -13,33 +13,23 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
+
+import static com.semivanilla.expeditions.menu.ClaimExpeditionAnimationMenu.CENTER_ITEMS;
 
 public class ClaimExpeditionMenu extends Menu {
     private final ArrayList<ItemStack> items;
     private final Consumer<ArrayList<ItemStack>> callback;
     private final Player player;
-    private int[] bottomSlots = genPlaceholderSpots(IntStream.range(36, 45), 38, 42);
-    private int[] topSlots = genPlaceholderSpots(IntStream.range(0, 9));
-    private int[] slots;
+    private Map<Integer, ItemStack> shown = new HashMap<>();
+    private Stack<ItemStack> toShow = new Stack<>();
 
     public ClaimExpeditionMenu(ArrayList<ItemStack> items, Consumer<ArrayList<ItemStack>> callback, Player player) {
         this.items = items;
         this.callback = callback;
         this.player = player;
-        ArrayList<Integer> arr = new ArrayList<>();
-        for (int bottomSlot : bottomSlots) {
-            arr.add(bottomSlot);
-        }
-        for (int topSlot : topSlots) {
-            arr.add(topSlot);
-        }
-        slots = arr.stream().mapToInt(Integer::intValue).toArray();
     }
 
     @Override
@@ -51,13 +41,40 @@ public class ClaimExpeditionMenu extends Menu {
     @Override
     public List<Button> getButtons(Player player) {
         List<Button> buttons = new ArrayList<>();
-        buttons.add(new Placeholder());
-        int g = 9;
-        for (ItemStack item : items) {
-            buttons.add(new ItemButton(item, g++));
+        List<Integer> usedSlots = new ArrayList<>();
+        toShow.addAll(items);
+        int g = 0;
+        for (int r = 0; r < toShow.size(); r++) {
+            ItemStack toShowItem = toShow.pop();
+            int i = g++;
+            if (!(i >= CENTER_ITEMS.size())) {
+                int[] k = CENTER_ITEMS.get(i);
+                if (toShowItem != null) {
+                    shown.put(k[0], toShowItem);
+                }
+                if (!toShow.isEmpty() && k.length > 1)
+                    shown.put(k[1], toShow.pop());
+            }
         }
-        buttons.add(getCloseButton());
-        buttons.add(getBackButton(player));
+        if (!toShow.isEmpty()) {
+            int a = 27;
+            for (ItemStack itemStack : toShow) {
+                int i = a++;
+                usedSlots.add(i);
+                shown.put(i,itemStack);
+            }
+        }
+        for (Map.Entry<Integer, ItemStack> entry : shown.entrySet()) {
+            //show every item starting from the center
+            int slot = entry.getKey();
+            buttons.add(new ItemButton(entry.getValue(), slot));
+            usedSlots.add(slot);
+        }
+        for (int i = 0; i < 45; i++) {
+            if (!usedSlots.contains(i)) {
+                buttons.add(new Placeholder(i));
+            }
+        }
         return buttons;
     }
 
@@ -99,18 +116,13 @@ public class ClaimExpeditionMenu extends Menu {
             }
         };
     }
-
+    @RequiredArgsConstructor
     private class Placeholder extends PlaceholderButton {
+        private final int slot;
         @Override
         public int getSlot() {
-            return bottomSlots[0];
+            return slot;
         }
-
-        @Override
-        public int[] getSlots() {
-            return slots;
-        }
-
         @Override
         public ItemStack getItem(Player player) {
             return ExpeditionsMenu.PLACEHOLDER_ITEM;
