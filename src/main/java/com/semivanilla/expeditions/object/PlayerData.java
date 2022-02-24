@@ -92,6 +92,8 @@ public class PlayerData {
         Logger.debug("Player " + getName() + " has voted at least once a day in the last week, giving them a premium expedition.");
         Map<String,String> placeholders = new HashMap<>();
         placeholders.put("%player%",getName());
+        placeholders.put("%count%","1");
+        placeholders.put("%type%","Super Vote");
         List<Component> messages = MessageManager.parse(ConfigManager.getExpeditionsGainedMessage(),placeholders);
         Player player = Bukkit.getPlayer(uuid);
         for (Component message : messages) {
@@ -113,6 +115,7 @@ public class PlayerData {
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("%player%", getName());
         placeholders.put("%count%", "1");
+        placeholders.put("%type%", "Super Vote");
         List<Component> messages = MessageManager.parse(ConfigManager.getExpeditionsGainedMessage(), placeholders);
         Player player = Bukkit.getPlayer(uuid);
         for (Component message : messages) {
