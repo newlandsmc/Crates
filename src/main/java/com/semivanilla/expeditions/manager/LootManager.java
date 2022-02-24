@@ -4,6 +4,7 @@ import com.semivanilla.expeditions.Expeditions;
 import com.semivanilla.expeditions.loot.LootEntry;
 import com.semivanilla.expeditions.loot.LootFile;
 import com.semivanilla.expeditions.loot.LootPool;
+import net.badbird5907.blib.util.Logger;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -30,7 +31,8 @@ public class LootManager {
             pools.addAll(lootFile.getPools());
         }
         for (LootPool pool : pools) {
-            for (int i = 0; i < pool.getRolls(); i++) {
+            int r = pool.getRolls(random);
+            for (int i = 0; i < r; i++) {
                 List<LootEntry> entries = new ArrayList<>();
                 for (LootEntry entry : pool.getEntries()) {
                     for (int i1 = 0; i1 < entry.getWeight(); i1++) {

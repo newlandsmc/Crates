@@ -4,3 +4,4 @@ main: com.semivanilla.expeditions.Expeditions
 api-version: 1.18
 softdepend:
   - 'AdvancedEnchantments'
+  - 'Votifier'

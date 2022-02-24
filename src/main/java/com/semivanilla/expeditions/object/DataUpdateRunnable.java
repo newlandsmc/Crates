@@ -1,7 +1,9 @@
 package com.semivanilla.expeditions.object;
 
 import com.semivanilla.expeditions.Expeditions;
+import com.semivanilla.expeditions.manager.PlayerManager;
 import net.badbird5907.blib.util.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.LocalDate;
@@ -14,5 +16,11 @@ public class DataUpdateRunnable extends BukkitRunnable {
             Logger.info("Current time is: %1, resetting daily expeditions!", date.toString());
             Expeditions.setLastReset(date);
         }
+        Bukkit.getOnlinePlayers().forEach(p -> {
+            PlayerData data = PlayerManager.getData(p.getUniqueId());
+            if (data.getLastDayUpdated() == null)
+                data.setLastDayUpdated(Expeditions.getLastReset());
+            data.checkDayUpdated();
+        });
     }
 }
