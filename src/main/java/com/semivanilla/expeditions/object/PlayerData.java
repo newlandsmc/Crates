@@ -80,7 +80,7 @@ public class PlayerData {
                 return;
             }
         }
-        Logger.debug("Player " + getName() + " has voted at least once a day in the last week, giving them a super vote");
+        Logger.debug("Player " + getName() + " has voted at least once a day in the last week, giving them a premium expedition.");
         Map<String,String> placeholders = new HashMap<>();
         placeholders.put("%player%",getName());
         List<Component> messages = MessageManager.parse(ConfigManager.getExpeditionsGainedMessage(),placeholders);

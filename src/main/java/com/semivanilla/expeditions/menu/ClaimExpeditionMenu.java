@@ -42,13 +42,12 @@ public class ClaimExpeditionMenu extends Menu {
     public List<Button> getButtons(Player player) {
         List<Button> buttons = new ArrayList<>();
         List<Integer> usedSlots = new ArrayList<>();
+        toShow.clear();
         toShow.addAll(items);
-        int g = 0;
         for (int r = 0; r < toShow.size(); r++) {
             ItemStack toShowItem = toShow.pop();
-            int i = g++;
-            if (!(i >= CENTER_ITEMS.size())) {
-                int[] k = CENTER_ITEMS.get(i);
+            if (!(r >= CENTER_ITEMS.size())) {
+                int[] k = CENTER_ITEMS.get(r);
                 if (toShowItem != null) {
                     shown.put(k[0], toShowItem);
                 }
