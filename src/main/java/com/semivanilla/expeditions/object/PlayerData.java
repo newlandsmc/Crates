@@ -93,7 +93,7 @@ public class PlayerData {
         Map<String,String> placeholders = new HashMap<>();
         placeholders.put("%player%",getName());
         placeholders.put("%count%","1");
-        placeholders.put("%type%","Super Vote");
+        placeholders.put("%type%","Premium");
         List<Component> messages = MessageManager.parse(ConfigManager.getExpeditionsGainedMessage(),placeholders);
         Player player = Bukkit.getPlayer(uuid);
         for (Component message : messages) {
@@ -120,6 +120,14 @@ public class PlayerData {
         Player player = Bukkit.getPlayer(uuid);
         for (Component message : messages) {
             player.sendMessage(message);
+        }
+        Map<String,String> placeholders0 = new HashMap<>();
+        placeholders0.put("%player%", getName());
+        List<Component> broadcast = MessageManager.parse(ConfigManager.getSuperVoteMessage(), placeholders0);
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            for (Component component : broadcast) {
+                onlinePlayer.sendMessage(component);
+            }
         }
     }
 

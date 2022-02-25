@@ -53,7 +53,7 @@ public class VoteListener implements Listener {
                 placeholders.put("%player%",offlinePlayer.getName());
                 placeholders.put("%count%", "1");
                 placeholders.put("%type%","Vote");
-                List<Component> components = MessageManager.parse(ConfigManager.getExpeditionsGainedMessage(),placeholders);
+                List<Component> components = MessageManager.parse(ConfigManager.getVoteMessage(),placeholders);
                 for (Component component : components) {
                     offlinePlayer.getPlayer().sendMessage(component);
                 }
