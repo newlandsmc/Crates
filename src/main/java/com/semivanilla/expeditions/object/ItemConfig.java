@@ -5,9 +5,6 @@ import com.semivanilla.expeditions.manager.MessageManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -42,8 +39,13 @@ public class ItemConfig {
         }
         meta.lore(lore);
         itemStack.setItemMeta(meta);
+        if (count <= 1)
+            itemStack.setAmount(1);
+        else
+            itemStack.setAmount(count);
         return itemStack;
     }
+
     private static Component getComponent() {
         return Component.text("").decoration(TextDecoration.ITALIC, false);
     }
