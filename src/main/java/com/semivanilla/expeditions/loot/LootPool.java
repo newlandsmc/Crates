@@ -1,6 +1,5 @@
 package com.semivanilla.expeditions.loot;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.Getter;
@@ -12,8 +11,8 @@ import java.util.Random;
 
 public class LootPool {
     @Getter
-    private List<LootEntry> entries = new ArrayList<>();
-    private int rollsMin,rollsMax,rollsAbsolute;
+    private final List<LootEntry> entries = new ArrayList<>();
+    private int rollsMin, rollsMax, rollsAbsolute;
     private boolean absoluteRolls;
 
     public LootPool(JsonObject json) {
@@ -23,7 +22,7 @@ public class LootPool {
                 JsonObject rolls = json.get("rolls").getAsJsonObject();
                 rollsMin = rolls.get("min").getAsInt();
                 rollsMax = rolls.get("max").getAsInt();
-            }else {
+            } else {
                 absoluteRolls = true;
                 rollsAbsolute = json.get("rolls").getAsInt();
                 Logger.debug("Absolute Rolls, %1", rollsAbsolute);
@@ -33,6 +32,7 @@ public class LootPool {
             entries.add(LootEntry.getEntry(entry.getAsJsonObject()));
         }
     }
+
     public int getRolls(Random rand) {
         if (absoluteRolls) {
             return rollsAbsolute;

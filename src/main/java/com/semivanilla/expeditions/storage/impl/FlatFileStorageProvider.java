@@ -1,7 +1,7 @@
 package com.semivanilla.expeditions.storage.impl;
 
+import com.google.gson.JsonObject;
 import com.semivanilla.expeditions.Expeditions;
-import com.semivanilla.expeditions.object.Expedition;
 import com.semivanilla.expeditions.object.PlayerData;
 import com.semivanilla.expeditions.storage.StorageProvider;
 import lombok.SneakyThrows;
@@ -67,10 +67,22 @@ public class FlatFileStorageProvider implements StorageProvider {
         if (!file.exists()) {
             file.createNewFile();
         }
-        String json  = Expeditions.getGson().toJson(data,PlayerData.class);
+        String json = Expeditions.getGson().toJson(getJson(data));
         Logger.debug("Saving data: %1", json);
         PrintStream ps = new PrintStream(file);
         ps.print(json);
         ps.close();
+    }
+
+    public JsonObject getJson(PlayerData data) {
+        JsonObject jo = new JsonObject();
+        jo.addProperty("uuid", data.getUuid().toString());
+        jo.addProperty("name", data.getName());
+        jo.addProperty("totalVotes", data.getTotalVotes());
+        jo.addProperty("offlineEarned", data.getOfflineEarned());
+        jo.add("expeditions", Expeditions.getGsonNoPrettyPrint().toJsonTree(data.getExpeditionTypes()));
+        jo.add("unclaimedRewards", Expeditions.getGsonNoPrettyPrint().toJsonTree(data.getUnclaimedRewards()));
+        jo.add("lastVotes", Expeditions.getGsonNoPrettyPrint().toJsonTree(data.getLastVotes()));
+        return jo;
     }
 }

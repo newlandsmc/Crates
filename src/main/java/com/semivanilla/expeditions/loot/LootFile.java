@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LootFile {
-    private File file;
+    private final File file;
     @Getter
-    private List<LootPool> pools = new ArrayList<>();
+    private final List<LootPool> pools = new ArrayList<>();
 
     public LootFile(File file) {
         this.file = file;

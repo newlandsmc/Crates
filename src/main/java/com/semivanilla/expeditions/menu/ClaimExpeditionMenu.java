@@ -24,9 +24,9 @@ public class ClaimExpeditionMenu extends Menu {
     private final ArrayList<ItemStack> items;
     private final Consumer<ArrayList<ItemStack>> callback;
     private final Player player;
-    private int[] bottomSlots = genPlaceholderSpots(IntStream.range(36, 45), 38, 42);
-    private int[] topSlots = genPlaceholderSpots(IntStream.range(0, 9));
-    private int[] slots;
+    private final int[] bottomSlots = genPlaceholderSpots(IntStream.range(36, 45), 38, 42);
+    private final int[] topSlots = genPlaceholderSpots(IntStream.range(0, 9));
+    private final int[] slots;
 
     public ClaimExpeditionMenu(ArrayList<ItemStack> items, Consumer<ArrayList<ItemStack>> callback, Player player) {
         this.items = items;
@@ -116,6 +116,7 @@ public class ClaimExpeditionMenu extends Menu {
             return ExpeditionsMenu.PLACEHOLDER_ITEM;
         }
     }
+
     @RequiredArgsConstructor
     private class ItemButton extends Button {
         private final ItemStack item;

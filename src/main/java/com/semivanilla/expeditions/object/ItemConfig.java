@@ -23,6 +23,10 @@ public class ItemConfig {
     private List<String> canUseLore;
     private List<String> cantUseLore;
 
+    private static Component getComponent() {
+        return Component.text("").decoration(TextDecoration.ITALIC, false);
+    }
+
     public ItemStack generateItem(boolean canUse, boolean unclaimed, int count) {
         ItemStack itemStack = new ItemStack(material);
         ItemMeta meta = itemStack.getItemMeta();
@@ -44,9 +48,5 @@ public class ItemConfig {
         else
             itemStack.setAmount(count);
         return itemStack;
-    }
-
-    private static Component getComponent() {
-        return Component.text("").decoration(TextDecoration.ITALIC, false);
     }
 }

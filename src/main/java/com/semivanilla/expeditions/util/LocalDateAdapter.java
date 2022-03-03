@@ -1,6 +1,7 @@
 package com.semivanilla.expeditions.util;
 
 import com.google.gson.*;
+
 import java.lang.reflect.Type;
 import java.time.LocalDate;
 
@@ -13,6 +14,7 @@ public class LocalDateAdapter implements JsonSerializer<LocalDate>, JsonDeserial
         jsonObject.addProperty("day", src.getDayOfMonth());
         return jsonObject;
     }
+
     @Override
     public LocalDate deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = json.getAsJsonObject();

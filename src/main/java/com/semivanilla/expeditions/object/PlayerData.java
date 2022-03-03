@@ -43,6 +43,7 @@ public class PlayerData {
         if (lastVotes.size() > 7)
             lastVotes.remove(0);
     }
+
     public void checkDayUpdated() {
         if (lastDayUpdated == null)
             lastDayUpdated = LocalDate.now();
@@ -51,6 +52,7 @@ public class PlayerData {
             votesToday = 0;
         }
     }
+
     public List<Expedition> getExpeditions() {
         return ExpeditionManager.getExpeditions().stream().filter(e -> expeditions.contains(e.getType())).collect(Collectors.toList());
     }
@@ -90,12 +92,14 @@ public class PlayerData {
             }
         }
         Logger.debug("Player " + getName() + " has voted at least once a day in the last week, giving them a premium expedition.");
-        Map<String,String> placeholders = new HashMap<>();
-        placeholders.put("%player%",getName());
-        placeholders.put("%count%","1");
-        placeholders.put("%type%","Premium");
-        List<Component> messages = MessageManager.parse(ConfigManager.getExpeditionsGainedMessage(),placeholders);
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%player%", getName());
+        placeholders.put("%count%", "1");
+        placeholders.put("%type%", "Premium");
+        List<Component> messages = MessageManager.parse(ConfigManager.getExpeditionsGainedMessage(), placeholders);
         Player player = Bukkit.getPlayer(uuid);
+        if (player == null)
+            return;
         for (Component message : messages) {
             player.sendMessage(message);
         }
@@ -104,6 +108,7 @@ public class PlayerData {
         if (Bukkit.getPlayer(uuid) == null)
             offlineEarned += 1;
     }
+
     public void checkSuperVote() {
         int voteServices = ConfigManager.getVoteServices().size();
         //check if they have voted on all services
@@ -118,10 +123,14 @@ public class PlayerData {
         placeholders.put("%type%", "Super Vote");
         List<Component> messages = MessageManager.parse(ConfigManager.getExpeditionsGainedMessage(), placeholders);
         Player player = Bukkit.getPlayer(uuid);
+        if (player == null) {
+            offlineEarned += 1;
+            return;
+        }
         for (Component message : messages) {
             player.sendMessage(message);
         }
-        Map<String,String> placeholders0 = new HashMap<>();
+        Map<String, String> placeholders0 = new HashMap<>();
         placeholders0.put("%player%", getName());
         List<Component> broadcast = MessageManager.parse(ConfigManager.getSuperVoteMessage(), placeholders0);
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {

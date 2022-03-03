@@ -27,21 +27,21 @@ public class PlayerListener implements Listener {
         PlayerData data = PlayerManager.getData(event.getPlayer().getUniqueId());
         Player player = event.getPlayer();
         int offlineEarned = data.getOfflineEarned();
-        if (offlineEarned >= 1){
+        if (offlineEarned >= 1) {
             data.setOfflineEarned(0);
-            Map<String,String> placeholders = new HashMap<>();
-            placeholders.put("%player%",player.getName());
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("%player%", player.getName());
             placeholders.put("%count%", offlineEarned + "");
             List<String> list = ConfigManager.getExpeditionsOfflineMessage();
-            List<Component> components = MessageManager.parse(list,placeholders);
+            List<Component> components = MessageManager.parse(list, placeholders);
             for (Component component : components) {
                 player.sendMessage(component);
             }
-        }else if (!data.getExpeditionTypes().isEmpty()) {
-            Map<String,String> placeholders = new HashMap<>();
-            placeholders.put("%player%",player.getName());
+        } else if (!data.getExpeditionTypes().isEmpty()) {
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("%player%", player.getName());
             placeholders.put("%count%", data.getExpeditionTypes().size() + "");
-            List<Component> components = MessageManager.parse(ConfigManager.getExpeditionsLeftMessage(),placeholders);
+            List<Component> components = MessageManager.parse(ConfigManager.getExpeditionsLeftMessage(), placeholders);
             for (Component component : components) {
                 player.sendMessage(component);
             }

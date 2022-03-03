@@ -4,7 +4,6 @@ import com.semivanilla.expeditions.Expeditions;
 import com.semivanilla.expeditions.loot.LootEntry;
 import com.semivanilla.expeditions.loot.LootFile;
 import com.semivanilla.expeditions.loot.LootPool;
-import net.badbird5907.blib.util.Logger;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -16,12 +15,13 @@ import java.util.Random;
 public class LootManager {
     public static void test(Player player) {
         List<LootFile> lootFiles = new ArrayList<>();
-        File f1 = new File(Expeditions.getInstance().getDataFolder(),"loot/test0.json");
-        File f2 = new File(Expeditions.getInstance().getDataFolder(),"loot/test1.json");
+        File f1 = new File(Expeditions.getInstance().getDataFolder(), "loot/test0.json");
+        File f2 = new File(Expeditions.getInstance().getDataFolder(), "loot/test1.json");
         lootFiles.add(new LootFile(f1));
         lootFiles.add(new LootFile(f2));
-        rollLoot(lootFiles,player);
+        rollLoot(lootFiles, player);
     }
+
     public static ArrayList<ItemStack> rollLoot(List<LootFile> lootFiles, Player player) {
         ArrayList<LootPool> pools = new ArrayList<>();
         ArrayList<ItemStack> items = new ArrayList<>();
@@ -43,7 +43,7 @@ public class LootManager {
                     continue;
                 }
                 LootEntry entry = entries.get(random.nextInt(entries.size()));
-                ItemStack stack = entry.generate(player,random);
+                ItemStack stack = entry.generate(player, random);
                 if (stack != null) {
                     items.add(stack);
                 }

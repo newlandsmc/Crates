@@ -1,7 +1,6 @@
 package com.semivanilla.expeditions.object;
 
 import com.semivanilla.expeditions.menu.ClaimExpeditionAnimationMenu;
-import com.semivanilla.expeditions.menu.ClaimExpeditionMenu;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;

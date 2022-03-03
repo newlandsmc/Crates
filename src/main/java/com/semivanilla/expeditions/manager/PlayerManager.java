@@ -21,7 +21,7 @@ public class PlayerManager {
     }
 
     public static void unload(UUID uuid) {
-        Map.Entry<UUID,PlayerData> entry = dataMap.entrySet().stream().filter(e -> e.getKey().equals(uuid)).findFirst().orElse(null);
+        Map.Entry<UUID, PlayerData> entry = dataMap.entrySet().stream().filter(e -> e.getKey().equals(uuid)).findFirst().orElse(null);
         if (entry == null)
             return;
         PlayerData data = entry.getValue();
@@ -32,7 +32,7 @@ public class PlayerManager {
     }
 
     public static PlayerData getData(UUID uuid) {
-        Map.Entry<UUID,PlayerData> entry = dataMap.entrySet().stream().filter(e -> e.getKey().equals(uuid)).findFirst().orElse(null);
+        Map.Entry<UUID, PlayerData> entry = dataMap.entrySet().stream().filter(e -> e.getKey().equals(uuid)).findFirst().orElse(null);
         if (entry == null)
             return Expeditions.getStorageProvider().getDataNow(uuid);
         PlayerData data = entry.getValue();

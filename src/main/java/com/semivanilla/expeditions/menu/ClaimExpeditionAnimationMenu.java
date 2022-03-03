@@ -23,14 +23,15 @@ import java.util.*;
 @Getter
 @Setter
 public class ClaimExpeditionAnimationMenu extends Menu {
-    private final ArrayList<ItemStack> items;
-    private final Stack<ItemStack> toShow; // why am I using a stack??
-    private Map<Integer, ItemStack> shown = new HashMap<>();
-    private int stage = 0;
     public static final int STAGE_MAX = 40;
+    public static final List<int[]> CENTER_ITEMS = List.of( // immutable
+            new int[]{22},
+            new int[]{21, 23},
+            new int[]{20, 24},
+            new int[]{19, 25},
+            new int[]{18, 26}
+    );
     private static final int CENTER = 22;
-    private boolean closed = false, animationDone = false, tickingCenter = true;
-    private int centerTicksLeft = 12;
     private static final Material[] CENTER_PANES = {
             Material.PINK_STAINED_GLASS_PANE,
             Material.YELLOW_STAINED_GLASS_PANE,
@@ -39,14 +40,20 @@ public class ClaimExpeditionAnimationMenu extends Menu {
             Material.CYAN_STAINED_GLASS_PANE,
             Material.LIME_STAINED_GLASS_PANE
     };
-    public static final List<int[]> CENTER_ITEMS = List.of( // immutable
-            new int[]{22},
-            new int[]{21, 23},
-            new int[]{20, 24},
-            new int[]{19, 25},
-            new int[]{18, 26}
-    );
+    private final ArrayList<ItemStack> items;
+    private final Stack<ItemStack> toShow; // why am I using a stack??
     private final ExpeditionType type;
+    boolean temp = false;
+    private Map<Integer, ItemStack> shown = new HashMap<>();
+    private int stage = 0;
+    private boolean closed = false, animationDone = false, tickingCenter = true;
+    private int centerTicksLeft = 12;
+    private int g = 0, centerIndex = 0; //animation stage for CENTER_ITEMS
+
+
+    //change every 5 ticks
+    // 12 times
+    //appears 5 tick apart
 
     public ClaimExpeditionAnimationMenu(ArrayList<ItemStack> items, ExpeditionType type) {
         this.items = items;
@@ -60,13 +67,6 @@ public class ClaimExpeditionAnimationMenu extends Menu {
         }
     }
 
-    private int g = 0, centerIndex = 0; //animation stage for CENTER_ITEMS
-
-
-    //change every 5 ticks
-    // 12 times
-    //appears 5 tick apart
-
     @Override
     public List<Button> getButtons(Player player) {
         List<Button> buttons = new ArrayList<>();
@@ -75,10 +75,10 @@ public class ClaimExpeditionAnimationMenu extends Menu {
             Material centerPane = CENTER_PANES[centerIndex++];
             if (centerIndex >= CENTER_PANES.length)
                 centerIndex = 0;
-            buttons.add(new PanesButton(centerPane,22));
-        }else {
+            buttons.add(new PanesButton(centerPane, 22));
+        } else {
             boolean shouldShow = stage != 1;
-                    //&& stage % 2 == 0;
+            //&& stage % 2 == 0;
             if (shouldShow && !toShow.isEmpty()) {
                 ItemStack toShowItem = toShow.pop();
                 int i = g++;
@@ -105,36 +105,36 @@ public class ClaimExpeditionAnimationMenu extends Menu {
                     if (!tickingCenter) {
                         buttons.add(new PanesButton(Material.YELLOW_STAINED_GLASS_PANE, 22));
                         buttons.add(new PanesButton(Material.ORANGE_STAINED_GLASS_PANE, 23, 21));
-                        buttons.add(new PanesButton(Material.RED_STAINED_GLASS_PANE, 24, 25,26,20,19,18));
-                        usedSlots.addAll(Arrays.asList(22,23,21,24,25,26,20,19,18));
+                        buttons.add(new PanesButton(Material.RED_STAINED_GLASS_PANE, 24, 25, 26, 20, 19, 18));
+                        usedSlots.addAll(Arrays.asList(22, 23, 21, 24, 25, 26, 20, 19, 18));
                     }
-                    usedSlots.addAll(Arrays.asList(22,23,21,24,25,26,20,19,18));
+                    usedSlots.addAll(Arrays.asList(22, 23, 21, 24, 25, 26, 20, 19, 18));
                     break;
                 }
                 case 1 -> {
-                    buttons.add(new PanesButton(Material.ORANGE_STAINED_GLASS_PANE, 19,25));
+                    buttons.add(new PanesButton(Material.ORANGE_STAINED_GLASS_PANE, 19, 25));
                     buttons.add(new PanesButton(Material.YELLOW_STAINED_GLASS_PANE, 20, 24));
-                    buttons.add(new PanesButton(Material.RED_STAINED_GLASS_PANE, 21,23));
+                    buttons.add(new PanesButton(Material.RED_STAINED_GLASS_PANE, 21, 23));
                     //usedSlots.addAll(Arrays.asList(19,25,20,24,21,23));
-                    usedSlots.addAll(Arrays.asList(22,23,21,24,25,26,20,19,18));
+                    usedSlots.addAll(Arrays.asList(22, 23, 21, 24, 25, 26, 20, 19, 18));
                     break;
                 }
                 case 2 -> {
-                    buttons.add(new PanesButton(Material.RED_STAINED_GLASS_PANE, 20,24));
-                    buttons.add(new PanesButton(Material.ORANGE_STAINED_GLASS_PANE, 19,25));
-                    buttons.add(new PanesButton(Material.YELLOW_STAINED_GLASS_PANE, 18,26));
-                    usedSlots.addAll(Arrays.asList(20,24,19,25,18,26));
+                    buttons.add(new PanesButton(Material.RED_STAINED_GLASS_PANE, 20, 24));
+                    buttons.add(new PanesButton(Material.ORANGE_STAINED_GLASS_PANE, 19, 25));
+                    buttons.add(new PanesButton(Material.YELLOW_STAINED_GLASS_PANE, 18, 26));
+                    usedSlots.addAll(Arrays.asList(20, 24, 19, 25, 18, 26));
                     break;
                 }
                 case 3 -> {
                     buttons.add(new PanesButton(Material.RED_STAINED_GLASS_PANE, 25, 19));
                     buttons.add(new PanesButton(Material.ORANGE_STAINED_GLASS_PANE, 26, 18));
-                    usedSlots.addAll(Arrays.asList(25,19,26,18));
+                    usedSlots.addAll(Arrays.asList(25, 19, 26, 18));
                     break;
                 }
                 case 4 -> {
                     buttons.add(new PanesButton(Material.RED_STAINED_GLASS_PANE, 18, 26));
-                    usedSlots.addAll(Arrays.asList(18,26));
+                    usedSlots.addAll(Arrays.asList(18, 26));
                     break;
                 }
                 default -> {
@@ -171,8 +171,6 @@ public class ClaimExpeditionAnimationMenu extends Menu {
         return "Claim Expedition";
     }
 
-    boolean temp = false;
-
     public boolean tick(Player player) {
         //Logger.debug("Closed: %1 | AnimDone: %2 | Temp: %3 | TickingCenter: %4 | CenterTicksLeft: %5", closed, animationDone, temp, tickingCenter, centerTicksLeft);
         if (closed && animationDone) //cancel the runnable once the player closes the menu and the animation is done
@@ -185,7 +183,7 @@ public class ClaimExpeditionAnimationMenu extends Menu {
         }
         if (animationDone) {
             if (temp) {
-                Tasks.runLater(() ->{
+                Tasks.runLater(() -> {
                     new ClaimExpeditionMenu(items, (l) -> {
                         try {
                             Logger.debug("Closed, saving: %1 | %2", l.size(), l);
@@ -202,7 +200,7 @@ public class ClaimExpeditionAnimationMenu extends Menu {
                             e.printStackTrace();
                         }
                     }, player).open(player);
-                },20L);
+                }, 20L);
                 return true;
             } else {
                 temp = true;

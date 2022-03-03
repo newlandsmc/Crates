@@ -1,6 +1,5 @@
 package com.semivanilla.expeditions.listeners;
 
-import com.semivanilla.expeditions.Expeditions;
 import com.semivanilla.expeditions.manager.ConfigManager;
 import com.semivanilla.expeditions.manager.MessageManager;
 import com.semivanilla.expeditions.manager.PlayerManager;
@@ -18,7 +17,6 @@ import org.bukkit.event.Listener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class VoteListener implements Listener {
     @EventHandler
@@ -32,7 +30,7 @@ public class VoteListener implements Listener {
         Tasks.runAsync(() -> {
             String username = vote.getUsername();
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(username);
-            if (!offlinePlayer.hasPlayedBefore()){
+            if (!offlinePlayer.hasPlayedBefore()) {
                 Logger.info("Player %1 has not played before. Ignoring.", username);
                 return;
             }
@@ -40,7 +38,7 @@ public class VoteListener implements Listener {
             PlayerData data;
             if (Bukkit.getPlayer(username) != null) {
                 data = PlayerManager.getData(offlinePlayer.getUniqueId());
-            }else {
+            } else {
                 Logger.info("Player %1 is not online. Loading their data...", username);
                 data = PlayerManager.load(offlinePlayer.getUniqueId());
                 offline = true;
@@ -49,11 +47,11 @@ public class VoteListener implements Listener {
             data.onVote();
             if (offlinePlayer.isOnline()) {
                 data.save();
-                Map<String,String> placeholders = new HashMap<>();
-                placeholders.put("%player%",offlinePlayer.getName());
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("%player%", offlinePlayer.getName());
                 placeholders.put("%count%", "1");
-                placeholders.put("%type%","Vote");
-                List<Component> components = MessageManager.parse(ConfigManager.getVoteMessage(),placeholders);
+                placeholders.put("%type%", "Vote");
+                List<Component> components = MessageManager.parse(ConfigManager.getVoteMessage(), placeholders);
                 for (Component component : components) {
                     offlinePlayer.getPlayer().sendMessage(component);
                 }

@@ -17,17 +17,30 @@ public class ConfigManager {
     private static ItemConfig dailyItem, premiumItem, voteItem, superVoteItem;
 
     @Getter
-    private static List<String> voteServices, claimLore = new ArrayList<>(), unclaimedItems = new ArrayList<>();
+    private static List<String> voteServices;
+    @Getter
+    private static final List<String> claimLore = new ArrayList<>();
+    @Getter
+    private static final List<String> unclaimedItems = new ArrayList<>();
 
     @Getter
-    private static List<String> expeditionsLeftMessage = new ArrayList<>(),
-            expeditionsOfflineMessage = new ArrayList<>(),
-            expeditionsGainedMessage = new ArrayList<>(),
-            voteMessage = new ArrayList<>(),
-            superVoteMessage = new ArrayList<>();
+    private static final List<String> expeditionsLeftMessage = new ArrayList<>();
     @Getter
-    private static List<LootFile> dailyLoot = new ArrayList<>(), premiumLoot = new ArrayList<>(),
-            voteLoot = new ArrayList<>(), superVoteLoot = new ArrayList<>();
+    private static final List<String> expeditionsOfflineMessage = new ArrayList<>();
+    @Getter
+    private static final List<String> expeditionsGainedMessage = new ArrayList<>();
+    @Getter
+    private static final List<String> voteMessage = new ArrayList<>();
+    @Getter
+    private static final List<String> superVoteMessage = new ArrayList<>();
+    @Getter
+    private static final List<LootFile> dailyLoot = new ArrayList<>();
+    @Getter
+    private static final List<LootFile> premiumLoot = new ArrayList<>();
+    @Getter
+    private static final List<LootFile> voteLoot = new ArrayList<>();
+    @Getter
+    private static final List<LootFile> superVoteLoot = new ArrayList<>();
 
     @Getter
     private static boolean enableAnimation;

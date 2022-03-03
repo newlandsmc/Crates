@@ -15,7 +15,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import net.badbird5907.blib.bLib;
-import net.badbird5907.blib.util.Logger;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -26,11 +25,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.util.Date;
 
 public final class Expeditions extends JavaPlugin {
     @Getter
     private static final Gson gson = new GsonBuilder().setPrettyPrinting()
+            .registerTypeAdapter(ItemStack.class, new ItemStackAdapter())
+            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+            .create();
+    @Getter
+    private static final Gson gsonNoPrettyPrint = new GsonBuilder()
             .registerTypeAdapter(ItemStack.class, new ItemStackAdapter())
             .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
             .create();
@@ -75,7 +78,7 @@ public final class Expeditions extends JavaPlugin {
                 String contents = new String(Files.readAllBytes(lastMidnight.toPath()));
                 if (contents.isEmpty()) {
                     lastReset = LocalDate.now();
-                }else {
+                } else {
                     /*
                     Date date = new Date(Long.parseLong(contents));
                     lastReset = LocalDate.from(date.toInstant());
@@ -90,8 +93,8 @@ public final class Expeditions extends JavaPlugin {
 
         new DataUpdateRunnable().runTaskTimerAsynchronously(this, 20 * 120, 20 * 60);
 
-        getServer().getPluginManager().registerEvents(new PlayerListener(),this);
-        getServer().getPluginManager().registerEvents(new VoteListener(),this);
+        getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+        getServer().getPluginManager().registerEvents(new VoteListener(), this);
 
         //storageProvider.init(this);
     }

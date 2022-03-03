@@ -9,7 +9,8 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Random;
 
 public class CommandLootEntry extends LootEntry {
-    private String command;
+    private final String command;
+
     public CommandLootEntry(JsonObject jsonObject) {
         super(jsonObject);
         this.command = jsonObject.get("command").getAsString();

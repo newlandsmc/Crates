@@ -13,7 +13,7 @@ import java.util.List;
 
 public class ExpeditionManager {
     @Getter
-    private static List<Expedition> expeditions = new ArrayList<>(); //tbh i don't have a plan on how this plugin will work
+    private static final List<Expedition> expeditions = new ArrayList<>(); //tbh i don't have a plan on how this plugin will work
 
     public static void init() {
         expeditions.add(new DailyExpedition());

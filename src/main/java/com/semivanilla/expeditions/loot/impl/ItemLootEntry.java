@@ -18,12 +18,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.*;
 
 public class ItemLootEntry extends LootEntry {
-    private List<String> lore = new ArrayList<>();
-    private List<EnchantmentEntry> enchantments = new ArrayList<>();
+    private final List<String> lore = new ArrayList<>();
+    private final List<EnchantmentEntry> enchantments = new ArrayList<>();
     private boolean absoluteAmount, absoluteEnchantments;
     private int minAmount, maxAmount, amountAbsolute, minEnchants, maxEnchants, enchantsAbsolute;
-    private String name;
-    private Material material;
+    private final String name;
+    private final Material material;
 
     public ItemLootEntry(JsonObject jsonObject) {
         super(jsonObject);
@@ -68,7 +68,7 @@ public class ItemLootEntry extends LootEntry {
                 absoluteEnchantments = true;
                 enchantsAbsolute = jsonObject.get("enchantsamount").getAsInt();
             }
-        }else {
+        } else {
             absoluteEnchantments = false;
             minEnchants = 0;
             maxEnchants = enchantments.size();
@@ -128,9 +128,10 @@ public class ItemLootEntry extends LootEntry {
     public class EnchantmentEntry {
         private Enchantment enchantment;
         private int weight = 1, levelAbsolute;
-        private boolean absoluteLevel, advancedEnchantments;
+        private final boolean absoluteLevel;
+        private boolean advancedEnchantments;
         private int minLevel, maxLevel;
-        private String name;
+        private final String name;
 
         public EnchantmentEntry(JsonObject jsonObject) {
             name = jsonObject.get("name").getAsString();
@@ -169,7 +170,7 @@ public class ItemLootEntry extends LootEntry {
             }
             if (advancedEnchantments) {
                 AEAPI.applyEnchant(name, level, stack);
-            }else {
+            } else {
                 stack.addUnsafeEnchantment(enchantment, level);
             }
         }

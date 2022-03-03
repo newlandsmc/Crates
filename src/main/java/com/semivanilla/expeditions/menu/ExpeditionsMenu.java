@@ -20,7 +20,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -29,7 +28,7 @@ import java.util.stream.IntStream;
 public class ExpeditionsMenu extends Menu {
     public static final ItemStack PLACEHOLDER_ITEM = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).name(CC.GRAY).build();
     private final PlayerData data;
-    private int[] slots = {10, 12, 14, 16};
+    private final int[] slots = {10, 12, 14, 16};
 
     @Override
     public List<Button> getButtons(Player player) {
@@ -56,8 +55,10 @@ public class ExpeditionsMenu extends Menu {
         private final Expedition expedition;
         private final ItemConfig item;
         private final int slot;
-        private boolean canUse, unclaimedItems, daily;
-        private int count;
+        private final boolean canUse;
+        private final boolean unclaimedItems;
+        private final boolean daily;
+        private final int count;
 
         public ExpeditionButton(Expedition expedition, ItemConfig item, int slot) {
             this.expedition = expedition;
@@ -90,7 +91,7 @@ public class ExpeditionsMenu extends Menu {
                         return;
                     }
                     data.getUnclaimedRewards().put(expedition.getType(), l);
-                },player).open(player);
+                }, player).open(player);
                 return;
             }
             if (canUse) {
