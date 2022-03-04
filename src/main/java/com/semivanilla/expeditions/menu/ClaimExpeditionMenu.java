@@ -2,6 +2,7 @@ package com.semivanilla.expeditions.menu;
 
 import com.semivanilla.expeditions.manager.ConfigManager;
 import com.semivanilla.expeditions.manager.MessageManager;
+import it.unimi.dsi.fastutil.Hash;
 import lombok.RequiredArgsConstructor;
 import net.badbird5907.blib.menu.buttons.Button;
 import net.badbird5907.blib.menu.buttons.PlaceholderButton;
@@ -147,7 +148,17 @@ public class ClaimExpeditionMenu extends Menu {
         @Override
         public void onClick(Player player, int slot, ClickType clickType) {
             super.onClick(player, slot, clickType);
-            player.getInventory().addItem(item);
+            //check if player has enough space
+            if (player.getInventory().firstEmpty() == -1) {
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("%player%", player.getName());
+                List<Component> components = MessageManager.parse(ConfigManager.getFullInventory(), placeholders);
+                for (Component component : components) {
+                    player.sendMessage(component);
+                }
+                return;
+            }
+            player.getInventory().addItem(item); //TODO use the map returned by this method to see the items that do not fit
             items.remove(item);
             update(player);
         }

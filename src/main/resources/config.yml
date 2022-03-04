@@ -74,3 +74,5 @@ messages:
     - '<yellow> * %player% just received a Super Vote Expedition! Use /vote to get yours.'
   vote:
     - '<green>Thanks for voting! You completed a Vote Expedition!'
+  inventory-full:
+    - '<red>Your inventory is full!'

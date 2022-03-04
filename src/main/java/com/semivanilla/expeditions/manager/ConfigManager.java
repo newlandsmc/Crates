@@ -34,6 +34,8 @@ public class ConfigManager {
     @Getter
     private static final List<String> superVoteMessage = new ArrayList<>();
     @Getter
+    private static final List<String> fullInventory = new ArrayList<>();
+    @Getter
     private static final List<LootFile> dailyLoot = new ArrayList<>();
     @Getter
     private static final List<LootFile> premiumLoot = new ArrayList<>();
@@ -119,6 +121,8 @@ public class ConfigManager {
         voteMessage.addAll(getConfig().getStringList("messages.vote"));
         superVoteMessage.clear();
         superVoteMessage.addAll(getConfig().getStringList("messages.super-vote-broadcast"));
+        fullInventory.clear();
+        fullInventory.addAll(getConfig().getStringList("messages.inventory-full"));
     }
 
     public FileConfiguration getConfig() {
