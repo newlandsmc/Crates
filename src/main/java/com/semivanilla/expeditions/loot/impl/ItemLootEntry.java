@@ -13,6 +13,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
@@ -171,6 +172,13 @@ public class ItemLootEntry extends LootEntry {
             if (advancedEnchantments) {
                 AEAPI.applyEnchant(name, level, stack);
             } else {
+                boolean isBook = stack.getType() == Material.ENCHANTED_BOOK;
+                if (isBook) {
+                    EnchantmentStorageMeta meta = (EnchantmentStorageMeta) stack.getItemMeta();
+                    meta.addStoredEnchant(enchantment, level, true);
+                    stack.setItemMeta(meta);
+                    return;
+                }
                 stack.addUnsafeEnchantment(enchantment, level);
             }
         }
