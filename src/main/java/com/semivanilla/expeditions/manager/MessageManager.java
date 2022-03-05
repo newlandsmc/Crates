@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class MessageManager {
     @Getter
-    private static final MiniMessage MINI_MESSAGE = MiniMessage.builder().build();
+    private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
 
     public static void sendMessage(Player player, Collection<String> message) {
         for (String s : message) {
@@ -30,7 +30,7 @@ public class MessageManager {
             for (Map.Entry<String, String> stringStringEntry : placeholders.entrySet()) {
                 a = a.replace(stringStringEntry.getKey(), stringStringEntry.getValue());
             }
-        return MINI_MESSAGE.parse(a);
+        return MINI_MESSAGE.deserialize(a);
     }
 
     public static List<Component> parse(Collection<String> messages, Map<String, String> placeholders) {
