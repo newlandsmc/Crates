@@ -98,13 +98,13 @@ public class PlayerData {
         placeholders.put("%type%", "Premium");
         List<Component> messages = MessageManager.parse(ConfigManager.getExpeditionsGainedMessage(), placeholders);
         Player player = Bukkit.getPlayer(uuid);
-        if (player == null)
-            return;
-        for (Component message : messages) {
-            player.sendMessage(message);
+        if (player != null) {
+            for (Component message : messages) {
+                player.sendMessage(message);
+            }
         }
         lastVotes.clear();
-        expeditions.add(ExpeditionType.SUPER_VOTE);
+        expeditions.add(ExpeditionType.PREMIUM);
         if (Bukkit.getPlayer(uuid) == null)
             offlineEarned += 1;
     }
