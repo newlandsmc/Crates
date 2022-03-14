@@ -110,16 +110,18 @@ public class ItemLootEntry extends LootEntry {
         } else {
             enchantsToAdd = random.nextInt(maxEnchants - minEnchants + 1) + minEnchants;
         }
+        List<EnchantmentEntry> enchants = new ArrayList<>(enchantments);
         for (int g = 0; g < enchantsToAdd; g++) {
-            if (enchantments.size() > 0) {
+            if (enchants.size() > 0) {
                 List<EnchantmentEntry> enchantmentWithWeight = new ArrayList<>();
-                for (EnchantmentEntry entry : enchantments) {
+                for (EnchantmentEntry entry : enchants) {
                     for (int i = 0; i < entry.getWeight(); i++) {
                         enchantmentWithWeight.add(entry);
                     }
                 }
                 EnchantmentEntry entry = enchantmentWithWeight.get(random.nextInt(enchantmentWithWeight.size()));
                 entry.addEnchantment(stack, random);
+                enchants.removeIf(enchantmentEntry -> enchantmentEntry.equals(entry));
             }
         }
         return stack;
@@ -181,6 +183,14 @@ public class ItemLootEntry extends LootEntry {
                 }
                 stack.addUnsafeEnchantment(enchantment, level);
             }
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            EnchantmentEntry that = (EnchantmentEntry) o;
+            return weight == that.weight && levelAbsolute == that.levelAbsolute && absoluteLevel == that.absoluteLevel && advancedEnchantments == that.advancedEnchantments && minLevel == that.minLevel && maxLevel == that.maxLevel && Objects.equals(enchantment, that.enchantment) && Objects.equals(name, that.name);
         }
     }
 }
