@@ -80,9 +80,12 @@ public class FlatFileStorageProvider implements StorageProvider {
         jo.addProperty("name", data.getName());
         jo.addProperty("totalVotes", data.getTotalVotes());
         jo.addProperty("offlineEarned", data.getOfflineEarned());
+        jo.addProperty("votesToday", data.getVotesToday());
         jo.add("expeditions", Expeditions.getGsonNoPrettyPrint().toJsonTree(data.getExpeditionTypes()));
         jo.add("unclaimedRewards", Expeditions.getGsonNoPrettyPrint().toJsonTree(data.getUnclaimedRewards()));
         jo.add("lastVotes", Expeditions.getGsonNoPrettyPrint().toJsonTree(data.getLastVotes()));
+        jo.add("lastDailyClaim", Expeditions.getGsonNoPrettyPrint().toJsonTree(data.getLastDailyClaim()));
+        jo.add("lastDayUpdated", Expeditions.getGsonNoPrettyPrint().toJsonTree(data.getLastDayUpdated()));
         return jo;
     }
 }
