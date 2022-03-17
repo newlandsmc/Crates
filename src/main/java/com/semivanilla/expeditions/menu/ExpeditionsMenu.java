@@ -85,20 +85,14 @@ public class ExpeditionsMenu extends Menu {
         public void onClick(Player player, int slot, ClickType clickType) {
             if (unclaimedItems) {
                 ArrayList<ItemStack> items = data.getUnclaimedRewards().get(expedition.getType());
-                new ClaimExpeditionMenu(items, (l) -> {
-                    if (l.isEmpty()) {
-                        data.getUnclaimedRewards().remove(expedition.getType());
-                        return;
-                    }
-                    data.getUnclaimedRewards().put(expedition.getType(), l);
-                }, player).open(player);
+                new ClaimExpeditionMenu(items, expedition.getType(), true).open(player);
                 return;
             }
             if (canUse) {
                 ArrayList<ItemStack> items = expedition.genLoot(player);
                 data.getUnclaimedRewards().put(expedition.getType(), items);
                 Logger.debug("Generated loot: Size: %1 | %2", items.size(), items);
-                ClaimExpeditionAnimationMenu menu = new ClaimExpeditionAnimationMenu(items, expedition.getType());
+                ClaimExpeditionMenu menu = new ClaimExpeditionMenu(items, expedition.getType(), false);
                 menu.open(player);
                 if (daily) {
                     data.setLastDailyClaim(LocalDate.now());
