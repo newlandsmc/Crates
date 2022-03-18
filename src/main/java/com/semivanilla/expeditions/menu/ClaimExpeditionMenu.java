@@ -128,7 +128,7 @@ public class ClaimExpeditionMenu extends Menu { //really messy, will need to rew
                 usedSlots.add(slot);
             }
         }
-        if (!tickingCenter && ConfigManager.isEnableAnimation()) {
+        if (!tickingCenter && !claiming && ConfigManager.isEnableAnimation()) {
             switch (stage++) {
                 case 0 -> {
                     if (!tickingCenter) {
@@ -167,7 +167,8 @@ public class ClaimExpeditionMenu extends Menu { //really messy, will need to rew
                     break;
                 }
                 default -> {
-                    animationDone = claiming = true;
+                    animationDone = true;
+                    claiming = true;
                 }
             }
         }
