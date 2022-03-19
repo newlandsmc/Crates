@@ -39,6 +39,7 @@ public class PlayerData {
     }
 
     public void addVote(LocalDate date) {
+        if (lastVotes == null) lastVotes = new ArrayList<>();
         lastVotes.add(date);
         if (lastVotes.size() > 7)
             lastVotes.remove(0);
@@ -54,10 +55,12 @@ public class PlayerData {
     }
 
     public List<Expedition> getExpeditions() {
+        if (expeditions == null) expeditions = new ArrayList<>();
         return ExpeditionManager.getExpeditions().stream().filter(e -> expeditions.contains(e.getType())).collect(Collectors.toList());
     }
 
     public List<ExpeditionType> getExpeditionTypes() {
+        if (expeditions == null) expeditions = new ArrayList<>();
         return expeditions;
     }
 
@@ -68,10 +71,12 @@ public class PlayerData {
     public void onVote() {
         totalVotes++;
         votesToday++;
+        if (expeditions == null) expeditions = new ArrayList<>();
         expeditions.add(ExpeditionType.VOTE);
         checkPremium();
         checkSuperVote();
         LocalDate timestamp = LocalDate.now();
+        if (lastVotes == null) lastVotes = new ArrayList<>();
         if (lastVotes.stream().filter(d -> d.isEqual(timestamp)).findFirst().orElse(null) != null) //if they have voted today
             return;
         addVote(timestamp);
@@ -80,6 +85,7 @@ public class PlayerData {
     public void checkPremium() {
         //check if they have voted at least once a day in the last week
         LocalDate temp = null;
+        if (lastVotes == null) lastVotes = new ArrayList<>();
         if (lastVotes.size() < 7)
             return;
         for (LocalDate d : lastVotes) {
@@ -104,6 +110,7 @@ public class PlayerData {
             }
         }
         lastVotes.clear();
+        if (expeditions == null) expeditions = new ArrayList<>();
         expeditions.add(ExpeditionType.PREMIUM);
         if (Bukkit.getPlayer(uuid) == null)
             offlineEarned += 1;
@@ -115,6 +122,7 @@ public class PlayerData {
         if (votesToday < voteServices)
             return;
         Logger.debug("Player " + getName() + " has voted on all services, giving them a super vote.");
+        if (expeditions == null) expeditions = new ArrayList<>();
         expeditions.add(ExpeditionType.SUPER_VOTE);
         votesToday = 0;
         Map<String, String> placeholders = new HashMap<>();
@@ -138,6 +146,11 @@ public class PlayerData {
                 onlinePlayer.sendMessage(component);
             }
         }
+    }
+
+    public HashMap<ExpeditionType, ArrayList<ItemStack>> getUnclaimedRewards() {
+        if (unclaimedRewards == null) unclaimedRewards = new HashMap<>();
+        return unclaimedRewards;
     }
 
     public boolean canClaimDaily() {

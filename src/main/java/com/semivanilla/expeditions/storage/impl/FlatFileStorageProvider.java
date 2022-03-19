@@ -81,11 +81,16 @@ public class FlatFileStorageProvider implements StorageProvider {
         jo.addProperty("totalVotes", data.getTotalVotes());
         jo.addProperty("offlineEarned", data.getOfflineEarned());
         jo.addProperty("votesToday", data.getVotesToday());
-        jo.add("expeditions", Expeditions.getGsonNoPrettyPrint().toJsonTree(data.getExpeditionTypes()));
-        jo.add("unclaimedRewards", Expeditions.getGsonNoPrettyPrint().toJsonTree(data.getUnclaimedRewards()));
-        jo.add("lastVotes", Expeditions.getGsonNoPrettyPrint().toJsonTree(data.getLastVotes()));
-        jo.add("lastDailyClaim", Expeditions.getGsonNoPrettyPrint().toJsonTree(data.getLastDailyClaim()));
-        jo.add("lastDayUpdated", Expeditions.getGsonNoPrettyPrint().toJsonTree(data.getLastDayUpdated()));
+        if (data.getExpeditionTypes() != null)
+            jo.add("expeditions", Expeditions.getGsonNoPrettyPrint().toJsonTree(data.getExpeditionTypes()));
+        if (data.getUnclaimedRewards() != null)
+            jo.add("unclaimedRewards", Expeditions.getGsonNoPrettyPrint().toJsonTree(data.getUnclaimedRewards()));
+        if (data.getLastVotes() != null)
+            jo.add("lastVotes", Expeditions.getGsonNoPrettyPrint().toJsonTree(data.getLastVotes()));
+        if (data.getLastDailyClaim() != null)
+            jo.add("lastDailyClaim", Expeditions.getGsonNoPrettyPrint().toJsonTree(data.getLastDailyClaim()));
+        if (data.getLastDayUpdated() != null)
+            jo.add("lastDayUpdated", Expeditions.getGsonNoPrettyPrint().toJsonTree(data.getLastDayUpdated()));
         return jo;
     }
 }
