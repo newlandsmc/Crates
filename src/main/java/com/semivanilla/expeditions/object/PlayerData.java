@@ -1,11 +1,14 @@
 package com.semivanilla.expeditions.object;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.semivanilla.expeditions.Expeditions;
 import com.semivanilla.expeditions.manager.ConfigManager;
 import com.semivanilla.expeditions.manager.ExpeditionManager;
 import com.semivanilla.expeditions.manager.MessageManager;
+import com.semivanilla.expeditions.util.LocalDateAdapter;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.badbird5907.blib.util.Logger;
 import net.kyori.adventure.text.Component;
@@ -19,7 +22,6 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
 public class PlayerData {
     private final UUID uuid;
     private String name;
@@ -29,6 +31,108 @@ public class PlayerData {
     private ArrayList<ExpeditionType> expeditions = new ArrayList<>();
     private HashMap<ExpeditionType, ArrayList<ItemStack>> unclaimedRewards = new HashMap<>();
     private ArrayList<LocalDate> lastVotes = new ArrayList<>();
+
+    public PlayerData(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    public PlayerData(JsonObject json) {
+        this.uuid = UUID.fromString(json.get("uuid").getAsString());
+        this.name = json.get("name").getAsString();
+        this.totalVotes = json.get("totalVotes").getAsInt();
+        this.offlineEarned = json.get("offlineEarned").getAsInt();
+        this.votesToday = json.get("votesToday").getAsInt();
+        LocalDateAdapter lda = new LocalDateAdapter();
+        if (json.has("expeditions")) {
+            JsonArray expeditions = json.get("expeditions").getAsJsonArray();
+            for (JsonElement e : expeditions) {
+                this.expeditions.add(ExpeditionType.valueOf(e.getAsString()));
+            }
+        }
+        if (json.has("unclaimedRewards")) {
+            if (json.get("unclaimedRewards").isJsonArray()) {
+                JsonArray arr = json.get("unclaimedRewards").getAsJsonArray();
+                for (JsonElement e : arr) {
+                    JsonObject obj = e.getAsJsonObject();
+                    ExpeditionType type = ExpeditionType.valueOf(obj.get("key").getAsString());
+                    JsonArray items = obj.get("value").getAsJsonArray();
+                    for (JsonElement itemElement : items) {
+                        String base64Item = itemElement.getAsString().substring(7);
+                        ItemStack item = ItemStack.deserializeBytes(Base64.getDecoder().decode(base64Item));
+                        if (!unclaimedRewards.containsKey(type)) {
+                            unclaimedRewards.put(type, new ArrayList<>());
+                        }
+                        unclaimedRewards.get(type).add(item);
+                    }
+                }
+            } else {
+                Logger.info("Player %1 had legacy unclaimed rewards\nRewards:\n%2", this.getName(), Expeditions.getGson().toJson(json.get("unclaimedRewards")));
+            }
+        }
+        if (json.has("lastVotes")) {
+            JsonArray arr = json.get("lastVotes").getAsJsonArray();
+            for (JsonElement e : arr) {
+                LocalDate date = lda.deserialize(e, null, null);
+                lastVotes.add(date);
+            }
+        }
+        if (json.has("lastDayUpdated")) {
+            this.lastDayUpdated = lda.deserialize(json.get("lastDayUpdated"), null, null);
+        }
+        if (json.has("lastDailyClaim")) {
+            this.lastDailyClaim = lda.deserialize(json.get("lastDailyClaim"), null, null);
+        }
+    }
+
+    public JsonObject getJson() {
+        JsonObject jo = new JsonObject();
+        jo.addProperty("uuid", getUuid().toString());
+        jo.addProperty("name", getName());
+        jo.addProperty("totalVotes", getTotalVotes());
+        jo.addProperty("offlineEarned", getOfflineEarned());
+        jo.addProperty("votesToday", getVotesToday());
+        if (getExpeditionTypes() != null) {
+            JsonArray arr = new JsonArray();
+            for (ExpeditionType expeditionType : getExpeditionTypes()) {
+                arr.add(expeditionType.name());
+            }
+            //jo.add("expeditions", Expeditions.getGsonNoPrettyPrint().toJsonTree(getExpeditionTypes()));
+            jo.add("expeditions", arr);
+        }
+        if (getUnclaimedRewards() != null) {
+            //jo.add("unclaimedRewards", Expeditions.getGsonNoPrettyPrint().toJsonTree(getUnclaimedRewards()));
+            JsonArray arr = new JsonArray();
+            for (Map.Entry<ExpeditionType, ArrayList<ItemStack>> entry : getUnclaimedRewards().entrySet()) {
+                JsonObject jobj = new JsonObject();
+                jobj.addProperty("key", entry.getKey().name());
+                JsonArray array = new JsonArray();
+                for (ItemStack itemStack : entry.getValue()) {
+                    array.add("base64:" + Base64.getEncoder().encodeToString(itemStack.serializeAsBytes()));
+                }
+                jobj.add("value", array);
+                arr.add(jobj);
+            }
+            jo.add("unclaimedRewards", arr);
+        }
+        LocalDateAdapter lda = new LocalDateAdapter();
+        if (getLastVotes() != null) {
+            //jo.add("lastVotes", Expeditions.getGsonNoPrettyPrint().toJsonTree(getLastVotes()));
+            JsonArray arr = new JsonArray();
+            for (LocalDate lastVote : getLastVotes()) {
+                arr.add(lda.serialize(lastVote, null, null));
+            }
+            jo.add("lastVotes", arr);
+        }
+        if (getLastDailyClaim() != null) {
+            //jo.add("lastDailyClaim", Expeditions.getGsonNoPrettyPrint().toJsonTree(getLastDailyClaim()));
+            jo.add("lastDailyClaim", lda.serialize(getLastDailyClaim(), null, null));
+        }
+        if (getLastDayUpdated() != null) {
+            //jo.add("lastDayUpdated", Expeditions.getGsonNoPrettyPrint().toJsonTree(getLastDayUpdated()));
+            jo.add("lastDayUpdated", lda.serialize(getLastDayUpdated(), null, null));
+        }
+        return jo;
+    }
 
     public void onLoad() {
         getName();
