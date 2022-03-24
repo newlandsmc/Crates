@@ -1,6 +1,6 @@
-name: Expeditions
+name: OldExpeditions
 version: '${project.version}'
-main: com.semivanilla.expeditions.Expeditions
+main: com.semivanilla.oldexpeditions.Expeditions
 api-version: 1.18
 softdepend:
   - 'AdvancedEnchantments'

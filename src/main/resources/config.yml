@@ -65,9 +65,9 @@ menu:
           - '<red>You don''t have any super vote expeditions! Vote at all sites to obtain one!'
 messages:
   expeditions-left:
-    - '<green>You still have %count% expeditions to claim! use <gradient:yellow:red>/expeditions</gradient> to claim them!</green>'
+    - '<green>You still have %count% legacy expeditions to claim! use <gradient:yellow:red>/oldexpeditions</gradient> to claim them!</green>'
   expeditions-earned-offline:
-    - '<green>You completed %count% Expedition(s) while away! Use <gradient:yellow:red>/spoils</gradient> to claim your rewards.</green>'
+    - '<green>You completed %count% Expedition(s) while away! Use <gradient:yellow:red>/oldspoils</gradient> to claim your rewards.</green>'
   expeditions-gained:
     - '<green>You have been given %count% %type% Expedition(s)!'
   super-vote-broadcast:
