@@ -30,7 +30,7 @@ public class VoteListener implements Listener {
         Tasks.runAsync(() -> {
             String username = vote.getUsername();
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(username);
-            if (!offlinePlayer.hasPlayedBefore()) {
+            if (!offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline() && Bukkit.getPlayer(username) == null) {
                 Logger.info("Player %1 has not played before. Ignoring.", username);
                 return;
             }
