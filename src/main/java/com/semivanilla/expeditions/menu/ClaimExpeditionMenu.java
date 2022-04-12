@@ -236,6 +236,7 @@ public class ClaimExpeditionMenu extends Menu { //really messy, will need to rew
         Logger.debug("Data: %1", data);
         data.getUnclaimedRewards().put(type, items);
         Logger.debug(data.getUnclaimedRewards());
+        data.save();
     }
 
     @Override

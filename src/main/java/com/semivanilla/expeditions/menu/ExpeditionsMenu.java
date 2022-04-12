@@ -97,6 +97,7 @@ public class ExpeditionsMenu extends Menu {
                 if (daily) {
                     data.setLastDailyClaim(LocalDate.now());
                 } else data.getExpeditionTypes().remove(expedition.getType());
+                data.save();
                 new MenuUpdateTask(menu, player).runTaskTimer(Expeditions.getInstance(), 5l, 5l);
             }
         }
