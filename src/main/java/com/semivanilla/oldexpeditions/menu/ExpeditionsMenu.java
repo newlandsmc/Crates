@@ -2,10 +2,7 @@ package com.semivanilla.oldexpeditions.menu;
 
 import com.semivanilla.oldexpeditions.Expeditions;
 import com.semivanilla.oldexpeditions.manager.ExpeditionManager;
-import com.semivanilla.oldexpeditions.object.Expedition;
-import com.semivanilla.oldexpeditions.object.ItemConfig;
-import com.semivanilla.oldexpeditions.object.MenuUpdateTask;
-import com.semivanilla.oldexpeditions.object.PlayerData;
+import com.semivanilla.oldexpeditions.object.*;
 import com.semivanilla.oldexpeditions.object.impl.DailyExpedition;
 import lombok.RequiredArgsConstructor;
 import net.badbird5907.blib.menu.buttons.Button;
@@ -86,6 +83,10 @@ public class ExpeditionsMenu extends Menu {
             if (unclaimedItems) {
                 ArrayList<ItemStack> items = data.getUnclaimedRewards().get(expedition.getType());
                 new ClaimExpeditionMenu(items, expedition.getType(), true).open(player);
+                return;
+            }
+            if (expedition.getType() == ExpeditionType.DAILY) {
+                player.sendMessage(CC.RED + "You cannot claim daily expeditions on legacy expeditions.");
                 return;
             }
             if (canUse) {
