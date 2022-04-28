@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.java.Log;
+import net.badbird5907.blib.command.CommandResult;
 import net.badbird5907.blib.menu.buttons.Button;
 import net.badbird5907.blib.menu.buttons.PlaceholderButton;
 import net.badbird5907.blib.menu.buttons.impl.BackButton;
@@ -228,6 +229,11 @@ public class ClaimExpeditionMenu extends Menu { //really messy, will need to rew
         closed = true;
         Logger.debug("Closed, saving: %1 | %2", items.size(), items);
         PlayerData data = PlayerManager.getData(player.getUniqueId());
+        if (data == null) {
+            player.sendMessage(CC.RED + "An error occurred! Please open a bug report ticket in the discord, and send a screenshot of this! " + CC.GRAY + "(" + System.currentTimeMillis() + ")" + CC.GOLD + " (3)");
+            Logger.severe("(3) Data was null for %1 (%2) | %3", player.getName(), player.getUniqueId(), System.currentTimeMillis());
+            return;
+        }
         if (items.isEmpty()) {
             data.getUnclaimedRewards().remove(type);
             return;

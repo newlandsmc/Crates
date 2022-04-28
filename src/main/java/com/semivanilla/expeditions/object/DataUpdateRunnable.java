@@ -18,8 +18,7 @@ public class DataUpdateRunnable extends BukkitRunnable {
         }
         Bukkit.getOnlinePlayers().forEach(p -> {
             PlayerData data = PlayerManager.getData(p.getUniqueId());
-            if (data.getLastDayUpdated() == null)
-                data.setLastDayUpdated(Expeditions.getLastReset());
+            if (data.getLastDayUpdated() == null) data.setLastDayUpdated(Expeditions.getLastReset());
             data.checkDayUpdated();
         });
     }

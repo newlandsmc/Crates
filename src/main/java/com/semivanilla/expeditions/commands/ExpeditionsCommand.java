@@ -27,6 +27,11 @@ public class ExpeditionsCommand extends BaseCommand {
     @Command(name = "expeditions", aliases = "spoils", playerOnly = true)
     public CommandResult execute(Sender sender, String[] args) {
         PlayerData data = PlayerManager.getData(sender.getPlayer().getUniqueId());
+        if (data == null) {
+            sender.sendMessage(CC.RED + "An error occurred! Please open a bug report ticket in the discord, and send a screenshot of this! " + CC.GRAY + "(" + System.currentTimeMillis() + ")" + CC.GOLD + " (1)");
+            Logger.severe("(1) Data was null for %1 (%2) | %3", sender.getPlayer().getName(), sender.getPlayer().getUniqueId(), System.currentTimeMillis());
+            return CommandResult.SUCCESS;
+        }
         new ExpeditionsMenu(data).open(sender);
         return CommandResult.SUCCESS;
     }

@@ -6,11 +6,14 @@ import com.semivanilla.expeditions.manager.PlayerManager;
 import com.semivanilla.expeditions.object.PlayerData;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
+import net.badbird5907.blib.command.CommandResult;
+import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.Logger;
 import net.badbird5907.blib.util.Tasks;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -38,6 +41,13 @@ public class VoteListener implements Listener {
             PlayerData data;
             if (Bukkit.getPlayer(username) != null) {
                 data = PlayerManager.getData(offlinePlayer.getUniqueId());
+                if (data == null) {
+                    Player p = Bukkit.getPlayer(username);
+                    if (p != null) {
+                        p.sendMessage(CC.RED + "An error occurred! Please open a bug report ticket in the discord, and send a screenshot of this! " + CC.GRAY + "(" + System.currentTimeMillis() + ")" + CC.GOLD + " (2)");
+                        Logger.severe("(2) Data was null for %1 (%2) | %3", p.getName(), p.getUniqueId(), System.currentTimeMillis());
+                    }
+                }
             } else {
                 Logger.info("Player %1 is not online. Loading their data...", username);
                 data = PlayerManager.load(offlinePlayer.getUniqueId());
