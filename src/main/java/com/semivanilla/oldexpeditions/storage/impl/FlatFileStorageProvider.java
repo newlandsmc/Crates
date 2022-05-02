@@ -73,6 +73,9 @@ public class FlatFileStorageProvider implements StorageProvider {
         if (jo == null) {
             Logger.error("Failed to save data for " + data.getUuid().toString());
             //move their current file to a backup
+            if (!BACKUP_FOLDER.exists()) {
+                BACKUP_FOLDER.mkdirs();
+            }
             File backup = new File(BACKUP_FOLDER, data.getUuid().toString() + "." + System.currentTimeMillis() + ".json");
             Files.move(file.toPath(), backup.toPath(), StandardCopyOption.REPLACE_EXISTING);
             Logger.info("Moved their existing playerdata to " + backup.getAbsolutePath());
