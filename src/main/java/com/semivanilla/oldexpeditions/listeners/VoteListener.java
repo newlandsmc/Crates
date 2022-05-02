@@ -21,6 +21,8 @@ import java.util.Map;
 public class VoteListener implements Listener {
     @EventHandler
     public void onVote(VotifierEvent event) {
+        if (true) //Disable vote expeditions on legacy
+            return;
         Vote vote = event.getVote();
         if (!ConfigManager.getVoteServices().contains(vote.getServiceName())) {
             Logger.info("Received vote from not allowed service (%1). Ignoring.", vote.getServiceName());
