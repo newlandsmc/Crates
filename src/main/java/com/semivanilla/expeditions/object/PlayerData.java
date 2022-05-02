@@ -10,14 +10,18 @@ import com.semivanilla.expeditions.manager.MessageManager;
 import com.semivanilla.expeditions.util.LocalDateAdapter;
 import lombok.Getter;
 import lombok.Setter;
+import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.Logger;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 @Getter
@@ -28,9 +32,9 @@ public class PlayerData {
     private LocalDate lastDailyClaim = null, lastDayUpdated = Expeditions.getLastReset();
     private int totalVotes = 0, offlineEarned = 0, votesToday = 0;
     private transient long lastNameLoad = -1;
-    private ArrayList<ExpeditionType> expeditions = new ArrayList<>();
-    private HashMap<ExpeditionType, ArrayList<ItemStack>> unclaimedRewards = new HashMap<>();
-    private ArrayList<LocalDate> lastVotes = new ArrayList<>();
+    private CopyOnWriteArrayList<ExpeditionType> expeditions = new CopyOnWriteArrayList<>();
+    private ConcurrentHashMap<ExpeditionType, ArrayList<ItemStack>> unclaimedRewards = new ConcurrentHashMap<>();
+    private CopyOnWriteArrayList<LocalDate> lastVotes = new CopyOnWriteArrayList<>();
 
     public PlayerData(UUID uuid) {
         this.uuid = uuid;
@@ -38,11 +42,17 @@ public class PlayerData {
 
     public PlayerData(JsonObject json) {
         this.uuid = UUID.fromString(json.get("uuid").getAsString());
-        this.name = json.get("name").getAsString();
+        if (json.has("name")) {
+            this.name = json.get("name").getAsString();
+        }else {
+            OfflinePlayer op = Bukkit.getOfflinePlayer(uuid);
+            this.name = op.getName();
+        }
         this.totalVotes = json.get("totalVotes").getAsInt();
         this.offlineEarned = json.get("offlineEarned").getAsInt();
         this.votesToday = json.get("votesToday").getAsInt();
         LocalDateAdapter lda = new LocalDateAdapter();
+        if (expeditions == null) expeditions = new CopyOnWriteArrayList<>();
         if (json.has("expeditions")) {
             JsonArray expeditions = json.get("expeditions").getAsJsonArray();
             for (JsonElement e : expeditions) {
@@ -143,7 +153,7 @@ public class PlayerData {
     }
 
     public void addVote(LocalDate date) {
-        if (lastVotes == null) lastVotes = new ArrayList<>();
+        if (lastVotes == null) lastVotes = new CopyOnWriteArrayList<>();
         lastVotes.add(date);
         if (lastVotes.size() > 7)
             lastVotes.remove(0);
@@ -159,12 +169,12 @@ public class PlayerData {
     }
 
     public List<Expedition> getExpeditions() {
-        if (expeditions == null) expeditions = new ArrayList<>();
+        if (expeditions == null) expeditions = new CopyOnWriteArrayList<>();
         return ExpeditionManager.getExpeditions().stream().filter(e -> expeditions.contains(e.getType())).collect(Collectors.toList());
     }
 
     public List<ExpeditionType> getExpeditionTypes() {
-        if (expeditions == null) expeditions = new ArrayList<>();
+        if (expeditions == null) expeditions = new CopyOnWriteArrayList<>();
         return expeditions;
     }
 
@@ -175,12 +185,13 @@ public class PlayerData {
     public void onVote() {
         totalVotes++;
         votesToday++;
-        if (expeditions == null) expeditions = new ArrayList<>();
-        expeditions.add(ExpeditionType.VOTE);
+        if (expeditions == null) expeditions = new CopyOnWriteArrayList<>();
+        //expeditions.add(ExpeditionType.VOTE);
+        tryToAddExpedition(ExpeditionType.VOTE);
         checkPremium();
         checkSuperVote();
         LocalDate timestamp = LocalDate.now();
-        if (lastVotes == null) lastVotes = new ArrayList<>();
+        if (lastVotes == null) lastVotes = new CopyOnWriteArrayList<>();
         if (lastVotes.stream().filter(d -> d.isEqual(timestamp)).findFirst().orElse(null) != null) //if they have voted today
             return;
         addVote(timestamp);
@@ -189,7 +200,7 @@ public class PlayerData {
     public void checkPremium() {
         //check if they have voted at least once a day in the last week
         LocalDate temp = null;
-        if (lastVotes == null) lastVotes = new ArrayList<>();
+        if (lastVotes == null) lastVotes = new CopyOnWriteArrayList<>();
         if (lastVotes.size() < 7)
             return;
         for (LocalDate d : lastVotes) {
@@ -214,8 +225,9 @@ public class PlayerData {
             }
         }
         lastVotes.clear();
-        if (expeditions == null) expeditions = new ArrayList<>();
-        expeditions.add(ExpeditionType.PREMIUM);
+        if (expeditions == null) expeditions = new CopyOnWriteArrayList<>();
+        //expeditions.add(ExpeditionType.PREMIUM);
+        tryToAddExpedition(ExpeditionType.PREMIUM);
         if (Bukkit.getPlayer(uuid) == null)
             offlineEarned += 1;
     }
@@ -225,10 +237,11 @@ public class PlayerData {
         //check if they have voted on all services
         if (votesToday < voteServices)
             return;
-        Logger.debug("Player " + getName() + " has voted on all services, giving them a super vote.");
-        if (expeditions == null) expeditions = new ArrayList<>();
-        expeditions.add(ExpeditionType.SUPER_VOTE);
         votesToday = 0;
+        Logger.debug("Player " + getName() + " has voted on all services, giving them a super vote.");
+        if (expeditions == null) expeditions = new CopyOnWriteArrayList<>();
+        //expeditions.add(ExpeditionType.SUPER_VOTE);
+        tryToAddExpedition(ExpeditionType.SUPER_VOTE);
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("%player%", getName());
         placeholders.put("%count%", "1");
@@ -252,8 +265,8 @@ public class PlayerData {
         }
     }
 
-    public HashMap<ExpeditionType, ArrayList<ItemStack>> getUnclaimedRewards() {
-        if (unclaimedRewards == null) unclaimedRewards = new HashMap<>();
+    public ConcurrentHashMap<ExpeditionType, ArrayList<ItemStack>> getUnclaimedRewards() {
+        if (unclaimedRewards == null) unclaimedRewards = new ConcurrentHashMap<>();
         return unclaimedRewards;
     }
 
@@ -273,5 +286,18 @@ public class PlayerData {
 
     public void save() {
         Expeditions.getStorageProvider().saveData(this);
+    }
+
+    public void tryToAddExpedition(ExpeditionType type) {
+        if (expeditions == null) expeditions = new CopyOnWriteArrayList<>();
+        try {
+            expeditions.add(type);
+        } catch (Exception e) {
+            long timestamp = System.currentTimeMillis();
+            Logger.error("Failed to give expedition type %1 to player %2 at %3", type.name(), getName(), timestamp);
+            if (Bukkit.getPlayer(uuid) != null) {
+                Bukkit.getPlayer(uuid).sendMessage(CC.RED + "An error occurred while trying to give you a " + type + "! Please open a bug report ticket in the discord, and send a screenshot of this! " + CC.GRAY + "(" + timestamp + ")" + CC.GOLD + " (4)");
+            }
+        }
     }
 }
