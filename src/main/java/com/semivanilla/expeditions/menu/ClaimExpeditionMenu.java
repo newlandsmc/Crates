@@ -234,7 +234,7 @@ public class ClaimExpeditionMenu extends Menu { //really messy, will need to rew
             Logger.severe("(3) Data was null for %1 (%2) | %3", player.getName(), player.getUniqueId(), System.currentTimeMillis());
             return;
         }
-        if (items.isEmpty()) {
+        if (items.isEmpty() || shown.isEmpty() || items.size() < 1) {
             data.getUnclaimedRewards().remove(type);
             return;
         }
