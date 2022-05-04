@@ -7,6 +7,8 @@ import com.semivanilla.expeditions.manager.PlayerManager;
 import com.semivanilla.expeditions.menu.ExpeditionsMenu;
 import com.semivanilla.expeditions.object.ExpeditionType;
 import com.semivanilla.expeditions.object.PlayerData;
+import com.vexsoftware.votifier.model.Vote;
+import com.vexsoftware.votifier.model.VotifierEvent;
 import net.badbird5907.blib.command.BaseCommand;
 import net.badbird5907.blib.command.Command;
 import net.badbird5907.blib.command.CommandResult;
@@ -26,6 +28,10 @@ import java.util.Map;
 public class ExpeditionsCommand extends BaseCommand {
     @Command(name = "expeditions", aliases = "spoils", playerOnly = true)
     public CommandResult execute(Sender sender, String[] args) {
+        if (Expeditions.isDisabled()) {
+            sender.sendMessage(CC.RED + "Expeditions are temporarily disabled!");
+            return CommandResult.SUCCESS;
+        }
         PlayerData data = PlayerManager.getData(sender.getPlayer().getUniqueId());
         if (data == null) {
             sender.sendMessage(CC.RED + "An error occurred! Please open a bug report ticket in the discord, and send a screenshot of this! " + CC.GRAY + "(" + System.currentTimeMillis() + ")" + CC.GOLD + " (1)");
@@ -41,17 +47,12 @@ public class ExpeditionsCommand extends BaseCommand {
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase("testvote")) {
                 if (args.length > 1) {
-                    LocalDate now = LocalDate.now();
-                    PlayerData data = PlayerManager.getData(sender.getPlayer().getUniqueId());
-                    data.addVote(now.minusDays(6));
-                    data.addVote(now.minusDays(5));
-                    data.addVote(now.minusDays(4));
-                    data.addVote(now.minusDays(3));
-                    data.addVote(now.minusDays(2));
-                    data.addVote(now.minusDays(1));
-                    data.addVote(now);
-                    data.checkPremium();
-                    sender.sendMessage(CC.GREEN + "done!");
+                    if (args.length == 3) {
+                        OfflinePlayer op = Bukkit.getOfflinePlayer(args[1]);
+                        String service = args[2];
+                        Bukkit.getServer().getPluginManager().callEvent(new VotifierEvent(new Vote(service, op.getName(), "",LocalDate.now().toString())));
+                        sender.sendMessage("Done!");
+                    }
                 }
                 PlayerManager.getData(sender.getPlayer().getUniqueId()).onVote();
                 sender.sendMessage(CC.GREEN + "Done!");
@@ -133,6 +134,10 @@ public class ExpeditionsCommand extends BaseCommand {
                 long end = System.currentTimeMillis();
                 sender.sendMessage(CC.GREEN + "Reloaded config in " + (end - start) + "ms");
                 return CommandResult.SUCCESS;
+            }else if (args[0].equalsIgnoreCase("disable")) {
+                Expeditions.setDisabled(!Expeditions.isDisabled());
+                sender.sendMessage(CC.GREEN + "Expeditions are now " + (Expeditions.isDisabled() ? "disabled" : "enabled"));
+                return CommandResult.SUCCESS;
             }
         }
         sender.sendMessage(CC.GREEN + "Expeditions V." + Expeditions.getInstance().getDescription().getVersion());
@@ -140,7 +145,8 @@ public class ExpeditionsCommand extends BaseCommand {
         sender.sendMessage(CC.AQUA + "/expeditionsadmin givepremium <player> [amount]");
         sender.sendMessage(CC.AQUA + "/expeditionsadmin reload");
         sender.sendMessage(CC.AQUA + "/expeditionsadmin supervotecheck [player/all] - Force the server to check if players should get a super vote expedition");
-        sender.sendMessage(CC.AQUA + "/expeditionsadmin testvote [week=true|false] - command for testing, don't use");
+        sender.sendMessage(CC.AQUA + "/expeditionsadmin testvote <player> <ServiceName> - command for testing, don't use");
+        sender.sendMessage(CC.AQUA + "/expeditionsadmin disable - Disable/enable expeditions");
         return CommandResult.SUCCESS;
     }
 }

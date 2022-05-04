@@ -52,6 +52,11 @@ public final class Expeditions extends JavaPlugin {
     @Getter
     @Setter
     private static LocalDate lastReset = LocalDate.now();
+
+    @Getter
+    @Setter
+    private static boolean disabled = false;
+
     private FileConfiguration config;
 
     @Override

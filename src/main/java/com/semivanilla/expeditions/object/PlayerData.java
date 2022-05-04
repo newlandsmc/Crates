@@ -36,6 +36,8 @@ public class PlayerData {
     private ConcurrentHashMap<ExpeditionType, ArrayList<ItemStack>> unclaimedRewards = new ConcurrentHashMap<>();
     private CopyOnWriteArrayList<LocalDate> lastVotes = new CopyOnWriteArrayList<>();
 
+    private long lastSuperVote = -1;
+
     public PlayerData(UUID uuid) {
         this.uuid = uuid;
     }
@@ -92,6 +94,9 @@ public class PlayerData {
         if (json.has("lastDailyClaim")) {
             this.lastDailyClaim = lda.deserialize(json.get("lastDailyClaim"), null, null);
         }
+        if (json.has("lastSuperVote")) {
+            this.lastSuperVote = json.get("lastSuperVote").getAsLong();
+        }
     }
 
     public JsonObject getJson() {
@@ -101,6 +106,9 @@ public class PlayerData {
         jo.addProperty("totalVotes", getTotalVotes());
         jo.addProperty("offlineEarned", getOfflineEarned());
         jo.addProperty("votesToday", getVotesToday());
+        if (lastSuperVote != -1) {
+            jo.addProperty("lastSuperVote", getLastSuperVote());
+        }
         if (getExpeditionTypes() != null) {
             JsonArray arr = new JsonArray();
             for (ExpeditionType expeditionType : getExpeditionTypes()) {
@@ -188,8 +196,8 @@ public class PlayerData {
         if (expeditions == null) expeditions = new CopyOnWriteArrayList<>();
         //expeditions.add(ExpeditionType.VOTE);
         tryToAddExpedition(ExpeditionType.VOTE);
-        checkPremium();
         checkSuperVote();
+        checkPremium();
         LocalDate timestamp = LocalDate.now();
         if (lastVotes == null) lastVotes = new CopyOnWriteArrayList<>();
         if (lastVotes.stream().filter(d -> d.isEqual(timestamp)).findFirst().orElse(null) != null) //if they have voted today
@@ -233,6 +241,10 @@ public class PlayerData {
     }
 
     public void checkSuperVote() {
+        if (System.currentTimeMillis() - lastSuperVote < 1000) {
+            Logger.error("Received another check for super vote in less than 1 second after last super vote check. This is a bug. Ignoring...");
+            return;
+        }
         int voteServices = ConfigManager.getVoteServices().size();
         //check if they have voted on all services
         if (votesToday < voteServices)
@@ -241,6 +253,7 @@ public class PlayerData {
         Logger.debug("Player " + getName() + " has voted on all services, giving them a super vote.");
         if (expeditions == null) expeditions = new CopyOnWriteArrayList<>();
         //expeditions.add(ExpeditionType.SUPER_VOTE);
+        lastSuperVote = System.currentTimeMillis();
         tryToAddExpedition(ExpeditionType.SUPER_VOTE);
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("%player%", getName());
