@@ -279,8 +279,26 @@ public class ClaimExpeditionMenu extends Menu { //really messy, will need to rew
                 return;
             }
             player.getInventory().addItem(item); //TODO use the map returned by this method to see the items that do not fit
-            items.remove(item);
-            shown.entrySet().removeIf(entry -> item == entry.getValue()); //use == and not .equals() to check if the item is the same instance
+            Iterator<ItemStack> iterator = items.iterator();
+            while (iterator.hasNext()) {
+                ItemStack itemStack = iterator.next();
+                if (itemStack.equals(item)) {
+                    iterator.remove();
+                    if (!iterator.hasNext()) {
+                        shown.clear();
+                        items.clear();
+                    }
+                    break;
+                }
+            }
+            Iterator<ItemStack> shownIterator = shown.values().iterator();
+            while (shownIterator.hasNext()) {
+                ItemStack itemStack = shownIterator.next();
+                if (itemStack.equals(item)) {
+                    shownIterator.remove(); //use == and not .equals() to check if the item is the same instance
+                    break;
+                }
+            }
             update(player);
         }
     }
