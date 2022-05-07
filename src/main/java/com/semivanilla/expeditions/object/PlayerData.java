@@ -8,6 +8,7 @@ import com.semivanilla.expeditions.manager.ConfigManager;
 import com.semivanilla.expeditions.manager.ExpeditionManager;
 import com.semivanilla.expeditions.manager.MessageManager;
 import com.semivanilla.expeditions.util.LocalDateAdapter;
+import com.vexsoftware.votifier.model.Vote;
 import lombok.Getter;
 import lombok.Setter;
 import net.badbird5907.blib.util.CC;
@@ -22,6 +23,8 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 import java.util.stream.Collectors;
 
 @Getter
@@ -190,7 +193,7 @@ public class PlayerData {
         return expeditions.stream().filter(e -> e == type).collect(Collectors.toList()).size();
     }
 
-    public void onVote() {
+    public synchronized void onVote() {
         totalVotes++;
         votesToday++;
         if (expeditions == null) expeditions = new CopyOnWriteArrayList<>();

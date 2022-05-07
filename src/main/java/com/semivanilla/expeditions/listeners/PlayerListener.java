@@ -53,13 +53,6 @@ public class PlayerListener implements Listener {
             }
         }
     }
-    @EventHandler
-    public void onJoin1(PlayerJoinEvent event) {
-        for (int i = 0; i < 6; i++) {
-            System.out.println(i);
-            Bukkit.getServer().getPluginManager().callEvent(new VotifierEvent(new Vote(Expeditions.getConfigManager().getConfig().getStringList("services").get(i), event.getPlayer().getName(), "", LocalDate.now().toString())));
-        }
-    }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
