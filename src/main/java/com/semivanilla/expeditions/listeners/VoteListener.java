@@ -1,8 +1,10 @@
 package com.semivanilla.expeditions.listeners;
 
+import com.semivanilla.expeditions.Expeditions;
 import com.semivanilla.expeditions.manager.ConfigManager;
 import com.semivanilla.expeditions.manager.MessageManager;
 import com.semivanilla.expeditions.manager.PlayerManager;
+import com.semivanilla.expeditions.object.Expedition;
 import com.semivanilla.expeditions.object.PlayerData;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
@@ -30,14 +32,15 @@ public class VoteListener implements Listener {
             return;
         }
         Logger.info("Received vote from %1 (%2)", vote.getUsername(), vote.getServiceName());
-        Tasks.runAsync(() -> {
-            String username = vote.getUsername();
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(username);
-            if (!offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline() && Bukkit.getPlayer(username) == null) {
-                Logger.info("Player %1 has not played before. Ignoring.", username);
-                return;
-            }
-            boolean offline = false;
+        String username = vote.getUsername();
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(username);
+        if (!offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline() && Bukkit.getPlayer(username) == null) {
+            Logger.info("Player %1 has not played before. Ignoring.", username);
+            return;
+        }
+        PlayerManager.getVoteQueue().add(offlinePlayer.getUniqueId());
+        /*
+          boolean offline = false;
             PlayerData data;
             if (Bukkit.getPlayer(username) != null) {
                 data = PlayerManager.getData(offlinePlayer.getUniqueId());
@@ -71,6 +74,6 @@ public class VoteListener implements Listener {
                 data.setOfflineEarned(data.getOfflineEarned() + 1);
                 PlayerManager.unload(offlinePlayer.getUniqueId());
             }
-        });
+         */
     }
 }

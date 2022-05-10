@@ -21,10 +21,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -40,6 +37,8 @@ public class PlayerData {
     private CopyOnWriteArrayList<LocalDate> lastVotes = new CopyOnWriteArrayList<>();
 
     private long lastSuperVote = -1;
+
+    private LinkedBlockingQueue<Object> voteQueue = new LinkedBlockingQueue<>();
 
     public PlayerData(UUID uuid) {
         this.uuid = uuid;
@@ -206,6 +205,17 @@ public class PlayerData {
         if (lastVotes.stream().filter(d -> d.isEqual(timestamp)).findFirst().orElse(null) != null) //if they have voted today
             return;
         addVote(timestamp);
+
+        Player player = Bukkit.getPlayer(uuid);
+        if (player == null) return;
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%player%", player.getName());
+        placeholders.put("%count%", "1");
+        placeholders.put("%type%", "Vote");
+        List<Component> components = MessageManager.parse(ConfigManager.getVoteMessage(), placeholders);
+        for (Component component : components) {
+            player.sendMessage(component);
+        }
     }
 
     public void checkPremium() {

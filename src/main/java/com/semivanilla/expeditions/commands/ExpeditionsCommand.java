@@ -52,11 +52,14 @@ public class ExpeditionsCommand extends BaseCommand {
                         String service = args[2];
                         Bukkit.getServer().getPluginManager().callEvent(new VotifierEvent(new Vote(service, op.getName(), "",LocalDate.now().toString())));
                         sender.sendMessage("Done!");
+                        return CommandResult.SUCCESS;
                     }
+                }else {
+                    //PlayerManager.getData(sender.getPlayer().getUniqueId()).onVote();
+                    PlayerManager.getVoteQueue().add(sender.getPlayer().getUniqueId());
+                    sender.sendMessage(CC.GREEN + "Done!");
+                    return CommandResult.SUCCESS;
                 }
-                PlayerManager.getData(sender.getPlayer().getUniqueId()).onVote();
-                sender.sendMessage(CC.GREEN + "Done!");
-                return CommandResult.SUCCESS;
             } else if (args[0].equalsIgnoreCase("givepremium")) {
                 if (args.length >= 2) {
                     String target = args[1];

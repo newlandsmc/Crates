@@ -6,7 +6,9 @@ import com.semivanilla.expeditions.listeners.PlayerListener;
 import com.semivanilla.expeditions.listeners.VoteListener;
 import com.semivanilla.expeditions.manager.ConfigManager;
 import com.semivanilla.expeditions.manager.ExpeditionManager;
+import com.semivanilla.expeditions.manager.PlayerManager;
 import com.semivanilla.expeditions.object.DataUpdateRunnable;
+import com.semivanilla.expeditions.object.PlayerData;
 import com.semivanilla.expeditions.storage.StorageProvider;
 import com.semivanilla.expeditions.storage.impl.FlatFileStorageProvider;
 import com.semivanilla.expeditions.util.ItemStackAdapter;
@@ -25,6 +27,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.util.UUID;
 
 public final class Expeditions extends JavaPlugin {
     @Getter
@@ -55,7 +58,28 @@ public final class Expeditions extends JavaPlugin {
 
     @Getter
     @Setter
-    private static boolean disabled = false;
+    private static boolean disabled = false, pluginEnabled = false;
+
+    @Getter
+    private static Thread voteProcessorThread = new Thread(() -> {
+        while (pluginEnabled) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            UUID uuid = PlayerManager.getVoteQueue().poll();
+            if (uuid == null) {
+                continue;
+            }
+            PlayerData data = PlayerManager.getData(uuid);
+            if (data == null) {
+                PlayerManager.getVoteQueue().add(uuid);
+                continue;
+            }
+            data.onVote();
+        }
+    });
 
     private FileConfiguration config;
 
@@ -101,11 +125,15 @@ public final class Expeditions extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         getServer().getPluginManager().registerEvents(new VoteListener(), this);
 
+        pluginEnabled = true;
+        voteProcessorThread.start();
         //storageProvider.init(this);
     }
 
     @Override
     public void onDisable() {
+        pluginEnabled = false;
+
         try {
             if (!lastMidnight.exists())
                 lastMidnight.createNewFile();
