@@ -255,7 +255,7 @@ public class PlayerData {
 
     public void checkSuperVote() {
         if (System.currentTimeMillis() - lastSuperVote < 1000) {
-            Logger.error("Received another check for super vote in less than 1 second after last super vote check. This is a bug. Ignoring...");
+            Logger.error("Received another check for super vote in less than 1 second after last successful super vote check. Ignoring...");
             return;
         }
         int voteServices = ConfigManager.getVoteServices().size();

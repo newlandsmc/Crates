@@ -116,7 +116,7 @@ public class ExpeditionsCommand extends BaseCommand {
                     try {
                         for (String arg : args) {
                             PlayerData data = PlayerManager.getData(Bukkit.getPlayer(arg).getUniqueId());
-                            data.checkPremium();
+                            data.checkSuperVote();
                             sender.sendMessage(CC.GREEN + "Checked " + data.getName());
                         }
                     } catch (Exception e) {
@@ -126,7 +126,7 @@ public class ExpeditionsCommand extends BaseCommand {
                 } else {
                     for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                         PlayerData data = PlayerManager.getData(onlinePlayer.getUniqueId());
-                        data.checkPremium();
+                        data.checkSuperVote();
                     }
                     sender.sendMessage(CC.GREEN + "Done!");
                 }
