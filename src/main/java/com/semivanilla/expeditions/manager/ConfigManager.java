@@ -45,6 +45,12 @@ public class ConfigManager {
     private static final List<LootFile> superVoteLoot = new ArrayList<>();
 
     @Getter
+    private static boolean asyncVoteProcessor = true;
+
+    @Getter
+    private static long voteProcessorInterval = 5;
+
+    @Getter
     private static boolean enableAnimation;
 
     public void init() {
@@ -123,6 +129,8 @@ public class ConfigManager {
         superVoteMessage.addAll(getConfig().getStringList("messages.super-vote-broadcast"));
         fullInventory.clear();
         fullInventory.addAll(getConfig().getStringList("messages.inventory-full"));
+        asyncVoteProcessor = getConfig().getBoolean("vote-processor.async", true);
+        voteProcessorInterval = getConfig().getLong("vote-processor.interval", 5);
     }
 
     public FileConfiguration getConfig() {

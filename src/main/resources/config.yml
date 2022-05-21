@@ -79,3 +79,6 @@ messages:
     - '<green>Thanks for voting! You completed a Vote Expedition!'
   inventory-full:
     - '<red>Your inventory is full!'
+vote-processor:
+  async: true
+  interval: 5
