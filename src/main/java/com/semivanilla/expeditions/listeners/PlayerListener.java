@@ -1,15 +1,10 @@
 package com.semivanilla.expeditions.listeners;
 
-import com.semivanilla.expeditions.Expeditions;
 import com.semivanilla.expeditions.manager.ConfigManager;
 import com.semivanilla.expeditions.manager.MessageManager;
 import com.semivanilla.expeditions.manager.PlayerManager;
-import com.semivanilla.expeditions.object.Expedition;
 import com.semivanilla.expeditions.object.PlayerData;
-import com.vexsoftware.votifier.model.Vote;
-import com.vexsoftware.votifier.model.VotifierEvent;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,7 +12,6 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

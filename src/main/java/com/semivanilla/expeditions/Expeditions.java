@@ -21,6 +21,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,29 +60,9 @@ public final class Expeditions extends JavaPlugin {
     @Getter
     @Setter
     private static boolean disabled = false, pluginEnabled = false;
-
-    @Getter
-    private static Thread voteProcessorThread = new Thread(() -> {
-        while (pluginEnabled) {
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            UUID uuid = PlayerManager.getVoteQueue().poll();
-            if (uuid == null) {
-                continue;
-            }
-            PlayerData data = PlayerManager.getData(uuid);
-            if (data == null) {
-                PlayerManager.getVoteQueue().add(uuid);
-                continue;
-            }
-            data.onVote();
-        }
-    });
-
     private FileConfiguration config;
+
+    private static BukkitRunnable voteProcessor;
 
     @Override
     public void onLoad() {
@@ -126,14 +107,30 @@ public final class Expeditions extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new VoteListener(), this);
 
         pluginEnabled = true;
-        voteProcessorThread.start();
+        voteProcessor = new BukkitRunnable() {
+            @Override
+            public void run() {
+                UUID uuid = PlayerManager.getVoteQueue().poll();
+                if (uuid == null) {
+                    return;
+                }
+                PlayerData data = PlayerManager.getData(uuid);
+                if (data == null) {
+                    PlayerManager.getVoteQueue().add(uuid);
+                    return;
+                }
+                data.onVote();
+            }
+        };
+        if (ConfigManager.isAsyncVoteProcessor()) voteProcessor.runTaskTimerAsynchronously(this, 20, ConfigManager.getVoteProcessorInterval());
+        else voteProcessor.runTaskTimer(this, 20, ConfigManager.getVoteProcessorInterval());
         //storageProvider.init(this);
     }
 
     @Override
     public void onDisable() {
         pluginEnabled = false;
-
+        voteProcessor.cancel();
         try {
             if (!lastMidnight.exists())
                 lastMidnight.createNewFile();
