@@ -48,13 +48,13 @@ public class PlayerData {
         this.uuid = UUID.fromString(json.get("uuid").getAsString());
         if (json.has("name")) {
             this.name = json.get("name").getAsString();
-        }else {
+        } else {
             OfflinePlayer op = Bukkit.getOfflinePlayer(uuid);
             this.name = op.getName();
         }
-        this.totalVotes = json.get("totalVotes").getAsInt();
-        this.offlineEarned = json.get("offlineEarned").getAsInt();
-        this.votesToday = json.get("votesToday").getAsInt();
+        if (json.has("totalVotes")) this.totalVotes = json.get("totalVotes").getAsInt();
+        if (json.has("offlineEarned")) this.offlineEarned = json.get("offlineEarned").getAsInt();
+        if (json.has("votesToday")) this.votesToday = json.get("votesToday").getAsInt();
         LocalDateAdapter lda = new LocalDateAdapter();
         if (expeditions == null) expeditions = new CopyOnWriteArrayList<>();
         if (json.has("expeditions")) {
