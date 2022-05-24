@@ -64,29 +64,29 @@ public class PlayerData {
             }
         }
         if (json.has("unclaimedRewards")) {
-            if (json.get("unclaimedRewards").isJsonArray()) {
-                JsonArray arr = json.get("unclaimedRewards").getAsJsonArray();
-                for (JsonElement e : arr) {
-                    JsonObject obj = e.getAsJsonObject();
-                    ExpeditionType type = ExpeditionType.valueOf(obj.get("key").getAsString());
-                    JsonArray items = obj.get("value").getAsJsonArray();
-                    for (JsonElement itemElement : items) {
-                        String base64Item = itemElement.getAsString().substring(7);
-                        ItemStack item = ItemStack.deserializeBytes(Base64.getDecoder().decode(base64Item));
-                        if (!unclaimedRewards.containsKey(type)) {
-                            unclaimedRewards.put(type, new ArrayList<>());
-                        }
-                        unclaimedRewards.get(type).add(item);
+            JsonArray arr = json.get("unclaimedRewards").getAsJsonArray();
+            for (JsonElement e : arr) {
+                JsonObject obj = e.getAsJsonObject();
+                ExpeditionType type = ExpeditionType.valueOf(obj.get("key").getAsString());
+                JsonArray items = obj.get("value").getAsJsonArray();
+                for (JsonElement itemElement : items) {
+                    String base64Item = itemElement.getAsString().substring(7);
+                    ItemStack item = ItemStack.deserializeBytes(Base64.getDecoder().decode(base64Item));
+                    if (!unclaimedRewards.containsKey(type)) {
+                        unclaimedRewards.put(type, new ArrayList<>());
                     }
+                    unclaimedRewards.get(type).add(item);
                 }
-            } else {
-                Logger.info("Player %1 had legacy unclaimed rewards\nRewards:\n%2", this.getName(), Expeditions.getGson().toJson(json.get("unclaimedRewards")));
             }
         }
         if (json.has("lastVotes")) {
             JsonArray arr = json.get("lastVotes").getAsJsonArray();
             for (JsonElement e : arr) {
                 LocalDate date = lda.deserialize(e, null, null);
+                if (date == null)  {
+                    Logger.error("Failed to deserialize date for player " + uuid);
+                    continue;
+                }
                 lastVotes.add(date);
             }
         }
@@ -127,7 +127,7 @@ public class PlayerData {
                 jobj.addProperty("key", entry.getKey().name());
                 JsonArray array = new JsonArray();
                 for (ItemStack itemStack : entry.getValue()) {
-                    array.add("base64:" + Base64.getEncoder().encodeToString(itemStack.serializeAsBytes()));
+                    array.add(Base64.getEncoder().encodeToString(itemStack.serializeAsBytes()));
                 }
                 jobj.add("value", array);
                 arr.add(jobj);

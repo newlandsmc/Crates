@@ -17,9 +17,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import net.badbird5907.blib.bLib;
+import net.badbird5907.blib.util.CC;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -116,6 +120,13 @@ public final class Expeditions extends JavaPlugin {
                 }
                 PlayerData data = PlayerManager.getData(uuid);
                 if (data == null) {
+                    Player p = Bukkit.getPlayer(uuid);
+                    if (p != null) {
+                        if (!p.hasMetadata("expedition-vote-error")) { //This may be sent if a player logs in after voting, need to confirm it doesn't
+                            p.sendMessage(CC.RED + "An error may have occurred while processing your vote! Please open a ticket for further assistance");
+                            p.setMetadata("expedition-vote-error", new FixedMetadataValue(instance, true));
+                        }
+                    }
                     PlayerManager.getVoteQueue().add(uuid);
                     return;
                 }
