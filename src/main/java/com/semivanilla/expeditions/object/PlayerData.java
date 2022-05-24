@@ -70,7 +70,8 @@ public class PlayerData {
                 ExpeditionType type = ExpeditionType.valueOf(obj.get("key").getAsString());
                 JsonArray items = obj.get("value").getAsJsonArray();
                 for (JsonElement itemElement : items) {
-                    String base64Item = itemElement.getAsString().substring(7);
+                    String base64Item = itemElement.getAsString();
+                    if (base64Item.startsWith("base64:")) base64Item = base64Item.substring(7);
                     ItemStack item = ItemStack.deserializeBytes(Base64.getDecoder().decode(base64Item));
                     if (!unclaimedRewards.containsKey(type)) {
                         unclaimedRewards.put(type, new ArrayList<>());
