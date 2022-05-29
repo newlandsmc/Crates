@@ -21,10 +21,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class ExpeditionsCommand extends BaseCommand {
     @Command(name = "crates", aliases = {"spoils", "expeditions"}, playerOnly = true)
@@ -45,14 +42,11 @@ public class ExpeditionsCommand extends BaseCommand {
 
     private static final String ADMIN_PERMISSION = "expeditions.admin";
 
-    @Command(name = "expeditionsadmin", aliases = {"cratesadmin"})
+    @Command(name = "expeditionsadmin", aliases = {"cratesadmin"}, permission = ADMIN_PERMISSION)
     public CommandResult executeAdmin(Sender sender, String[] args) {
 
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase("testvote")) {
-                if (!sender.hasPermission(ADMIN_PERMISSION)) {
-                    return CommandResult.NO_PERMS;
-                }
                 if (args.length > 1) {
                     if (args.length == 3) {
                         OfflinePlayer op = Bukkit.getOfflinePlayer(args[1]);
@@ -68,9 +62,6 @@ public class ExpeditionsCommand extends BaseCommand {
                     return CommandResult.SUCCESS;
                 }
             } else if (args[0].equalsIgnoreCase("givepremium")) {
-                if (!sender.hasPermission(ADMIN_PERMISSION)) {
-                    return CommandResult.NO_PERMS;
-                }
                 if (args.length >= 2) {
                     String target = args[1];
                     int amount = 1;
@@ -122,9 +113,6 @@ public class ExpeditionsCommand extends BaseCommand {
                     return CommandResult.SUCCESS;
                 }
             } else if (args[0].equalsIgnoreCase("supervotecheck")) {
-                if (!sender.hasPermission(ADMIN_PERMISSION)) {
-                    return CommandResult.NO_PERMS;
-                }
                 if (args.length == 2 && args[1].equalsIgnoreCase("all")) {
                     try {
                         for (String arg : args) {
@@ -145,49 +133,22 @@ public class ExpeditionsCommand extends BaseCommand {
                 }
                 return CommandResult.SUCCESS;
             } else if (args[0].equalsIgnoreCase("reload")) {
-                if (!sender.hasPermission(ADMIN_PERMISSION)) {
-                    return CommandResult.NO_PERMS;
-                }
                 long start = System.currentTimeMillis();
                 Expeditions.getInstance().reloadConfig();
                 long end = System.currentTimeMillis();
                 sender.sendMessage(CC.GREEN + "Reloaded config in " + (end - start) + "ms");
                 return CommandResult.SUCCESS;
             }else if (args[0].equalsIgnoreCase("disable")) {
-                boolean allowed = sender.hasPermission(ADMIN_PERMISSION);
-                if (!allowed && sender.getCommandSender() instanceof Player) {
-                    allowed = sender.getPlayer().getUniqueId().equals(UUID.fromString("5bd217f6-b89a-4064-a7f9-11733e8baafa"));
-                }
-
-                if (!allowed) {
-                    return CommandResult.NO_PERMS;
-                }
                 Expeditions.setDisabled(!Expeditions.isDisabled());
                 sender.sendMessage(CC.GREEN + "Expeditions are now " + (Expeditions.isDisabled() ? "disabled" : "enabled"));
                 return CommandResult.SUCCESS;
             }else if (args[0].equalsIgnoreCase("showqueue")) {
-                boolean allowed = sender.hasPermission(ADMIN_PERMISSION);
-                if (!allowed && sender.getCommandSender() instanceof Player) {
-                    allowed = sender.getPlayer().getUniqueId().equals(UUID.fromString("5bd217f6-b89a-4064-a7f9-11733e8baafa"));
-                }
-
-                if (!allowed) {
-                    return CommandResult.NO_PERMS;
-                }
                 sender.sendMessage(CC.GREEN + "Queue: " + PlayerManager.getVoteQueue().size());
                 for (UUID uuid : PlayerManager.getVoteQueue()) {
                     sender.sendMessage(CC.GREEN + " - " + uuid);
                 }
                 return CommandResult.SUCCESS;
             }else if (args[0].equalsIgnoreCase("clearqueue")) {
-                boolean allowed = sender.hasPermission(ADMIN_PERMISSION);
-                if (!allowed && sender.getCommandSender() instanceof Player) {
-                    allowed = sender.getPlayer().getUniqueId().equals(UUID.fromString("5bd217f6-b89a-4064-a7f9-11733e8baafa"));
-                }
-
-                if (!allowed) {
-                    return CommandResult.NO_PERMS;
-                }
                 int amount = PlayerManager.getVoteQueue().size();
                 PlayerManager.getVoteQueue().clear();
                 sender.sendMessage(CC.GREEN + "Cleared " + amount + " votes from the queue");
