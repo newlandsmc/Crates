@@ -4,7 +4,10 @@ import com.semivanilla.expeditions.manager.ConfigManager;
 import com.semivanilla.expeditions.manager.MessageManager;
 import com.semivanilla.expeditions.manager.PlayerManager;
 import com.semivanilla.expeditions.object.PlayerData;
+import com.vexsoftware.votifier.model.Vote;
+import com.vexsoftware.votifier.model.VotifierEvent;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -46,6 +49,11 @@ public class PlayerListener implements Listener {
                 player.sendMessage(component);
             }
         }
+        /*
+        for (String voteService : ConfigManager.getVoteServices()) {
+            Bukkit.getPluginManager().callEvent(new VotifierEvent(new Vote(voteService, player.getName(), player.getAddress().getHostName(), System.currentTimeMillis() + "")));
+        }
+         */
     }
 
     @EventHandler

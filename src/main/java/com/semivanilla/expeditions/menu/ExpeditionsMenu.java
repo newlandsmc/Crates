@@ -48,7 +48,7 @@ public class ExpeditionsMenu extends Menu {
 
     @Override
     public String getName(Player player) {
-        return "Expeditions";
+        return "Crates";
     }
 
     private class ExpeditionButton extends Button {

@@ -200,7 +200,7 @@ public class ClaimExpeditionMenu extends Menu { //really messy, will need to rew
 
     @Override
     public String getName(Player player) {
-        return "Claim Expedition";
+        return "Claim Crate";
     }
 
     public boolean tick(Player player) {
@@ -379,7 +379,7 @@ public class ClaimExpeditionMenu extends Menu { //really messy, will need to rew
                 centerTicksLeft = 0;
 
                 player.closeInventory();
-                player.performCommand("expeditions");
+                player.performCommand("crates");
             }
 
             @Override
