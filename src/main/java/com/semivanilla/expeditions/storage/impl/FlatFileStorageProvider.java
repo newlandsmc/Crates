@@ -6,6 +6,7 @@ import com.semivanilla.expeditions.Expeditions;
 import com.semivanilla.expeditions.object.PlayerData;
 import com.semivanilla.expeditions.storage.StorageProvider;
 import lombok.SneakyThrows;
+import lombok.extern.java.Log;
 import net.badbird5907.blib.util.Logger;
 import net.badbird5907.blib.util.Tasks;
 
@@ -20,6 +21,7 @@ public class FlatFileStorageProvider implements StorageProvider {
 
     @Override
     public void init(Expeditions plugin) {
+        Logger.info("Initializing FlatFileStorageProvider...");
         dataFolder = new File(plugin.getDataFolder(), "data");
         if (!dataFolder.exists()) {
             dataFolder.mkdirs();
@@ -37,16 +39,20 @@ public class FlatFileStorageProvider implements StorageProvider {
     @Override
     public PlayerData getDataNow(UUID uuid) {
         File file = new File(dataFolder, uuid.toString() + ".json");
+        Logger.debug("Loading data from " + file.getAbsolutePath());
         PlayerData data;
         if (!file.exists()) {
+            Logger.debug("File does not exist, creating new one");
             data = new PlayerData(uuid);
             saveData(data);
         } else {
+            Logger.debug("File exists, loading data");
             JsonObject jsonObject = JsonParser.parseString(new String(Files.readAllBytes(file.toPath()))).getAsJsonObject();
             data = new PlayerData(jsonObject);
             //data = Expeditions.getGson().fromJson(new String(Files.readAllBytes(file.toPath())), PlayerData.class);
         }
         data.onLoad();
+        Logger.debug("Loaded data for " + uuid);
         return data;
     }
 
@@ -57,6 +63,7 @@ public class FlatFileStorageProvider implements StorageProvider {
 
     @Override
     public void saveData(PlayerData data, boolean async) {
+        Logger.debug("Saving data for " + data.getName() + ", async: " + async);
         if (async) {
             Tasks.runAsync(() -> save(data));
         } else {
@@ -68,13 +75,15 @@ public class FlatFileStorageProvider implements StorageProvider {
     public void save(PlayerData data) {
         File file = new File(dataFolder, data.getUuid().toString() + ".json");
         if (!file.exists()) {
+            Logger.debug("Creating file " + file.getPath());
             file.createNewFile();
         }
         String json = Expeditions.getGson().toJson(getJson(data));
-        Logger.debug("Saving data: %1", json);
+        Logger.debug("(file opened) Saving data: %1", json);
         PrintStream ps = new PrintStream(file);
         ps.print(json);
         ps.close();
+        Logger.debug("(file closed) Saved data for " + data.getName());
     }
 
     public JsonObject getJson(PlayerData data) {
