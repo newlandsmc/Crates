@@ -84,6 +84,7 @@ public class ExpeditionsMenu extends Menu {
         @Override
         public void onClick(Player player, int slot, ClickType clickType) {
             if (unclaimedItems) {
+                Logger.debug("%1 is claiming unclaimed rewards for expedition type %2", player.getName(), expedition.getType());
                 ArrayList<ItemStack> items = data.getUnclaimedRewards().get(expedition.getType());
                 new ClaimExpeditionMenu(items, (l) -> {
                     if (l.isEmpty()) {
@@ -95,6 +96,7 @@ public class ExpeditionsMenu extends Menu {
                 return;
             }
             if (canUse) {
+                Logger.debug("%1 is claiming expedition type %2", player.getName(), expedition.getType());
                 ArrayList<ItemStack> items = expedition.genLoot(player);
                 data.getUnclaimedRewards().put(expedition.getType(), items);
                 Logger.debug("Generated loot: Size: %1 | %2", items.size(), items);
