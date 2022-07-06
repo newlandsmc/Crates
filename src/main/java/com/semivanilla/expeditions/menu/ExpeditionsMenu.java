@@ -86,13 +86,7 @@ public class ExpeditionsMenu extends Menu {
             if (unclaimedItems) {
                 Logger.debug("%1 is claiming unclaimed rewards for expedition type %2", player.getName(), expedition.getType());
                 ArrayList<ItemStack> items = data.getUnclaimedRewards().get(expedition.getType());
-                new ClaimExpeditionMenu(items, (l) -> {
-                    if (l.isEmpty()) {
-                        data.getUnclaimedRewards().remove(expedition.getType());
-                        return;
-                    }
-                    data.getUnclaimedRewards().put(expedition.getType(), l);
-                }, player).open(player);
+                new ClaimExpeditionMenu(items, expedition.getType(), true).open(player);
                 return;
             }
             if (canUse) {
@@ -100,11 +94,12 @@ public class ExpeditionsMenu extends Menu {
                 ArrayList<ItemStack> items = expedition.genLoot(player);
                 data.getUnclaimedRewards().put(expedition.getType(), items);
                 Logger.debug("Generated loot: Size: %1 | %2", items.size(), items);
-                ClaimExpeditionAnimationMenu menu = new ClaimExpeditionAnimationMenu(items, expedition.getType());
+                ClaimExpeditionMenu menu = new ClaimExpeditionMenu(items, expedition.getType(), false);
                 menu.open(player);
                 if (daily) {
                     data.setLastDailyClaim(LocalDate.now());
                 } else data.getExpeditionTypes().remove(expedition.getType());
+                data.save();
                 new MenuUpdateTask(menu, player).runTaskTimer(Expeditions.getInstance(), 5l, 5l);
             }
         }

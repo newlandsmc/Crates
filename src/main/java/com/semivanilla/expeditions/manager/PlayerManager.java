@@ -2,13 +2,20 @@ package com.semivanilla.expeditions.manager;
 
 import com.semivanilla.expeditions.Expeditions;
 import com.semivanilla.expeditions.object.PlayerData;
+import lombok.Getter;
 
 import java.util.Map;
+import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class PlayerManager {
+    @Getter
     private static final Map<UUID, PlayerData> dataMap = new ConcurrentHashMap<>();
+
+    @Getter
+    private static Queue<UUID> voteQueue = new LinkedBlockingQueue<>();
 
     public static PlayerData load(UUID uuid) {
         if (dataMap.containsKey(uuid))

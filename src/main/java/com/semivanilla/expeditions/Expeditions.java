@@ -6,7 +6,9 @@ import com.semivanilla.expeditions.listeners.PlayerListener;
 import com.semivanilla.expeditions.listeners.VoteListener;
 import com.semivanilla.expeditions.manager.ConfigManager;
 import com.semivanilla.expeditions.manager.ExpeditionManager;
+import com.semivanilla.expeditions.manager.PlayerManager;
 import com.semivanilla.expeditions.object.DataUpdateRunnable;
+import com.semivanilla.expeditions.object.PlayerData;
 import com.semivanilla.expeditions.storage.StorageProvider;
 import com.semivanilla.expeditions.storage.impl.FlatFileStorageProvider;
 import com.semivanilla.expeditions.util.ItemStackAdapter;
@@ -15,16 +17,22 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import net.badbird5907.blib.bLib;
+import net.badbird5907.blib.util.CC;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.util.UUID;
 
 public final class Expeditions extends JavaPlugin {
     @Getter
@@ -52,7 +60,13 @@ public final class Expeditions extends JavaPlugin {
     @Getter
     @Setter
     private static LocalDate lastReset = LocalDate.now();
+
+    @Getter
+    @Setter
+    private static boolean disabled = false, pluginEnabled = false;
     private FileConfiguration config;
+
+    private static BukkitRunnable voteProcessor;
 
     @Override
     public void onLoad() {
@@ -96,11 +110,38 @@ public final class Expeditions extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         getServer().getPluginManager().registerEvents(new VoteListener(), this);
 
+        pluginEnabled = true;
+        voteProcessor = new BukkitRunnable() {
+            @Override
+            public void run() {
+                UUID uuid = PlayerManager.getVoteQueue().poll();
+                if (uuid == null) {
+                    return;
+                }
+                PlayerData data = PlayerManager.getData(uuid);
+                if (data == null) {
+                    Player p = Bukkit.getPlayer(uuid);
+                    if (p != null) {
+                        if (!p.hasMetadata("expedition-vote-error")) { //This may be sent if a player logs in after voting, need to confirm it doesn't
+                            p.sendMessage(CC.RED + "An error may have occurred while processing your vote! Please open a ticket for further assistance");
+                            p.setMetadata("expedition-vote-error", new FixedMetadataValue(instance, true));
+                        }
+                    }
+                    PlayerManager.getVoteQueue().add(uuid);
+                    return;
+                }
+                data.onVote();
+            }
+        };
+        if (ConfigManager.isAsyncVoteProcessor()) voteProcessor.runTaskTimerAsynchronously(this, 20, ConfigManager.getVoteProcessorInterval());
+        else voteProcessor.runTaskTimer(this, 20, ConfigManager.getVoteProcessorInterval());
         //storageProvider.init(this);
     }
 
     @Override
     public void onDisable() {
+        pluginEnabled = false;
+        voteProcessor.cancel();
         try {
             if (!lastMidnight.exists())
                 lastMidnight.createNewFile();

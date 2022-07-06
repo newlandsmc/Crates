@@ -15,6 +15,9 @@ services:
   - 'Test1'
   - 'Test2'
   - 'Test3'
+  - 'Test4'
+  - 'Test5'
+  - 'Test6'
 menu:
   enable-animation: true # enables the 'animation' in the men
   claim-lore: #lore added when claiming items
@@ -76,3 +79,6 @@ messages:
     - '<green>Thanks for voting! You completed a Vote Expedition!'
   inventory-full:
     - '<red>Your inventory is full!'
+vote-processor:
+  async: true
+  interval: 5

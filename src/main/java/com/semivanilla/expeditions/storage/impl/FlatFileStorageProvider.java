@@ -1,6 +1,7 @@
 package com.semivanilla.expeditions.storage.impl;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.semivanilla.expeditions.Expeditions;
 import com.semivanilla.expeditions.object.PlayerData;
 import com.semivanilla.expeditions.storage.StorageProvider;
@@ -41,7 +42,9 @@ public class FlatFileStorageProvider implements StorageProvider {
             data = new PlayerData(uuid);
             saveData(data);
         } else {
-            data = Expeditions.getGson().fromJson(new String(Files.readAllBytes(file.toPath())), PlayerData.class);
+            JsonObject jsonObject = JsonParser.parseString(new String(Files.readAllBytes(file.toPath()))).getAsJsonObject();
+            data = new PlayerData(jsonObject);
+            //data = Expeditions.getGson().fromJson(new String(Files.readAllBytes(file.toPath())), PlayerData.class);
         }
         data.onLoad();
         return data;
@@ -75,14 +78,6 @@ public class FlatFileStorageProvider implements StorageProvider {
     }
 
     public JsonObject getJson(PlayerData data) {
-        JsonObject jo = new JsonObject();
-        jo.addProperty("uuid", data.getUuid().toString());
-        jo.addProperty("name", data.getName());
-        jo.addProperty("totalVotes", data.getTotalVotes());
-        jo.addProperty("offlineEarned", data.getOfflineEarned());
-        jo.add("expeditions", Expeditions.getGsonNoPrettyPrint().toJsonTree(data.getExpeditionTypes()));
-        jo.add("unclaimedRewards", Expeditions.getGsonNoPrettyPrint().toJsonTree(data.getUnclaimedRewards()));
-        jo.add("lastVotes", Expeditions.getGsonNoPrettyPrint().toJsonTree(data.getLastVotes()));
-        return jo;
+        return data.getJson();
     }
 }
