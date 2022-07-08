@@ -379,7 +379,7 @@ public class ClaimExpeditionMenu extends Menu { //really messy, will need to rew
                 centerTicksLeft = 0;
 
                 player.closeInventory();
-                player.performCommand("expeditions");
+                player.performCommand("crates");
             }
 
             @Override

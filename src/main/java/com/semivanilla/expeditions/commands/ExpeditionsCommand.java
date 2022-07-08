@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ExpeditionsCommand extends BaseCommand {
-    @Command(name = "expeditions", aliases = "spoils", playerOnly = true)
+    @Command(name = "crates", aliases = {"spoils", "expeditions"}, playerOnly = true)
     public CommandResult execute(Sender sender, String[] args) {
         try {
             if (Expeditions.isDisabled()) {
