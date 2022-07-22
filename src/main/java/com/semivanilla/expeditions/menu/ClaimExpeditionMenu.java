@@ -1,5 +1,6 @@
 package com.semivanilla.expeditions.menu;
 
+import com.semivanilla.expeditions.Expeditions;
 import com.semivanilla.expeditions.manager.ConfigManager;
 import com.semivanilla.expeditions.manager.MessageManager;
 import com.semivanilla.expeditions.manager.PlayerManager;
@@ -8,8 +9,6 @@ import com.semivanilla.expeditions.object.PlayerData;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.extern.java.Log;
-import net.badbird5907.blib.command.CommandResult;
 import net.badbird5907.blib.menu.buttons.Button;
 import net.badbird5907.blib.menu.buttons.PlaceholderButton;
 import net.badbird5907.blib.menu.buttons.impl.BackButton;
@@ -37,7 +36,7 @@ public class ClaimExpeditionMenu extends Menu { //really messy, will need to rew
             new int[]{18, 26}
     );
     private static final int CENTER = 22;
-    private static final Material[] CENTER_PANES = {
+    private static Material[] CENTER_PANES = {
             Material.PINK_STAINED_GLASS_PANE,
             Material.YELLOW_STAINED_GLASS_PANE,
             Material.ORANGE_STAINED_GLASS_PANE,
@@ -45,6 +44,17 @@ public class ClaimExpeditionMenu extends Menu { //really messy, will need to rew
             Material.CYAN_STAINED_GLASS_PANE,
             Material.LIME_STAINED_GLASS_PANE
     };
+    private static Material[] KHAVALON_COLORS = {
+            Material.YELLOW_STAINED_GLASS_PANE,
+            Material.ORANGE_STAINED_GLASS_PANE,
+            Material.RED_STAINED_GLASS_PANE,
+    };
+    private static Material[] ASTHONIA_COLORS = {
+            Material.PURPLE_STAINED_GLASS_PANE,
+            Material.MAGENTA_STAINED_GLASS_PANE,
+            Material.LIGHT_BLUE_STAINED_GLASS_PANE,
+    };
+
     private final ArrayList<ItemStack> items;
     private final Stack<ItemStack> toShow; // why am I using a stack??
     private final ExpeditionType type;
@@ -54,6 +64,8 @@ public class ClaimExpeditionMenu extends Menu { //really messy, will need to rew
     private boolean closed = false, animationDone = false, tickingCenter = true, claiming = false;
     private int centerTicksLeft = 12;
     private int g = 0, centerIndex = 0; //animation stage for CENTER_ITEMS
+
+    private Material[] colors = null;
 
 
     //change every 5 ticks
@@ -89,6 +101,9 @@ public class ClaimExpeditionMenu extends Menu { //really messy, will need to rew
                 }
             }
         }
+        if (Expeditions.getInstance().getConfig().getBoolean("menu.khavalon")) {
+            colors = KHAVALON_COLORS;
+        } else colors = ASTHONIA_COLORS;
     }
 
     @Override
@@ -100,6 +115,8 @@ public class ClaimExpeditionMenu extends Menu { //really messy, will need to rew
         ClaimAllButton claimAllButton = new ClaimAllButton();
         buttons.add(claimAllButton);
         usedSlots.add(claimAllButton.getSlot());
+
+        if (colors == null) colors = KHAVALON_COLORS;
 
         if (tickingCenter) {
             Material centerPane = CENTER_PANES[centerIndex++];
@@ -133,37 +150,37 @@ public class ClaimExpeditionMenu extends Menu { //really messy, will need to rew
             switch (stage++) {
                 case 0 -> {
                     if (!tickingCenter) {
-                        buttons.add(new PanesButton(Material.YELLOW_STAINED_GLASS_PANE, 22));
-                        buttons.add(new PanesButton(Material.ORANGE_STAINED_GLASS_PANE, 23, 21));
-                        buttons.add(new PanesButton(Material.RED_STAINED_GLASS_PANE, 24, 25, 26, 20, 19, 18));
+                        buttons.add(new PanesButton(colors[0], 22));
+                        buttons.add(new PanesButton(colors[1], 23, 21));
+                        buttons.add(new PanesButton(colors[2], 24, 25, 26, 20, 19, 18));
                         usedSlots.addAll(Arrays.asList(22, 23, 21, 24, 25, 26, 20, 19, 18));
                     }
                     usedSlots.addAll(Arrays.asList(22, 23, 21, 24, 25, 26, 20, 19, 18));
                     break;
                 }
                 case 1 -> {
-                    buttons.add(new PanesButton(Material.ORANGE_STAINED_GLASS_PANE, 19, 25));
-                    buttons.add(new PanesButton(Material.YELLOW_STAINED_GLASS_PANE, 20, 24));
-                    buttons.add(new PanesButton(Material.RED_STAINED_GLASS_PANE, 21, 23));
+                    buttons.add(new PanesButton(colors[1], 19, 25));
+                    buttons.add(new PanesButton(colors[0], 20, 24));
+                    buttons.add(new PanesButton(colors[2], 21, 23));
                     //usedSlots.addAll(Arrays.asList(19,25,20,24,21,23));
                     usedSlots.addAll(Arrays.asList(22, 23, 21, 24, 25, 26, 20, 19, 18));
                     break;
                 }
                 case 2 -> {
-                    buttons.add(new PanesButton(Material.RED_STAINED_GLASS_PANE, 20, 24));
-                    buttons.add(new PanesButton(Material.ORANGE_STAINED_GLASS_PANE, 19, 25));
-                    buttons.add(new PanesButton(Material.YELLOW_STAINED_GLASS_PANE, 18, 26));
+                    buttons.add(new PanesButton(colors[2], 20, 24));
+                    buttons.add(new PanesButton(colors[1], 19, 25));
+                    buttons.add(new PanesButton(colors[0], 18, 26));
                     usedSlots.addAll(Arrays.asList(20, 24, 19, 25, 18, 26));
                     break;
                 }
                 case 3 -> {
-                    buttons.add(new PanesButton(Material.RED_STAINED_GLASS_PANE, 25, 19));
-                    buttons.add(new PanesButton(Material.ORANGE_STAINED_GLASS_PANE, 26, 18));
+                    buttons.add(new PanesButton(colors[2], 25, 19));
+                    buttons.add(new PanesButton(colors[1], 26, 18));
                     usedSlots.addAll(Arrays.asList(25, 19, 26, 18));
                     break;
                 }
                 case 4 -> {
-                    buttons.add(new PanesButton(Material.RED_STAINED_GLASS_PANE, 18, 26));
+                    buttons.add(new PanesButton(colors[2], 18, 26));
                     usedSlots.addAll(Arrays.asList(18, 26));
                     break;
                 }
@@ -248,6 +265,33 @@ public class ClaimExpeditionMenu extends Menu { //really messy, will need to rew
     @Override
     public void onOpen(Player player) {
         closed = false;
+    }
+
+    @Override
+    public Button getBackButton(Player player) {
+        return new BackButton() {
+            @Override
+            public void clicked(Player player, int slot, ClickType clickType) {
+                animationDone = true;
+                claiming = true;
+                centerTicksLeft = 0;
+
+                player.closeInventory();
+                player.performCommand("crates");
+            }
+
+            @Override
+            public ItemStack getItem(Player player) {
+                return new ItemBuilder(Material.RED_STAINED_GLASS_PANE)
+                        .name(CC.GREEN + "Back")
+                        .build();
+            }
+
+            @Override
+            public int getSlot() {
+                return 36;
+            }
+        };
     }
 
     @RequiredArgsConstructor
@@ -367,32 +411,5 @@ public class ClaimExpeditionMenu extends Menu { //really messy, will need to rew
         public int[] getSlots() {
             return slots;
         }
-    }
-
-    @Override
-    public Button getBackButton(Player player) {
-        return new BackButton() {
-            @Override
-            public void clicked(Player player, int slot, ClickType clickType) {
-                animationDone = true;
-                claiming = true;
-                centerTicksLeft = 0;
-
-                player.closeInventory();
-                player.performCommand("crates");
-            }
-
-            @Override
-            public ItemStack getItem(Player player) {
-                return new ItemBuilder(Material.RED_STAINED_GLASS_PANE)
-                        .name(CC.GREEN + "Back")
-                        .build();
-            }
-
-            @Override
-            public int getSlot() {
-                return 36;
-            }
-        };
     }
 }

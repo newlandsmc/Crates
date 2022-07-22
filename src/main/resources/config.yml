@@ -20,6 +20,7 @@ services:
   - 'Test6'
 menu:
   enable-animation: true # enables the 'animation' in the men
+  khavalon: true
   claim-lore: #lore added when claiming items
     - '<green>Click to claim this item!'
   unclaimed-items:
