@@ -67,7 +67,7 @@ menu:
           - '<gray>Click to claim the super vote expeditions!'
       cant-use:
         lore:
-          - '<grey>{votes_completed ? ''You already claimed your daily super vote!'' : ''{votes}/{max_votes} Votes Completed''}'
+          - '<grey>{votes_completed ? ''You already claimed your daily super vote!'' : ''%votes%/%max_votes% Votes Completed''}' # Have to do %val% here because starscript doesn't evaluate inside ternary operators
           - '<red>You don''t have any super vote expeditions! Vote at all sites to obtain one!'
 messages:
   expeditions-left:
