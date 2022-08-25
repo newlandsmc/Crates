@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.semivanilla.expeditions.loot.LootEntry;
 import com.semivanilla.expeditions.manager.MessageManager;
 import lombok.Getter;
+import meteordevelopment.starscript.value.ValueMap;
 import net.advancedplugins.ae.api.AEAPI;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -81,18 +82,16 @@ public class ItemLootEntry extends LootEntry {
     public ItemStack generate(Player player, Random random) {
         ItemStack stack = new ItemStack(material);
         ItemMeta meta = stack.getItemMeta();
+        ValueMap valueMap = new ValueMap();
+        valueMap.set("player", player.getName());
         if (name != null) {
-            Map<String, String> map = new HashMap<>();
-            map.put("%player%", player.getName());
-            Component component = MessageManager.parse(name, map);
+            Component component = MessageManager.parse(name, valueMap);
             meta.displayName(component);
         }
         if (lore.size() > 0) {
             List<Component> loreComponents = new ArrayList<>();
-            Map<String, String> map = new HashMap<>();
-            map.put("%player%", player.getName());
             for (String line : lore) {
-                loreComponents.add(MessageManager.parse(line, map));
+                loreComponents.add(MessageManager.parse(line, valueMap));
             }
             meta.lore(loreComponents);
         }

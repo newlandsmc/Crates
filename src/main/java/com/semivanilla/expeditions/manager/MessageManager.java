@@ -1,6 +1,14 @@
 package com.semivanilla.expeditions.manager;
 
 import lombok.Getter;
+import meteordevelopment.starscript.Script;
+import meteordevelopment.starscript.Section;
+import meteordevelopment.starscript.StandardLib;
+import meteordevelopment.starscript.Starscript;
+import meteordevelopment.starscript.compiler.Compiler;
+import meteordevelopment.starscript.compiler.Parser;
+import meteordevelopment.starscript.utils.Error;
+import meteordevelopment.starscript.value.ValueMap;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
@@ -23,20 +31,30 @@ public class MessageManager {
     public static Component parse(String s) {
         return parse(s, null);
     }
-
-    public static Component parse(String s, Map<String, String> placeholders) {
+    public static Component parse(String s, ValueMap valueMap) {
+        Starscript ss = new Starscript();
+        StandardLib.init(ss);
+        if (valueMap == null) valueMap = new ValueMap();
         String a = s;
-        if (placeholders != null)
-            for (Map.Entry<String, String> stringStringEntry : placeholders.entrySet()) {
-                a = a.replace(stringStringEntry.getKey(), stringStringEntry.getValue());
-            }
-        return MINI_MESSAGE.deserialize(a);
+        for (String key : valueMap.keys()) {
+            ss.set(key, valueMap.get(key));
+            a = a.replace("%" + key + "%", valueMap.get(key).get().toString());
+        }
+        Parser.Result result = Parser.parse(a);
+        if (result.hasErrors()) {
+            for (Error error : result.errors) System.err.println(error);
+            return MINI_MESSAGE.deserialize(a);
+        }
+        Script script = Compiler.compile(result);
+        Section res = ss.run(script);
+        System.out.println("Res: " + res + " | " + res.text);
+        return MINI_MESSAGE.deserialize(res.toString());
     }
 
-    public static List<Component> parse(Collection<String> messages, Map<String, String> placeholders) {
+    public static List<Component> parse(Collection<String> messages, ValueMap valMap) {
         List<Component> components = new ArrayList<>();
         for (String s : messages) {
-            components.add(parse(s, placeholders));
+            components.add(parse(s, valMap));
         }
         return components;
     }

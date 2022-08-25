@@ -8,6 +8,7 @@ import com.semivanilla.expeditions.object.Expedition;
 import com.semivanilla.expeditions.object.PlayerData;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
+import meteordevelopment.starscript.value.ValueMap;
 import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.Logger;
 import net.kyori.adventure.text.Component;
@@ -48,19 +49,19 @@ public class PlayerListener implements Listener {
             int offlineEarned = data.getOfflineEarned();
             if (offlineEarned >= 1) {
                 data.setOfflineEarned(0);
-                Map<String, String> placeholders = new HashMap<>();
-                placeholders.put("%player%", player.getName());
-                placeholders.put("%count%", offlineEarned + "");
+                ValueMap valMap = new ValueMap();
+                valMap.set("count", offlineEarned);
+                valMap.set("player", player.getName());
                 List<String> list = ConfigManager.getExpeditionsOfflineMessage();
-                List<Component> components = MessageManager.parse(list, placeholders);
+                List<Component> components = MessageManager.parse(list, valMap);
                 for (Component component : components) {
                     player.sendMessage(component);
                 }
             } else if (!data.getExpeditionTypes().isEmpty()) {
-                Map<String, String> placeholders = new HashMap<>();
-                placeholders.put("%player%", player.getName());
-                placeholders.put("%count%", data.getExpeditionTypes().size() + "");
-                List<Component> components = MessageManager.parse(ConfigManager.getExpeditionsLeftMessage(), placeholders);
+                ValueMap valMap = new ValueMap();
+                valMap.set("player", player.getName());
+                valMap.set("count", data.getExpeditionTypes().size() + "");
+                List<Component> components = MessageManager.parse(ConfigManager.getExpeditionsLeftMessage(), valMap);
                 for (Component component : components) {
                     player.sendMessage(component);
                 }

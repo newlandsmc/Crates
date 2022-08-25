@@ -2,6 +2,7 @@ package com.semivanilla.expeditions.menu;
 
 import com.semivanilla.expeditions.Expeditions;
 import com.semivanilla.expeditions.manager.ExpeditionManager;
+import com.semivanilla.expeditions.manager.PlayerManager;
 import com.semivanilla.expeditions.object.Expedition;
 import com.semivanilla.expeditions.object.ItemConfig;
 import com.semivanilla.expeditions.object.MenuUpdateTask;
@@ -73,7 +74,7 @@ public class ExpeditionsMenu extends Menu {
 
         @Override
         public ItemStack getItem(Player player) {
-            return item.generateItem(canUse, unclaimedItems, count);
+            return item.generateItem(canUse, unclaimedItems, count, PlayerManager.getData(player.getUniqueId()));
         }
 
         @Override

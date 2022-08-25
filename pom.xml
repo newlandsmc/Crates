@@ -73,6 +73,10 @@
             <id>bencodz-repo</id>
             <url>https://nexus.bencodez.com/repository/maven-public/</url>
         </repository>
+        <repository>
+            <id>meteor-maven</id>
+            <url>https://maven.meteordev.org/releases</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -111,6 +115,11 @@
             <version>1.0</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/AdvancedEnchantments-8.7.4.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>meteordevelopment</groupId> <!-- Text 'scripting' lib -->
+            <artifactId>starscript</artifactId>
+            <version>0.2.1</version>
         </dependency>
     </dependencies>
 </project>

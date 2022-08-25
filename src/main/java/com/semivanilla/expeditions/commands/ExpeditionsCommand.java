@@ -9,6 +9,7 @@ import com.semivanilla.expeditions.object.ExpeditionType;
 import com.semivanilla.expeditions.object.PlayerData;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
+import meteordevelopment.starscript.value.ValueMap;
 import net.badbird5907.blib.command.BaseCommand;
 import net.badbird5907.blib.command.Command;
 import net.badbird5907.blib.command.CommandResult;
@@ -93,11 +94,11 @@ public class ExpeditionsCommand extends BaseCommand {
                     }
                     if (offlinePlayer.isOnline()) {
                         data.save();
-                        Map<String, String> placeholders = new HashMap<>();
-                        placeholders.put("%player%", offlinePlayer.getName());
-                        placeholders.put("%count%", amount + "");
-                        placeholders.put("%type%", "Premium");
-                        List<Component> components = MessageManager.parse(ConfigManager.getExpeditionsGainedMessage(), placeholders);
+                        ValueMap valueMap = new ValueMap();
+                        valueMap.set("player", offlinePlayer.getName());
+                        valueMap.set("count", amount);
+                        valueMap.set("type", "Premium");
+                        List<Component> components = MessageManager.parse(ConfigManager.getExpeditionsGainedMessage(), valueMap);
                         Player player = Bukkit.getPlayer(target);
                         assert player != null;
                         for (Component component : components) {

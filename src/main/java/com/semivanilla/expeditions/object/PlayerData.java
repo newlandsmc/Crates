@@ -11,6 +11,7 @@ import com.semivanilla.expeditions.util.LocalDateAdapter;
 import com.vexsoftware.votifier.model.Vote;
 import lombok.Getter;
 import lombok.Setter;
+import meteordevelopment.starscript.value.ValueMap;
 import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.Logger;
 import net.kyori.adventure.text.Component;
@@ -209,16 +210,33 @@ public class PlayerData {
 
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) return;
-        Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("%player%", player.getName());
-        placeholders.put("%count%", "1");
-        placeholders.put("%type%", "Vote");
-        List<Component> components = MessageManager.parse(ConfigManager.getVoteMessage(), placeholders);
+        ValueMap map = new ValueMap();
+        map.set("player", player.getName());
+        map.set("count", 1);
+        map.set("type", "Vote");
+        List<Component> components = MessageManager.parse(ConfigManager.getVoteMessage(), map);
         for (Component component : components) {
             player.sendMessage(component);
         }
     }
-
+    public int getDaysVotedInARow() {
+        if (lastVotes == null || lastVotes.isEmpty()) return 0;
+        int count = 0;
+        LocalDate temp = null;
+        for (LocalDate lastVote : lastVotes) {
+            if (temp == null) {
+                count++;
+                temp = lastVote;
+            }
+            else if (lastVote.isEqual(temp.plusDays(1))) { // If it is equal to next day
+                count ++;
+                temp = lastVote;
+            } else {
+                return ++count;
+            }
+        }
+        return count;
+    }
     public void checkPremium() {
         //check if they have voted at least once a day in the last week
         LocalDate temp = null;
@@ -235,11 +253,11 @@ public class PlayerData {
             }
         }
         Logger.debug("Player " + getName() + " has voted at least once a day in the last week, giving them a premium expedition.");
-        Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("%player%", getName());
-        placeholders.put("%count%", "1");
-        placeholders.put("%type%", "Premium");
-        List<Component> messages = MessageManager.parse(ConfigManager.getExpeditionsGainedMessage(), placeholders);
+        ValueMap map = new ValueMap();
+        map.set("player", getName());
+        map.set("count", "1");
+        map.set("type", "Premium");
+        List<Component> messages = MessageManager.parse(ConfigManager.getExpeditionsGainedMessage(), map);
         Player player = Bukkit.getPlayer(uuid);
         if (player != null) {
             for (Component message : messages) {
@@ -269,11 +287,11 @@ public class PlayerData {
         //expeditions.add(ExpeditionType.SUPER_VOTE);
         lastSuperVote = System.currentTimeMillis();
         tryToAddExpedition(ExpeditionType.SUPER_VOTE);
-        Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("%player%", getName());
-        placeholders.put("%count%", "1");
-        placeholders.put("%type%", "Super Vote");
-        List<Component> messages = MessageManager.parse(ConfigManager.getExpeditionsGainedMessage(), placeholders);
+        ValueMap map = new ValueMap();
+        map.set("player", getName());
+        map.set("count", "1");
+        map.set("type", "Super Vote");
+        List<Component> messages = MessageManager.parse(ConfigManager.getExpeditionsGainedMessage(), map);
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) {
             offlineEarned += 1;
@@ -282,9 +300,9 @@ public class PlayerData {
         for (Component message : messages) {
             player.sendMessage(message);
         }
-        Map<String, String> placeholders0 = new HashMap<>();
-        placeholders0.put("%player%", getName());
-        List<Component> broadcast = MessageManager.parse(ConfigManager.getSuperVoteMessage(), placeholders0);
+        ValueMap map0 = new ValueMap();
+        map0.set("player", getName());
+        List<Component> broadcast = MessageManager.parse(ConfigManager.getSuperVoteMessage(), map0);
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             for (Component component : broadcast) {
                 onlinePlayer.sendMessage(component);

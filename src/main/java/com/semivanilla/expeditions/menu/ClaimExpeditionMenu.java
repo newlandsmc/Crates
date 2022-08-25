@@ -9,6 +9,7 @@ import com.semivanilla.expeditions.object.PlayerData;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import meteordevelopment.starscript.value.ValueMap;
 import net.badbird5907.blib.menu.buttons.Button;
 import net.badbird5907.blib.menu.buttons.PlaceholderButton;
 import net.badbird5907.blib.menu.buttons.impl.BackButton;
@@ -314,9 +315,9 @@ public class ClaimExpeditionMenu extends Menu { //really messy, will need to rew
             if (!claiming)
                 return;
             if (player.getInventory().firstEmpty() == -1) {
-                Map<String, String> placeholders = new HashMap<>();
-                placeholders.put("%player%", player.getName());
-                List<Component> components = MessageManager.parse(ConfigManager.getFullInventory(), placeholders);
+                ValueMap valueMap = new ValueMap();
+                valueMap.set("player", player.getName());
+                List<Component> components = MessageManager.parse(ConfigManager.getFullInventory(), valueMap);
                 for (Component component : components) {
                     player.sendMessage(component);
                 }
