@@ -1,5 +1,6 @@
 package com.semivanilla.expeditions.object;
 
+import com.semivanilla.expeditions.Expeditions;
 import com.semivanilla.expeditions.manager.ConfigManager;
 import com.semivanilla.expeditions.manager.MessageManager;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +42,11 @@ public class ItemConfig {
         valMap.set("max_votes", ConfigManager.getVoteServices().size());
         valMap.set("days", data.getDaysVotedInARow());
         valMap.set("max_days", 7);
-        valMap.set("votes_completed", data.getVotesToday() >= ConfigManager.getVoteServices().size());
+        long lastSuperVote = data.getLastSuperVote(); // millis
+        //set lastSuperVote to LocalDate
+        LocalDate lastSuper =
+                Instant.ofEpochMilli(lastSuperVote).atZone(ZoneId.systemDefault()).toLocalDate();
+        valMap.set("votes_completed", LocalDate.now().equals(lastSuper));
         valMap.set("days_completed", data.getDaysVotedInARow() >= 7);
         Component component = getComponent().append(
                 MessageManager.parse(name, valMap)
