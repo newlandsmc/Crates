@@ -9,6 +9,7 @@ import com.semivanilla.expeditions.object.PlayerData;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.java.Log;
 import meteordevelopment.starscript.value.ValueMap;
 import net.badbird5907.blib.menu.buttons.Button;
 import net.badbird5907.blib.menu.buttons.PlaceholderButton;
@@ -325,14 +326,11 @@ public class ClaimExpeditionMenu extends Menu { //really messy, will need to rew
             }
             player.getInventory().addItem(item); //TODO use the map returned by this method to see the items that do not fit
             Iterator<ItemStack> iterator = items.iterator();
+            Logger.debug("items: %1", items.size());
             while (iterator.hasNext()) {
                 ItemStack itemStack = iterator.next();
-                if (itemStack.equals(item)) {
-                    iterator.remove();
-                    if (!iterator.hasNext()) {
-                        shown.clear();
-                        items.clear();
-                    }
+                if (itemStack.equals(item)) { // If the item is the same as the one we're removing
+                    iterator.remove(); // Remove it
                     break;
                 }
             }
