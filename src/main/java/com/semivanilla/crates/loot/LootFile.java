@@ -19,6 +19,7 @@ public class LootFile {
     public LootFile(File file) {
         this.file = file;
         try {
+            if (!file.exists()) return;
             String json = new String(Files.readAllBytes(file.toPath()));
             JsonObject obj = JsonParser.parseString(json).getAsJsonObject();
             if (obj.has("pools")) {

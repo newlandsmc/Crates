@@ -29,7 +29,7 @@ import java.util.stream.IntStream;
 public class CratesMenu extends Menu {
     public static final ItemStack PLACEHOLDER_ITEM = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).name(CC.GRAY).build();
     private final PlayerData data;
-    private final int[] slots = {10, 12, 14, 16};
+    private final int[] slots = {11, 13, 15};
 
     @Override
     public List<Button> getButtons(Player player) {
