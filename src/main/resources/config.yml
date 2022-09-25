@@ -8,9 +8,6 @@ loot: # specifies what files to pull the loot tables from (in loot folder)
   vote:
     files:
       - 'vote.json'
-  super-vote:
-    files:
-      - 'super-vote.json'
 services:
   - 'Test1'
   - 'Test2'
@@ -28,58 +25,45 @@ menu:
     - '<gray>Click to claim them!'
   items:
     daily:
-      name: '<green>Daily Expeditions'
+      name: '<green>Daily Crates'
       material: 'BARREL'
       can-use:
         lore:
-          - '<green>You have {count} expeditions to claim!'
-          - '<gray>Click to claim the daily expeditions!'
+          - '<green>You have {count} crates to claim!'
+          - '<gray>Click to claim the daily crates!'
       cant-use:
         lore:
-          - '<red>You have already opened the daily expedition today!'
+          - '<red>You have already opened the daily crate today!'
     premium:
-      name: '<green>Premium Expeditions'
+      name: '<green>Premium Crates'
       material: 'ENDER_CHEST'
       can-use:
         lore:
-          - '<green>You have {count} expeditions to claim!'
-          - '<gray>Click to claim the premium expeditions!'
+          - '<green>You have {count} crates to claim!'
+          - '<gray>Click to claim the premium crates!'
       cant-use:
         lore:
           - '<gray>{days}/{max_days} Days completed.'
-          - '<red>You don''t have any premium expeditions! Buy more at <gradient:yellow:red>store.semivanilla.com</gradient>'
+          - '<red>You don''t have any premium crates! Buy more at <gradient:yellow:red>store.semivanilla.com</gradient>'
     vote:
       name: '<green>Vote'
       material: 'CHEST'
       can-use:
         lore:
-          - '<green>You have {count} expeditions to claim!'
-          - '<gray>Click to claim the vote expeditions!'
+          - '<green>You have {count} crates to claim!'
+          - '<gray>Click to claim the vote crates!'
       cant-use:
         lore:
-          - '<red>You don''t have any vote expeditions! Do <gradient:yellow:red>/vote</gradient> to get more!'
-    super-vote:
-      name: '<green>Super Vote'
-      material: 'CHEST'
-      can-use:
-        lore:
-          - '<green>You have {count} expeditions to claim!'
-          - '<gray>Click to claim the super vote expeditions!'
-      cant-use:
-        lore:
-          - '<grey>{votes_completed ? ''You already claimed your daily super vote!'' : ''%votes%/%max_votes% Votes Completed''}' # Have to do %val% here because starscript doesn't evaluate inside ternary operators
-          - '<red>You don''t have any super vote expeditions! Vote at all sites to obtain one!'
+          - '<red>You don''t have any vote crates! Do <gradient:yellow:red>/vote</gradient> to get more!'
 messages:
-  expeditions-left:
-    - '<green>You still have {count} expeditions to claim! use <gradient:yellow:red>/expeditions</gradient> to claim them!</green>'
-  expeditions-earned-offline:
-    - '<green>You completed {count} Expedition(s) while away! Use <gradient:yellow:red>/spoils</gradient> to claim your rewards.</green>'
-  expeditions-gained:
-    - '<green>You have been given {count} {type} Expedition(s)!'
-  super-vote-broadcast:
-    - '<yellow> * {player} just received a Super Vote Expedition! Use /vote to get yours.'
+  crates-left:
+    - '<green>You still have {count} crates to claim! use <gradient:yellow:red>/crates</gradient> to claim them!</green>'
+  crates-earned-offline:
+    - '<green>You gained {count} crates while away! Use <gradient:yellow:red>/crates</gradient> to claim your rewards.</green>'
+  crates-gained:
+    - '<green>You have been given {count} {type} crate(s)!'
   vote:
-    - '<green>Thanks for voting! You completed a Vote Expedition!'
+    - '<green>Thanks for voting! You completed a Vote Crate!'
   inventory-full:
     - '<red>Your inventory is full!'
 vote-processor:
