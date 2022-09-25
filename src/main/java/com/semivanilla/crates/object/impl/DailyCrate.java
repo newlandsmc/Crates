@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class DailyExpedition extends Crate {
+public class DailyCrate extends Crate {
     @Override
     public boolean stackable() {
         return false;

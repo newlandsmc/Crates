@@ -7,7 +7,7 @@ import com.semivanilla.crates.object.Crate;
 import com.semivanilla.crates.object.ItemConfig;
 import com.semivanilla.crates.object.MenuUpdateTask;
 import com.semivanilla.crates.object.PlayerData;
-import com.semivanilla.crates.object.impl.DailyExpedition;
+import com.semivanilla.crates.object.impl.DailyCrate;
 import lombok.RequiredArgsConstructor;
 import net.badbird5907.blib.menu.buttons.Button;
 import net.badbird5907.blib.menu.buttons.PlaceholderButton;
@@ -65,7 +65,7 @@ public class CratesMenu extends Menu {
             this.expedition = expedition;
             this.item = item;
             this.slot = slot;
-            daily = expedition instanceof DailyExpedition;
+            daily = expedition instanceof DailyCrate;
 
             canUse = daily ? data.canClaimDaily() : data.getCrateTypes().contains(expedition.getType());
             count = data.countExpeditions(expedition.getType());

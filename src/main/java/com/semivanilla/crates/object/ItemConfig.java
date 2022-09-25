@@ -38,11 +38,6 @@ public class ItemConfig {
         valMap.set("max_votes", ConfigManager.getVoteServices().size());
         valMap.set("days", data.getDaysVotedInARow());
         valMap.set("max_days", 7);
-        long lastSuperVote = data.getLastSuperVote(); // millis
-        //set lastSuperVote to LocalDate
-        LocalDate lastSuper =
-                Instant.ofEpochMilli(lastSuperVote).atZone(ZoneId.systemDefault()).toLocalDate();
-        valMap.set("votes_completed", LocalDate.now().equals(lastSuper));
         valMap.set("days_completed", data.getDaysVotedInARow() >= 7);
         Component component = getComponent().append(
                 MessageManager.parse(name, valMap)

@@ -14,7 +14,7 @@ import java.util.List;
 public class ConfigManager {
 
     @Getter
-    private static ItemConfig dailyItem, premiumItem, voteItem, superVoteItem;
+    private static ItemConfig dailyItem, premiumItem, voteItem;
 
     @Getter
     private static List<String> voteServices;
@@ -32,8 +32,6 @@ public class ConfigManager {
     @Getter
     private static final List<String> voteMessage = new ArrayList<>();
     @Getter
-    private static final List<String> superVoteMessage = new ArrayList<>();
-    @Getter
     private static final List<String> fullInventory = new ArrayList<>();
     @Getter
     private static final List<LootFile> dailyLoot = new ArrayList<>();
@@ -41,9 +39,6 @@ public class ConfigManager {
     private static final List<LootFile> premiumLoot = new ArrayList<>();
     @Getter
     private static final List<LootFile> voteLoot = new ArrayList<>();
-    @Getter
-    private static final List<LootFile> superVoteLoot = new ArrayList<>();
-
     @Getter
     private static boolean asyncVoteProcessor = true;
 
@@ -80,12 +75,6 @@ public class ConfigManager {
                 getConfig().getStringList("menu.items.vote.can-use.lore"),
                 getConfig().getStringList("menu.items.vote.cant-use.lore")
         );
-        superVoteItem = new ItemConfig(
-                getConfig().getString("menu.items.super-vote.name"),
-                Material.valueOf(getConfig().getString("menu.items.super-vote.material")),
-                getConfig().getStringList("menu.items.super-vote.can-use.lore"),
-                getConfig().getStringList("menu.items.super-vote.cant-use.lore")
-        );
 
         voteServices = getConfig().getStringList("services");
 
@@ -104,7 +93,6 @@ public class ConfigManager {
         dailyLoot.clear();
         premiumLoot.clear();
         voteLoot.clear();
-        superVoteLoot.clear();
         for (String s : getConfig().getStringList("loot.daily.files")) {
             dailyLoot.add(new LootFile(new File(lootFolder, s)));
         }
@@ -114,9 +102,6 @@ public class ConfigManager {
         for (String s : getConfig().getStringList("loot.vote.files")) {
             voteLoot.add(new LootFile(new File(lootFolder, s)));
         }
-        for (String s : getConfig().getStringList("loot.super-vote.files")) {
-            superVoteLoot.add(new LootFile(new File(lootFolder, s)));
-        }
         cratesLeftMessage.clear();
         cratesLeftMessage.addAll(getConfig().getStringList("messages.crates-left"));
         cratesOfflineMessage.clear();
@@ -125,8 +110,6 @@ public class ConfigManager {
         crateGainedMessage.addAll(getConfig().getStringList("messages.crates-gained"));
         voteMessage.clear();
         voteMessage.addAll(getConfig().getStringList("messages.vote"));
-        superVoteMessage.clear();
-        superVoteMessage.addAll(getConfig().getStringList("messages.super-vote-broadcast"));
         fullInventory.clear();
         fullInventory.addAll(getConfig().getStringList("messages.inventory-full"));
         asyncVoteProcessor = getConfig().getBoolean("vote-processor.async", true);

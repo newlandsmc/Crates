@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class VoteExpedition extends Crate {
+public class PremiumCrate extends Crate {
     @Override
     public boolean stackable() {
         return true;
@@ -17,7 +17,7 @@ public class VoteExpedition extends Crate {
 
     @Override
     public CrateType getType() {
-        return CrateType.VOTE;
+        return CrateType.PREMIUM;
     }
 
     @Override
@@ -27,11 +27,12 @@ public class VoteExpedition extends Crate {
 
     @Override
     public ItemConfig getItem() {
-        return ConfigManager.getVoteItem();
+        return ConfigManager.getPremiumItem();
     }
 
     @Override
     public List<LootFile> getLootFiles() {
-        return ConfigManager.getVoteLoot();
+        return ConfigManager.getPremiumLoot();
     }
+
 }

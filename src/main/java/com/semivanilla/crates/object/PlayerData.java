@@ -36,8 +36,6 @@ public class PlayerData {
     private ConcurrentHashMap<CrateType, ArrayList<ItemStack>> unclaimedRewards = new ConcurrentHashMap<>();
     private CopyOnWriteArrayList<LocalDate> lastVotes = new CopyOnWriteArrayList<>();
 
-    private long lastSuperVote = -1;
-
     private LinkedBlockingQueue<Object> voteQueue = new LinkedBlockingQueue<>();
 
     public PlayerData(UUID uuid) {
@@ -97,9 +95,6 @@ public class PlayerData {
         if (json.has("lastDailyClaim")) {
             this.lastDailyClaim = lda.deserialize(json.get("lastDailyClaim"), null, null);
         }
-        if (json.has("lastSuperVote")) {
-            this.lastSuperVote = json.get("lastSuperVote").getAsLong();
-        }
     }
 
     public JsonObject getJson() {
@@ -109,9 +104,6 @@ public class PlayerData {
         jo.addProperty("totalVotes", getTotalVotes());
         jo.addProperty("offlineEarned", getOfflineEarned());
         jo.addProperty("votesToday", getVotesToday());
-        if (lastSuperVote != -1) {
-            jo.addProperty("lastSuperVote", getLastSuperVote());
-        }
         if (getCrateTypes() != null) {
             JsonArray arr = new JsonArray();
             for (CrateType crateType : getCrateTypes()) {
@@ -199,7 +191,6 @@ public class PlayerData {
         if (expeditions == null) expeditions = new CopyOnWriteArrayList<>();
         //expeditions.add(ExpeditionType.VOTE);
         tryToAddExpedition(CrateType.VOTE);
-        checkSuperVote();
         checkPremium();
         LocalDate timestamp = LocalDate.now();
         if (lastVotes == null) lastVotes = new CopyOnWriteArrayList<>();
@@ -270,45 +261,6 @@ public class PlayerData {
         if (Bukkit.getPlayer(uuid) == null)
             offlineEarned += 1;
     }
-
-    public void checkSuperVote() {
-        if (System.currentTimeMillis() - lastSuperVote < 1000) {
-            Logger.error("Received another check for super vote in less than 1 second after last successful super vote check. Ignoring...");
-            return;
-        }
-        int voteServices = ConfigManager.getVoteServices().size();
-        //check if they have voted on all services
-        if (votesToday < voteServices)
-            return;
-        votesToday = 0;
-        Logger.debug("Player " + getName() + " has voted on all services, giving them a super vote.");
-        if (expeditions == null) expeditions = new CopyOnWriteArrayList<>();
-        //expeditions.add(ExpeditionType.SUPER_VOTE);
-        lastSuperVote = System.currentTimeMillis();
-        tryToAddExpedition(CrateType.SUPER_VOTE);
-        ValueMap map = new ValueMap();
-        map.set("player", getName());
-        map.set("count", "1");
-        map.set("type", "Super Vote");
-        List<Component> messages = MessageManager.parse(ConfigManager.getCrateGainedMessage(), map);
-        Player player = Bukkit.getPlayer(uuid);
-        if (player == null) {
-            offlineEarned += 1;
-            return;
-        }
-        for (Component message : messages) {
-            player.sendMessage(message);
-        }
-        ValueMap map0 = new ValueMap();
-        map0.set("player", getName());
-        List<Component> broadcast = MessageManager.parse(ConfigManager.getSuperVoteMessage(), map0);
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            for (Component component : broadcast) {
-                onlinePlayer.sendMessage(component);
-            }
-        }
-    }
-
     public ConcurrentHashMap<CrateType, ArrayList<ItemStack>> getUnclaimedRewards() {
         if (unclaimedRewards == null) unclaimedRewards = new ConcurrentHashMap<>();
         return unclaimedRewards;

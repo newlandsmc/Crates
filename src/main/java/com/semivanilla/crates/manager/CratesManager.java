@@ -2,10 +2,9 @@ package com.semivanilla.crates.manager;
 
 import com.semivanilla.crates.object.Crate;
 import com.semivanilla.crates.object.CrateType;
-import com.semivanilla.crates.object.impl.DailyExpedition;
-import com.semivanilla.crates.object.impl.PremiumExpedition;
-import com.semivanilla.crates.object.impl.SuperVoteExpedition;
-import com.semivanilla.crates.object.impl.VoteExpedition;
+import com.semivanilla.crates.object.impl.DailyCrate;
+import com.semivanilla.crates.object.impl.PremiumCrate;
+import com.semivanilla.crates.object.impl.VoteCrate;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -16,10 +15,9 @@ public class CratesManager {
     private static final List<Crate> expeditions = new ArrayList<>(); //tbh i don't have a plan on how this plugin will work
 
     public static void init() {
-        expeditions.add(new DailyExpedition());
-        expeditions.add(new VoteExpedition());
-        expeditions.add(new SuperVoteExpedition());
-        expeditions.add(new PremiumExpedition());
+        expeditions.add(new DailyCrate());
+        expeditions.add(new VoteCrate());
+        expeditions.add(new PremiumCrate());
 
         expeditions.forEach(Crate::init);
     }

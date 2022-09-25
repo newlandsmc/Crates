@@ -115,26 +115,6 @@ public class CratesCommand extends BaseCommand {
                     sender.sendMessage(CC.RED + "Usage: /cratessadmin givepremium <player> [amount]");
                     return CommandResult.SUCCESS;
                 }
-            } else if (args[0].equalsIgnoreCase("supervotecheck")) {
-                if (args.length == 2 && args[1].equalsIgnoreCase("all")) {
-                    try {
-                        for (String arg : args) {
-                            PlayerData data = PlayerManager.getData(Bukkit.getPlayer(arg).getUniqueId());
-                            data.checkSuperVote();
-                            sender.sendMessage(CC.GREEN + "Checked " + data.getName());
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return CommandResult.ERROR;
-                    }
-                } else {
-                    for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                        PlayerData data = PlayerManager.getData(onlinePlayer.getUniqueId());
-                        data.checkSuperVote();
-                    }
-                    sender.sendMessage(CC.GREEN + "Done!");
-                }
-                return CommandResult.SUCCESS;
             } else if (args[0].equalsIgnoreCase("reload")) {
                 long start = System.currentTimeMillis();
                 Crates.getInstance().reloadConfig();
@@ -151,7 +131,6 @@ public class CratesCommand extends BaseCommand {
         sender.sendMessage(CC.GREEN + "Commands:");
         sender.sendMessage(CC.AQUA + "/expeditionsadmin givepremium <player> [amount]");
         sender.sendMessage(CC.AQUA + "/expeditionsadmin reload");
-        sender.sendMessage(CC.AQUA + "/expeditionsadmin supervotecheck [player/all] - Force the server to check if players should get a super vote expedition");
         sender.sendMessage(CC.AQUA + "/expeditionsadmin testvote <player> <ServiceName> - command for testing, don't use");
         sender.sendMessage(CC.AQUA + "/expeditionsadmin disable - Disable/enable expeditions");
         return CommandResult.SUCCESS;

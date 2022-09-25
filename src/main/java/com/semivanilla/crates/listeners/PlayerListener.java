@@ -33,7 +33,7 @@ public class PlayerListener implements Listener {
         PlayerData data = PlayerManager.getData(event.getPlayer().getUniqueId());
         if (data == null) {
             Logger.error("Data is null for %1", event.getPlayer().getName());
-            event.getPlayer().sendMessage(CC.RED + "Your Expeditions data failed to load! Please try re-logging. If that doesn't work, please open a ticket for further assistance.");
+            event.getPlayer().sendMessage(CC.RED + "Your Crates data failed to load! Please try re-logging. If that doesn't work, please open a ticket for further assistance.");
             return;
         }
         Player player = event.getPlayer();
