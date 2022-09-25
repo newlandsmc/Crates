@@ -58,13 +58,17 @@ public class PlayerData {
         if (json.has("expedi" + "tions")) { // to bypass IDE search and replace
             JsonArray exp = json.get("expedi" + "tions").getAsJsonArray();
             for (JsonElement e : exp) {
-                this.crates.add(CrateType.valueOf(e.getAsString()));
+                try {
+                    this.crates.add(CrateType.valueOf(e.getAsString()));
+                } catch (IllegalArgumentException ex) {}
             }
         }
         if (json.has("crates")) {
             JsonArray crate = json.get("crates").getAsJsonArray();
             for (JsonElement e : crate) {
-                this.crates.add(CrateType.valueOf(e.getAsString()));
+                try {
+                    this.crates.add(CrateType.valueOf(e.getAsString()));
+                } catch (IllegalArgumentException ex) {}
             }
         }
         if (json.has("unclaimedRewards")) {
