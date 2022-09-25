@@ -33,12 +33,13 @@ public class ItemConfig {
         ItemStack itemStack = new ItemStack(material);
         ItemMeta meta = itemStack.getItemMeta();
         ValueMap valMap = new ValueMap();
+        int maxDays = 7;
         valMap.set("count", count);
         valMap.set("votes", data.getVotesToday());
         valMap.set("max_votes", ConfigManager.getVoteServices().size());
         valMap.set("days", data.getDaysVotedInARow());
-        valMap.set("max_days", 7);
-        valMap.set("days_completed", data.getDaysVotedInARow() >= 7);
+        valMap.set("max_days", maxDays);
+        valMap.set("days_completed", data.getDaysVotedInARow() >= maxDays);
         Component component = getComponent().append(
                 MessageManager.parse(name, valMap)
         );

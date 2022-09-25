@@ -69,3 +69,4 @@ messages:
 vote-processor:
   async: true
   interval: 5
+free-premium-crate: true

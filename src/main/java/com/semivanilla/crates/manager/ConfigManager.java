@@ -46,8 +46,7 @@ public class ConfigManager {
     private static long voteProcessorInterval = 5;
 
     @Getter
-    private static boolean enableAnimation;
-
+    private static boolean enableAnimation, freePremiumCrate;
     public void init() {
         Crates plugin = Crates.getInstance();
         if (!new File(plugin.getDataFolder() + "/config.yml").exists()) {
@@ -85,6 +84,8 @@ public class ConfigManager {
 
         unclaimedItems.clear();
         unclaimedItems.addAll(getConfig().getStringList("menu.unclaimed-items"));
+
+        freePremiumCrate = getConfig().getBoolean("free-premium-crate", true);
 
         File lootFolder = new File(Crates.getInstance().getDataFolder(), "loot");
         if (!lootFolder.exists()) {
