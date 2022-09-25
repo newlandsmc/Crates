@@ -1,6 +1,6 @@
-name: Expeditions
+name: Crates
 version: '${project.version}'
-main: com.semivanilla.expeditions.Expeditions
+main: com.semivanilla.crates.Crates
 api-version: 1.18
 softdepend:
   - 'AdvancedEnchantments'
