@@ -48,7 +48,6 @@ public class FlatFileStorageProvider implements StorageProvider {
             Logger.debug("File exists, loading data");
             JsonObject jsonObject = JsonParser.parseString(new String(Files.readAllBytes(file.toPath()))).getAsJsonObject();
             data = new PlayerData(jsonObject);
-            //data = Expeditions.getGson().fromJson(new String(Files.readAllBytes(file.toPath())), PlayerData.class);
         }
         data.onLoad();
         Logger.debug("Loaded data for " + uuid);

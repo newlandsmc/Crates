@@ -13,7 +13,7 @@ public class DataUpdateRunnable extends BukkitRunnable {
     public void run() {
         LocalDate date = LocalDate.now();
         if (date.isAfter(Crates.getLastReset())) {
-            Logger.info("Current time is: %1, resetting daily expeditions!", date.toString());
+            Logger.info("Current time is: %1, resetting daily crates!", date.toString());
             Crates.setLastReset(date);
         }
         Bukkit.getOnlinePlayers().forEach(p -> {

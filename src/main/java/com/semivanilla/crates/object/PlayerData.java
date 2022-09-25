@@ -32,7 +32,7 @@ public class PlayerData {
     private LocalDate lastDailyClaim = null, lastDayUpdated = Crates.getLastReset();
     private int totalVotes = 0, offlineEarned = 0, votesToday = 0;
     private transient long lastNameLoad = -1;
-    private CopyOnWriteArrayList<CrateType> expeditions = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<CrateType> crates = new CopyOnWriteArrayList<>();
     private ConcurrentHashMap<CrateType, ArrayList<ItemStack>> unclaimedRewards = new ConcurrentHashMap<>();
     private CopyOnWriteArrayList<LocalDate> lastVotes = new CopyOnWriteArrayList<>();
 
@@ -54,11 +54,17 @@ public class PlayerData {
         if (json.has("offlineEarned")) this.offlineEarned = json.get("offlineEarned").getAsInt();
         if (json.has("votesToday")) this.votesToday = json.get("votesToday").getAsInt();
         LocalDateAdapter lda = new LocalDateAdapter();
-        if (expeditions == null) expeditions = new CopyOnWriteArrayList<>();
-        if (json.has("expeditions")) {
-            JsonArray expeditions = json.get("expeditions").getAsJsonArray();
-            for (JsonElement e : expeditions) {
-                this.expeditions.add(CrateType.valueOf(e.getAsString()));
+        if (crates == null) crates = new CopyOnWriteArrayList<>();
+        if (json.has("expedi" + "tions")) { // to bypass IDE search and replace
+            JsonArray exp = json.get("expedi" + "tions").getAsJsonArray();
+            for (JsonElement e : exp) {
+                this.crates.add(CrateType.valueOf(e.getAsString()));
+            }
+        }
+        if (json.has("crates")) {
+            JsonArray crate = json.get("crates").getAsJsonArray();
+            for (JsonElement e : crate) {
+                this.crates.add(CrateType.valueOf(e.getAsString()));
             }
         }
         if (json.has("unclaimedRewards")) {
@@ -109,11 +115,9 @@ public class PlayerData {
             for (CrateType crateType : getCrateTypes()) {
                 arr.add(crateType.name());
             }
-            //jo.add("expeditions", Expeditions.getGsonNoPrettyPrint().toJsonTree(getExpeditionTypes()));
-            jo.add("expeditions", arr);
+            jo.add("crates", arr);
         }
         if (getUnclaimedRewards() != null) {
-            //jo.add("unclaimedRewards", Expeditions.getGsonNoPrettyPrint().toJsonTree(getUnclaimedRewards()));
             JsonArray arr = new JsonArray();
             for (Map.Entry<CrateType, ArrayList<ItemStack>> entry : getUnclaimedRewards().entrySet()) {
                 JsonObject jobj = new JsonObject();
@@ -129,7 +133,6 @@ public class PlayerData {
         }
         LocalDateAdapter lda = new LocalDateAdapter();
         if (getLastVotes() != null) {
-            //jo.add("lastVotes", Expeditions.getGsonNoPrettyPrint().toJsonTree(getLastVotes()));
             JsonArray arr = new JsonArray();
             for (LocalDate lastVote : getLastVotes()) {
                 arr.add(lda.serialize(lastVote, null, null));
@@ -137,11 +140,9 @@ public class PlayerData {
             jo.add("lastVotes", arr);
         }
         if (getLastDailyClaim() != null) {
-            //jo.add("lastDailyClaim", Expeditions.getGsonNoPrettyPrint().toJsonTree(getLastDailyClaim()));
             jo.add("lastDailyClaim", lda.serialize(getLastDailyClaim(), null, null));
         }
         if (getLastDayUpdated() != null) {
-            //jo.add("lastDayUpdated", Expeditions.getGsonNoPrettyPrint().toJsonTree(getLastDayUpdated()));
             jo.add("lastDayUpdated", lda.serialize(getLastDayUpdated(), null, null));
         }
         return jo;
@@ -171,27 +172,25 @@ public class PlayerData {
         }
     }
 
-    public List<Crate> getExpeditions() {
-        if (expeditions == null) expeditions = new CopyOnWriteArrayList<>();
-        return CratesManager.getExpeditions().stream().filter(e -> expeditions.contains(e.getType())).collect(Collectors.toList());
+    public List<Crate> getCrates() {
+        if (crates == null) crates = new CopyOnWriteArrayList<>();
+        return CratesManager.getTotalCrates().stream().filter(e -> crates.contains(e.getType())).collect(Collectors.toList());
     }
 
     public List<CrateType> getCrateTypes() {
-        if (expeditions == null) expeditions = new CopyOnWriteArrayList<>();
-        return expeditions;
+        if (crates == null) crates = new CopyOnWriteArrayList<>();
+        return crates;
     }
 
-    public int countExpeditions(CrateType type) {
-        return expeditions.stream().filter(e -> e == type).toList().size();
+    public int countCrates(CrateType type) {
+        return crates.stream().filter(e -> e == type).toList().size();
     }
 
     public synchronized void onVote() {
         totalVotes++;
         votesToday++;
-        if (expeditions == null) expeditions = new CopyOnWriteArrayList<>();
-        //expeditions.add(ExpeditionType.VOTE);
-        tryToAddExpedition(CrateType.VOTE);
-        checkPremium();
+        if (crates == null) crates = new CopyOnWriteArrayList<>();
+        tryToAddCrate(CrateType.VOTE);
         LocalDate timestamp = LocalDate.now();
         if (lastVotes == null) lastVotes = new CopyOnWriteArrayList<>();
         if (lastVotes.stream().filter(d -> d.isEqual(timestamp)).findFirst().orElse(null) != null) //if they have voted today
@@ -227,40 +226,6 @@ public class PlayerData {
         }
         return count;
     }
-    public void checkPremium() {
-        //check if they have voted at least once a day in the last week
-        LocalDate temp = null;
-        if (lastVotes == null) lastVotes = new CopyOnWriteArrayList<>();
-        if (lastVotes.size() < 7)
-            return;
-        for (LocalDate d : lastVotes) {
-            if (temp == null)
-                temp = d;
-            else if (d.isEqual(temp.plusDays(1)))
-                temp = d;
-            else {
-                return;
-            }
-        }
-        Logger.debug("Player " + getName() + " has voted at least once a day in the last week, giving them a premium expedition.");
-        ValueMap map = new ValueMap();
-        map.set("player", getName());
-        map.set("count", "1");
-        map.set("type", "Premium");
-        List<Component> messages = MessageManager.parse(ConfigManager.getCrateGainedMessage(), map);
-        Player player = Bukkit.getPlayer(uuid);
-        if (player != null) {
-            for (Component message : messages) {
-                player.sendMessage(message);
-            }
-        }
-        lastVotes.clear();
-        if (expeditions == null) expeditions = new CopyOnWriteArrayList<>();
-        //expeditions.add(ExpeditionType.PREMIUM);
-        tryToAddExpedition(CrateType.PREMIUM);
-        if (Bukkit.getPlayer(uuid) == null)
-            offlineEarned += 1;
-    }
     public ConcurrentHashMap<CrateType, ArrayList<ItemStack>> getUnclaimedRewards() {
         if (unclaimedRewards == null) unclaimedRewards = new ConcurrentHashMap<>();
         return unclaimedRewards;
@@ -284,13 +249,13 @@ public class PlayerData {
         Crates.getStorageProvider().saveData(this);
     }
 
-    public void tryToAddExpedition(CrateType type) {
-        if (expeditions == null) expeditions = new CopyOnWriteArrayList<>();
+    public void tryToAddCrate(CrateType type) {
+        if (crates == null) crates = new CopyOnWriteArrayList<>();
         try {
-            expeditions.add(type);
+            crates.add(type);
         } catch (Exception e) {
             long timestamp = System.currentTimeMillis();
-            Logger.error("Failed to give expedition type %1 to player %2 at %3", type.name(), getName(), timestamp);
+            Logger.error("Failed to give crate type %1 to player %2 at %3", type.name(), getName(), timestamp);
             if (Bukkit.getPlayer(uuid) != null) {
                 Bukkit.getPlayer(uuid).sendMessage(CC.RED + "An error occurred while trying to give you a " + type + "! Please open a bug report ticket in the discord, and send a screenshot of this! " + CC.GRAY + "(" + timestamp + ")" + CC.GOLD + " (4)");
             }

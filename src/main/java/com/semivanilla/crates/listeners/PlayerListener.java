@@ -61,7 +61,7 @@ public class PlayerListener implements Listener {
         } catch (Exception e) {
             Logger.error("Problem processing player data for %1", player.getName());
             e.printStackTrace();
-            event.getPlayer().sendMessage(CC.RED + "Your Expeditions data failed to load! Please try re-logging. If that doesn't work, please open a ticket for further assistance.");
+            event.getPlayer().sendMessage(CC.RED + "Your Crates data failed to load! Please try re-logging. If that doesn't work, please open a ticket for further assistance.");
         }
     }
 

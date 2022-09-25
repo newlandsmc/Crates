@@ -218,7 +218,7 @@ public class ClaimCratesMenu extends Menu { //really messy, will need to rewrite
 
     @Override
     public String getName(Player player) {
-        return "Claim Expedition";
+        return "Claim Crate";
     }
 
     public boolean tick(Player player) {

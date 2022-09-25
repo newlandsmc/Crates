@@ -112,7 +112,7 @@ public class CratesCommand extends BaseCommand {
                     sender.sendMessage(CC.GREEN + "Done!");
                     return CommandResult.SUCCESS;
                 } else {
-                    sender.sendMessage(CC.RED + "Usage: /cratessadmin givepremium <player> [amount]");
+                    sender.sendMessage(CC.RED + "Usage: /cratesadmin givepremium <player> [amount]");
                     return CommandResult.SUCCESS;
                 }
             } else if (args[0].equalsIgnoreCase("reload")) {
@@ -123,16 +123,16 @@ public class CratesCommand extends BaseCommand {
                 return CommandResult.SUCCESS;
             }else if (args[0].equalsIgnoreCase("disable")) {
                 Crates.setDisabled(!Crates.isDisabled());
-                sender.sendMessage(CC.GREEN + "Expeditions are now " + (Crates.isDisabled() ? "disabled" : "enabled"));
+                sender.sendMessage(CC.GREEN + "Crates are now " + (Crates.isDisabled() ? "disabled" : "enabled"));
                 return CommandResult.SUCCESS;
             }
         }
-        sender.sendMessage(CC.GREEN + "Expeditions V." + Crates.getInstance().getDescription().getVersion());
+        sender.sendMessage(CC.GREEN + "Crates V." + Crates.getInstance().getDescription().getVersion());
         sender.sendMessage(CC.GREEN + "Commands:");
-        sender.sendMessage(CC.AQUA + "/expeditionsadmin givepremium <player> [amount]");
-        sender.sendMessage(CC.AQUA + "/expeditionsadmin reload");
-        sender.sendMessage(CC.AQUA + "/expeditionsadmin testvote <player> <ServiceName> - command for testing, don't use");
-        sender.sendMessage(CC.AQUA + "/expeditionsadmin disable - Disable/enable expeditions");
+        sender.sendMessage(CC.AQUA + "/cratesadmin givepremium <player> [amount]");
+        sender.sendMessage(CC.AQUA + "/cratesadmin reload");
+        sender.sendMessage(CC.AQUA + "/cratesadmin testvote <player> <ServiceName> - command for testing, don't use");
+        sender.sendMessage(CC.AQUA + "/cratesadmin disable - Disable/enable crates");
         return CommandResult.SUCCESS;
     }
 }

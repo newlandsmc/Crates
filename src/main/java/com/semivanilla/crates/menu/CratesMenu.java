@@ -36,11 +36,11 @@ public class CratesMenu extends Menu {
         List<Button> buttons = new ArrayList<>();
         buttons.add(new Placeholder());
         int i = 0;
-        for (Crate expedition : CratesManager.getExpeditions()) {
+        for (Crate crate : CratesManager.getTotalCrates()) {
             int slot = slots[i++];
-            buttons.add(new ExpeditionButton(
-                    expedition,
-                    expedition.getItem(),
+            buttons.add(new CratesButton(
+                    crate,
+                    crate.getItem(),
                     slot
             ));
         }
@@ -49,11 +49,11 @@ public class CratesMenu extends Menu {
 
     @Override
     public String getName(Player player) {
-        return "Expeditions";
+        return "Crates";
     }
 
-    private class ExpeditionButton extends Button {
-        private final Crate expedition;
+    private class CratesButton extends Button {
+        private final Crate crate;
         private final ItemConfig item;
         private final int slot;
         private final boolean canUse;
@@ -61,15 +61,15 @@ public class CratesMenu extends Menu {
         private final boolean daily;
         private final int count;
 
-        public ExpeditionButton(Crate expedition, ItemConfig item, int slot) {
-            this.expedition = expedition;
+        public CratesButton(Crate crate, ItemConfig item, int slot) {
+            this.crate = crate;
             this.item = item;
             this.slot = slot;
-            daily = expedition instanceof DailyCrate;
+            daily = crate instanceof DailyCrate;
 
-            canUse = daily ? data.canClaimDaily() : data.getCrateTypes().contains(expedition.getType());
-            count = data.countExpeditions(expedition.getType());
-            unclaimedItems = data.getUnclaimedRewards().containsKey(expedition.getType());
+            canUse = daily ? data.canClaimDaily() : data.getCrateTypes().contains(crate.getType());
+            count = data.countCrates(crate.getType());
+            unclaimedItems = data.getUnclaimedRewards().containsKey(crate.getType());
         }
 
         @Override
@@ -85,21 +85,21 @@ public class CratesMenu extends Menu {
         @Override
         public void onClick(Player player, int slot, ClickType clickType) {
             if (unclaimedItems) {
-                Logger.debug("%1 is claiming unclaimed rewards for expedition type %2", player.getName(), expedition.getType());
-                ArrayList<ItemStack> items = data.getUnclaimedRewards().get(expedition.getType());
-                new ClaimCratesMenu(items, expedition.getType(), true).open(player);
+                Logger.debug("%1 is claiming unclaimed rewards for crates type %2", player.getName(), crate.getType());
+                ArrayList<ItemStack> items = data.getUnclaimedRewards().get(crate.getType());
+                new ClaimCratesMenu(items, crate.getType(), true).open(player);
                 return;
             }
             if (canUse) {
-                Logger.debug("%1 is claiming expedition type %2", player.getName(), expedition.getType());
-                ArrayList<ItemStack> items = expedition.genLoot(player);
-                data.getUnclaimedRewards().put(expedition.getType(), items);
+                Logger.debug("%1 is claiming crates type %2", player.getName(), crate.getType());
+                ArrayList<ItemStack> items = crate.genLoot(player);
+                data.getUnclaimedRewards().put(crate.getType(), items);
                 Logger.debug("Generated loot: Size: %1 | %2", items.size(), items);
-                ClaimCratesMenu menu = new ClaimCratesMenu(items, expedition.getType(), false);
+                ClaimCratesMenu menu = new ClaimCratesMenu(items, crate.getType(), false);
                 menu.open(player);
                 if (daily) {
                     data.setLastDailyClaim(LocalDate.now());
-                } else data.getCrateTypes().remove(expedition.getType());
+                } else data.getCrateTypes().remove(crate.getType());
                 data.save();
                 new MenuUpdateTask(menu, player).runTaskTimer(Crates.getInstance(), 5l, 5l);
             }
