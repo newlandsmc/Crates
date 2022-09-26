@@ -5,6 +5,7 @@ import com.semivanilla.crates.loot.LootFile;
 import com.semivanilla.crates.object.ItemConfig;
 import lombok.Getter;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
@@ -40,14 +41,17 @@ public class ConfigManager {
     @Getter
     private static final List<LootFile> voteLoot = new ArrayList<>();
     @Getter
+    private static Sound tickingCenterSound = null, revealSound =  null;
+    @Getter
+    private static int tickingCenterVolume = 1, revealVolume = 1, tickingCenterPitch = 1, revealPitch = 1;
+    @Getter
     private static boolean asyncVoteProcessor = true;
 
     @Getter
-    private static long voteProcessorInterval = 5;
+    private static long voteProcessorInterval = 5, updateTicks = 2;
 
     @Getter
-    private static boolean enableAnimation;
-
+    private static boolean enableAnimation, freePremiumCrate;
     public void init() {
         Crates plugin = Crates.getInstance();
         if (!new File(plugin.getDataFolder() + "/config.yml").exists()) {
@@ -86,6 +90,8 @@ public class ConfigManager {
         unclaimedItems.clear();
         unclaimedItems.addAll(getConfig().getStringList("menu.unclaimed-items"));
 
+        freePremiumCrate = getConfig().getBoolean("free-premium-crate", true);
+
         File lootFolder = new File(Crates.getInstance().getDataFolder(), "loot");
         if (!lootFolder.exists()) {
             lootFolder.mkdir();
@@ -114,6 +120,15 @@ public class ConfigManager {
         fullInventory.addAll(getConfig().getStringList("messages.inventory-full"));
         asyncVoteProcessor = getConfig().getBoolean("vote-processor.async", true);
         voteProcessorInterval = getConfig().getLong("vote-processor.interval", 5);
+
+        tickingCenterSound = Sound.valueOf(getConfig().getString("menu.sounds.center.sound", null));
+        revealSound = Sound.valueOf(getConfig().getString("menu.sounds.reveal.sound", null));
+        tickingCenterVolume = getConfig().getInt("menu.sounds.center.volume", 1);
+        revealVolume = getConfig().getInt("menu.sounds.reveal.volume", 1);
+        tickingCenterPitch = getConfig().getInt("menu.sounds.center.pitch", 1);
+        revealPitch = getConfig().getInt("menu.sounds.reveal.pitch", 1);
+
+        updateTicks = getConfig().getLong("menu.update-ticks", 2);
     }
 
     public FileConfiguration getConfig() {

@@ -195,6 +195,7 @@ public class PlayerData {
         votesToday++;
         if (crates == null) crates = new CopyOnWriteArrayList<>();
         tryToAddCrate(CrateType.VOTE);
+        checkPremium();
         LocalDate timestamp = LocalDate.now();
         if (lastVotes == null) lastVotes = new CopyOnWriteArrayList<>();
         if (lastVotes.stream().filter(d -> d.isEqual(timestamp)).findFirst().orElse(null) != null) //if they have voted today
@@ -214,21 +215,25 @@ public class PlayerData {
     }
     public int getDaysVotedInARow() {
         if (lastVotes == null || lastVotes.isEmpty()) return 0;
-        int count = 0;
-        LocalDate temp = null;
-        for (LocalDate lastVote : lastVotes) {
-            if (temp == null) {
-                count++;
-                temp = lastVote;
+        // Count the number of days in a row that the player has voted
+        int daysVotedInARow = 0;
+        LocalDate lastVote = null;
+        for (LocalDate vote : lastVotes) {
+            System.out.println(vote);
+            if (lastVote == null) {
+                System.out.println("lastVote is null");
+                lastVote = vote;
+                daysVotedInARow++;
+                continue;
             }
-            else if (lastVote.isEqual(temp.plusDays(1))) { // If it is equal to next day
-                count ++;
-                temp = lastVote;
-            } else {
-                return ++count;
+            if (lastVote.isBefore(vote)) {
+                System.out.println("lastVote is after vote");
+                daysVotedInARow++;
+                lastVote = vote;
             }
         }
-        return count;
+        System.out.println("Days voted in a row: " + daysVotedInARow);
+        return daysVotedInARow;
     }
     public ConcurrentHashMap<CrateType, ArrayList<ItemStack>> getUnclaimedRewards() {
         if (unclaimedRewards == null) unclaimedRewards = new ConcurrentHashMap<>();
@@ -264,5 +269,51 @@ public class PlayerData {
                 Bukkit.getPlayer(uuid).sendMessage(CC.RED + "An error occurred while trying to give you a " + type + "! Please open a bug report ticket in the discord, and send a screenshot of this! " + CC.GRAY + "(" + timestamp + ")" + CC.GOLD + " (4)");
             }
         }
+    }
+    public void checkPremium() {
+        if (!ConfigManager.isFreePremiumCrate()) return;
+        //check if they have voted at least once a day in the last week
+        if (lastVotes == null) lastVotes = new CopyOnWriteArrayList<>();
+        if (lastVotes.size() < 7)
+            return;
+        /*
+        LocalDate temp = null;
+        for (LocalDate d : lastVotes) {
+            if (temp == null)
+                temp = d;
+            else if (d.isEqual(temp.plusDays(1)))
+                temp = d;
+            else {
+                return;
+            }
+        }
+         */
+        LocalDate temp = null;
+        for (LocalDate d : lastVotes) {
+            if (temp == null)
+                temp = d;
+            else if (d.isEqual(temp.plusDays(1)))
+                temp = d;
+            else {
+                return;
+            }
+        }
+        Logger.debug("Player " + getName() + " has voted at least once a day in the last week, giving them a premium crate.");
+        ValueMap map = new ValueMap();
+        map.set("player", getName());
+        map.set("count", "1");
+        map.set("type", "Premium");
+        List<Component> messages = MessageManager.parse(ConfigManager.getCrateGainedMessage(), map);
+        Player player = Bukkit.getPlayer(uuid);
+        if (player != null) {
+            for (Component message : messages) {
+                player.sendMessage(message);
+            }
+        }
+        lastVotes.clear();
+        if (crates == null) crates = new CopyOnWriteArrayList<>();
+        tryToAddCrate(CrateType.PREMIUM);
+        if (Bukkit.getPlayer(uuid) == null)
+            offlineEarned += 1;
     }
 }
