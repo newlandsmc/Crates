@@ -121,8 +121,14 @@ public class ConfigManager {
         asyncVoteProcessor = getConfig().getBoolean("vote-processor.async", true);
         voteProcessorInterval = getConfig().getLong("vote-processor.interval", 5);
 
-        tickingCenterSound = Sound.valueOf(getConfig().getString("menu.sounds.center.sound", null));
-        revealSound = Sound.valueOf(getConfig().getString("menu.sounds.reveal.sound", null));
+        String centerSound = getConfig().getString("menu.sounds.center.sound", null);
+        if (centerSound != null && !centerSound.isEmpty()) {
+            tickingCenterSound = Sound.valueOf(centerSound);
+        }
+        String revSound = getConfig().getString("menu.sounds.reveal.sound", null);
+        if (revSound != null && !revSound.isEmpty()) {
+            revealSound = Sound.valueOf(revSound);
+        }
         tickingCenterVolume = getConfig().getInt("menu.sounds.center.volume", 1);
         revealVolume = getConfig().getInt("menu.sounds.reveal.volume", 1);
         tickingCenterPitch = getConfig().getInt("menu.sounds.center.pitch", 1);
