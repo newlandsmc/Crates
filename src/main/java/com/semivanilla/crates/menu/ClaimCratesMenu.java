@@ -266,7 +266,21 @@ public class ClaimCratesMenu extends Menu { //really messy, will need to rewrite
             data.getUnclaimedRewards().remove(type);
             return;
         }
-
+        boolean dropped = false;
+        for (ItemStack item : items) {
+            Map<Integer, ItemStack> map = player.getInventory().addItem(item);
+            if (!map.isEmpty()) {
+                for (ItemStack i : map.values()) {
+                    player.getWorld().dropItemNaturally(player.getLocation(), i);
+                    dropped = true;
+                }
+            }
+        }
+        if (dropped) {
+            player.sendMessage(CC.RED + "Dropped items you didn't claim on the ground!");
+            data.save();
+            return;
+        }
         Logger.debug("Data: %1", data);
         data.getUnclaimedRewards().put(type, items);
         Logger.debug(data.getUnclaimedRewards());
