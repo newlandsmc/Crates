@@ -150,7 +150,7 @@ public class ClaimCratesMenu extends Menu { //really messy, will need to rewrite
             }
         }
         if (!tickingCenter && !claiming && ConfigManager.isEnableAnimation()) {
-            boolean b = false;
+            boolean b = true;
             switch (stage++) {
                 case 0 -> {
                     if (!tickingCenter) {
@@ -193,7 +193,7 @@ public class ClaimCratesMenu extends Menu { //really messy, will need to rewrite
                         player.playSound(player.getLocation(), ConfigManager.getRevealSound(), ConfigManager.getRevealVolume(), ConfigManager.getRevealPitch());
                     animationDone = true;
                     claiming = true;
-                    b = true;
+                    b = false;
                 }
             }
             if (b) {
