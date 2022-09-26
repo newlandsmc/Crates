@@ -150,6 +150,7 @@ public class ClaimCratesMenu extends Menu { //really messy, will need to rewrite
             }
         }
         if (!tickingCenter && !claiming && ConfigManager.isEnableAnimation()) {
+            boolean b = false;
             switch (stage++) {
                 case 0 -> {
                     if (!tickingCenter) {
@@ -192,7 +193,12 @@ public class ClaimCratesMenu extends Menu { //really messy, will need to rewrite
                         player.playSound(player.getLocation(), ConfigManager.getRevealSound(), ConfigManager.getRevealVolume(), ConfigManager.getRevealPitch());
                     animationDone = true;
                     claiming = true;
+                    b = true;
                 }
+            }
+            if (b) {
+                if (ConfigManager.getTickingCenterSound() != null)
+                    player.playSound(player.getLocation(), ConfigManager.getTickingCenterSound(), ConfigManager.getTickingCenterVolume(), ConfigManager.getTickingCenterPitch());
             }
         }
         for (int i = 0; i < 45; i++) {
