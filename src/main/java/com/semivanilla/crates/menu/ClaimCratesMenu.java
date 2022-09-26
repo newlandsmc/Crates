@@ -127,8 +127,6 @@ public class ClaimCratesMenu extends Menu { //really messy, will need to rewrite
             if (ConfigManager.getTickingCenterSound() != null)
                 player.playSound(player.getLocation(), ConfigManager.getTickingCenterSound(), ConfigManager.getTickingCenterVolume(), ConfigManager.getTickingCenterPitch());
         } else {
-            if (ConfigManager.getRevealSound() != null)
-                player.playSound(player.getLocation(), ConfigManager.getRevealSound(), ConfigManager.getRevealVolume(), ConfigManager.getRevealPitch());
             boolean shouldShow = stage != 1 && !claiming;
             //&& stage % 2 == 0;
             if (shouldShow && !toShow.isEmpty()) {
@@ -190,6 +188,8 @@ public class ClaimCratesMenu extends Menu { //really messy, will need to rewrite
                     break;
                 }
                 default -> {
+                    if (ConfigManager.getRevealSound() != null)
+                        player.playSound(player.getLocation(), ConfigManager.getRevealSound(), ConfigManager.getRevealVolume(), ConfigManager.getRevealPitch());
                     animationDone = true;
                     claiming = true;
                 }
