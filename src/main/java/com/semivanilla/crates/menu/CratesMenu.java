@@ -1,6 +1,7 @@
 package com.semivanilla.crates.menu;
 
 import com.semivanilla.crates.Crates;
+import com.semivanilla.crates.manager.ConfigManager;
 import com.semivanilla.crates.manager.CratesManager;
 import com.semivanilla.crates.manager.PlayerManager;
 import com.semivanilla.crates.object.Crate;
@@ -101,7 +102,7 @@ public class CratesMenu extends Menu {
                     data.setLastDailyClaim(LocalDate.now());
                 } else data.getCrateTypes().remove(crate.getType());
                 data.save();
-                new MenuUpdateTask(menu, player).runTaskTimer(Crates.getInstance(), 5l, 5l);
+                new MenuUpdateTask(menu, player).runTaskTimer(Crates.getInstance(), ConfigManager.getUpdateTicks(), ConfigManager.getUpdateTicks());
             }
         }
     }

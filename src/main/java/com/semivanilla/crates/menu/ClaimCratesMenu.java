@@ -124,7 +124,11 @@ public class ClaimCratesMenu extends Menu { //really messy, will need to rewrite
             if (centerIndex >= CENTER_PANES.length)
                 centerIndex = 0;
             buttons.add(new PanesButton(centerPane, 22));
+            if (ConfigManager.getTickingCenterSound() != null)
+                player.playSound(player.getLocation(), ConfigManager.getTickingCenterSound(), ConfigManager.getTickingCenterVolume(), ConfigManager.getTickingCenterPitch());
         } else {
+            if (ConfigManager.getRevealSound() != null)
+                player.playSound(player.getLocation(), ConfigManager.getRevealSound(), ConfigManager.getRevealVolume(), ConfigManager.getRevealPitch());
             boolean shouldShow = stage != 1 && !claiming;
             //&& stage % 2 == 0;
             if (shouldShow && !toShow.isEmpty()) {
