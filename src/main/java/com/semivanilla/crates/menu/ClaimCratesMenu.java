@@ -262,22 +262,13 @@ public class ClaimCratesMenu extends Menu { //really messy, will need to rewrite
             Logger.severe("(3) Data was null for %1 (%2) | %3", player.getName(), player.getUniqueId(), System.currentTimeMillis());
             return;
         }
+        data.getUnclaimedRewards().remove(type);
         if (items.isEmpty() || shown.isEmpty() || items.size() < 1) {
-            data.getUnclaimedRewards().remove(type);
             return;
         }
-        boolean dropped = false;
-        for (ItemStack item : items) {
-            Map<Integer, ItemStack> map = player.getInventory().addItem(item);
-            if (!map.isEmpty()) {
-                for (ItemStack i : map.values()) {
-                    player.getWorld().dropItemNaturally(player.getLocation(), i);
-                    dropped = true;
-                }
-            }
-        }
-        if (dropped) {
-            player.sendMessage(CC.RED + "Dropped items you didn't claim on the ground!");
+        if (true) {
+            player.sendMessage(CC.RED + "Items you didn't claim were dropped on the ground!");
+            items.forEach(item -> player.getWorld().dropItemNaturally(player.getLocation(), item));
             data.save();
             return;
         }
