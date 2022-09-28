@@ -219,15 +219,15 @@ public class PlayerData {
         int daysVotedInARow = 0;
         LocalDate lastVote = null;
         for (LocalDate vote : lastVotes) {
-            System.out.println(vote);
+            //System.out.println(vote);
             if (lastVote == null) {
-                System.out.println("lastVote is null");
+                //System.out.println("lastVote is null");
                 lastVote = vote;
                 daysVotedInARow++;
                 continue;
             }
             if (lastVote.isBefore(vote)) {
-                System.out.println("lastVote is after vote");
+                //System.out.println("lastVote is after vote");
                 daysVotedInARow++;
                 lastVote = vote;
             }
@@ -288,16 +288,8 @@ public class PlayerData {
             }
         }
          */
-        LocalDate temp = null;
-        for (LocalDate d : lastVotes) {
-            if (temp == null)
-                temp = d;
-            else if (d.isEqual(temp.plusDays(1)))
-                temp = d;
-            else {
-                return;
-            }
-        }
+        int daysVotedInARow = getDaysVotedInARow();
+        if (!(daysVotedInARow >= 7)) return;
         Logger.debug("Player " + getName() + " has voted at least once a day in the last week, giving them a premium crate.");
         ValueMap map = new ValueMap();
         map.set("player", getName());
