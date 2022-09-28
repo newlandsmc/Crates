@@ -201,6 +201,7 @@ public class PlayerData {
         if (lastVotes.stream().filter(d -> d.isEqual(timestamp)).findFirst().orElse(null) != null) //if they have voted today
             return;
         addVote(timestamp);
+        save();
 
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) return;
