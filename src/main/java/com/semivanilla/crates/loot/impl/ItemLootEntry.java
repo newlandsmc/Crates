@@ -106,7 +106,10 @@ public class ItemLootEntry extends LootEntry {
         stack.setItemMeta(meta);
         int enchantsToAdd = 0;
         if (absoluteEnchantments) {
-            enchantsToAdd = enchantsAbsolute;
+            for (EnchantmentEntry enchantment : enchantments) {
+                stack = enchantment.addEnchantment(stack, random);
+            }
+            return stack;
         } else {
             enchantsToAdd = random.nextInt(maxEnchants - minEnchants + 1) + minEnchants;
         }
