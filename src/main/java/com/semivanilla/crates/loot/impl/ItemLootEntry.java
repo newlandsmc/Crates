@@ -106,13 +106,11 @@ public class ItemLootEntry extends LootEntry {
         stack.setItemMeta(meta);
         int enchantsToAdd = 0;
         if (absoluteEnchantments) {
-            for (EnchantmentEntry enchantment : enchantments) {
-                stack = enchantment.addEnchantment(stack, random);
-            }
-            return stack;
+            enchantsToAdd = enchantsAbsolute;
         } else {
             enchantsToAdd = random.nextInt(maxEnchants - minEnchants + 1) + minEnchants;
         }
+        List<EnchantmentEntry> enchantments = new ArrayList<>(this.enchantments);
         for (int g = 0; g < enchantsToAdd; g++) {
             if (enchantments.size() > 0) {
                 List<EnchantmentEntry> enchantmentWithWeight = new ArrayList<>();
@@ -123,6 +121,7 @@ public class ItemLootEntry extends LootEntry {
                 }
                 EnchantmentEntry entry = enchantmentWithWeight.get(random.nextInt(enchantmentWithWeight.size()));
                 stack = entry.addEnchantment(stack, random);
+                enchantments.remove(entry);
                 if (LootItems.isDebug()) System.out.println("Added enchantment " + (entry.advancedEnchantmentsName != null ? entry.advancedEnchantmentsName : entry.enchantment.getKey().getKey()));
             }
         }
@@ -130,7 +129,7 @@ public class ItemLootEntry extends LootEntry {
     }
 
     @Getter
-    public class EnchantmentEntry {
+    public static class EnchantmentEntry {
         private Enchantment enchantment;
         private int weight = 1, levelAbsolute;
         private boolean absoluteLevel;
