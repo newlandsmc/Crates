@@ -21,7 +21,7 @@ free-premium-crate:
     default: 7 # Days
     diamond: 3
 menu:
-  enable-animation: true # enables the 'animation' in the men
+  enable-animation: true # enables the 'animation' in the menu
   khavalon: true
   update-ticks: 2 # Speed at which the menu should update at
   sounds: # https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html for list of sounds
