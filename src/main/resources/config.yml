@@ -18,8 +18,13 @@ services:
 free-premium-crate:
   enable: true
   rules:
+    check: false # Disable for default, minor improvement in performance
     default: 7 # Days
     diamond: 3
+  amount:
+    check: false # Disable for default, minor improvement in performance
+    default: 1
+    diamond: 2
 menu:
   enable-animation: true # enables the 'animation' in the menu
   khavalon: true

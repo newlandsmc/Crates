@@ -8,7 +8,6 @@ import net.badbird5907.blib.objects.tuple.Pair;
 import net.badbird5907.blib.util.Logger;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
@@ -45,7 +44,7 @@ public class ConfigManager {
     @Getter
     private static final List<LootFile> voteLoot = new ArrayList<>();
     @Getter
-    private static final List<Pair<String, Integer>> freePremiumCrateAmount = new ArrayList<>();
+    private static final List<Pair<String, Integer>> freePremiumCrateDays = new ArrayList<>(), freePremiumCrateAmount = new ArrayList<>();
     @Getter
     private static Sound tickingCenterSound = null, revealSound =  null;
     @Getter
@@ -57,7 +56,12 @@ public class ConfigManager {
     private static long voteProcessorInterval = 5, updateTicks = 2;
 
     @Getter
-    private static boolean enableAnimation, freePremiumCrate;
+    private static boolean enableAnimation, freePremiumCrate,
+            freePremiumCrateDaysEnabled, freePremiumCrateAmountEnabled; // should LP API be queried? or should we use default values?
+
+    @Getter
+    private static int freePremiumCrateDaysDefault, freePremiumCrateAmountDefault; // default values for free premium crate
+
     public void init() {
         Crates plugin = Crates.getInstance();
         if (!new File(plugin.getDataFolder() + "/config.yml").exists()) {
@@ -97,28 +101,67 @@ public class ConfigManager {
         unclaimedItems.addAll(getConfig().getStringList("menu.unclaimed-items"));
 
         freePremiumCrate = getConfig().getBoolean("free-premium-crate.enable", true);
-        freePremiumCrateAmount.clear();
+        freePremiumCrateDays.clear();
         if (freePremiumCrate) {
-            Map<String, Object> map = getConfig().getConfigurationSection("free-premium-crate.rules").getValues(false);
-            for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
-                String k = stringObjectEntry.getKey();
-                Object v = stringObjectEntry.getValue();
-                int i = -1;
-                if (v instanceof String) {
-                    i = Integer.parseInt((String) v);
-                } else if (v instanceof Integer) {
-                    i = (Integer) v;
-                } else {
-                    Logger.error("Invalid value for free-premium-crate.rules." + k + " in config.yml");
-                    continue;
+            {
+                Map<String, Object> map = getConfig().getConfigurationSection("free-premium-crate.rules").getValues(false);
+                for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
+                    String k = stringObjectEntry.getKey();
+                    Object v = stringObjectEntry.getValue();
+                    if (k.equalsIgnoreCase("check") && v instanceof Boolean) {
+                        freePremiumCrateDaysEnabled = (Boolean) v;
+                        continue;
+                    }
+                    int i = -1;
+                    if (v instanceof String) {
+                        i = Integer.parseInt((String) v);
+                    } else if (v instanceof Integer) {
+                        i = (Integer) v;
+                    } else {
+                        Logger.error("Invalid value for free-premium-crate.rules." + k + " in config.yml");
+                        continue;
+                    }
+                    freePremiumCrateDays.add(new Pair<>(k, i));
+                    if (k.equalsIgnoreCase("default")) {
+                        freePremiumCrateDaysDefault = i;
+                    }
                 }
-                freePremiumCrateAmount.add(new Pair<>(k, i));
+                freePremiumCrateDays.sort((k, v) -> {
+                    int i1 = k.getValue1();
+                    int i2 = v.getValue1();
+                    return Integer.compare(i1, i2);
+                });
             }
-            freePremiumCrateAmount.sort((k,v)-> {
-                int i1 = k.getValue1();
-                int i2 = v.getValue1();
-                return Integer.compare(i1, i2);
-            });
+            {
+                Map<String, Object> map = getConfig().getConfigurationSection("free-premium-crate.amount").getValues(false);
+                for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
+                    String k = stringObjectEntry.getKey();
+                    Object v = stringObjectEntry.getValue();
+                    if (k.equalsIgnoreCase("check") && v instanceof Boolean) {
+                        freePremiumCrateAmountEnabled = (Boolean) v;
+                        continue;
+                    }
+                    int i = -1;
+                    if (v instanceof String) {
+                        i = Integer.parseInt((String) v);
+                    } else if (v instanceof Integer) {
+                        i = (Integer) v;
+                    } else {
+                        Logger.error("Invalid value for free-premium-crate.amount." + k + " in config.yml");
+                        continue;
+                    }
+                    freePremiumCrateAmount.add(new Pair<>(k, i));
+                    if (k.equalsIgnoreCase("default")) {
+                        freePremiumCrateAmountDefault = i;
+                    }
+                }
+
+                freePremiumCrateAmount.sort((k, v) -> {
+                    int i1 = k.getValue1();
+                    int i2 = v.getValue1();
+                    return Integer.compare(i2, i1);
+                });
+            }
         }
 
         File lootFolder = new File(Crates.getInstance().getDataFolder(), "loot");

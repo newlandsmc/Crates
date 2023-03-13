@@ -21,7 +21,9 @@ import org.bukkit.inventory.ItemStack;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
 @Getter
@@ -60,7 +62,8 @@ public class PlayerData {
             for (JsonElement e : exp) {
                 try {
                     this.crates.add(CrateType.valueOf(e.getAsString()));
-                } catch (IllegalArgumentException ex) {}
+                } catch (IllegalArgumentException ex) {
+                }
             }
         }
         if (json.has("crates")) {
@@ -68,7 +71,8 @@ public class PlayerData {
             for (JsonElement e : crate) {
                 try {
                     this.crates.add(CrateType.valueOf(e.getAsString()));
-                } catch (IllegalArgumentException ex) {}
+                } catch (IllegalArgumentException ex) {
+                }
             }
         }
         if (json.has("unclaimedRewards")) {
@@ -96,7 +100,7 @@ public class PlayerData {
             JsonArray arr = json.get("lastVotes").getAsJsonArray();
             for (JsonElement e : arr) {
                 LocalDate date = lda.deserialize(e, null, null);
-                if (date == null)  {
+                if (date == null) {
                     Logger.error("Failed to deserialize date for player " + uuid);
                     continue;
                 }
@@ -198,7 +202,7 @@ public class PlayerData {
         totalVotes++;
         votesToday++;
         if (crates == null) crates = new CopyOnWriteArrayList<>();
-        tryToAddCrate(CrateType.VOTE);
+        tryToAddCrate(CrateType.VOTE,1);
         checkPremium();
         LocalDate timestamp = LocalDate.now();
         if (lastVotes == null) lastVotes = new CopyOnWriteArrayList<>();
@@ -218,6 +222,7 @@ public class PlayerData {
             player.sendMessage(component);
         }
     }
+
     public int getDaysVotedInARow() {
         if (lastVotes == null || lastVotes.isEmpty()) return 0;
         // Count the number of days in a row that the player has voted
@@ -240,6 +245,7 @@ public class PlayerData {
         System.out.println("Days voted in a row: " + daysVotedInARow);
         return daysVotedInARow;
     }
+
     public ConcurrentHashMap<CrateType, ArrayList<ItemStack>> getUnclaimedRewards() {
         if (unclaimedRewards == null) unclaimedRewards = new ConcurrentHashMap<>();
         return unclaimedRewards;
@@ -263,18 +269,23 @@ public class PlayerData {
         Crates.getStorageProvider().saveData(this);
     }
 
-    public void tryToAddCrate(CrateType type) {
+    public void tryToAddCrate(CrateType type, int amount) {
         if (crates == null) crates = new CopyOnWriteArrayList<>();
+        int success = 0;
         try {
-            crates.add(type);
+            for (int i = 0; i < amount; i++) {
+                crates.add(type);
+                success++;
+            }
         } catch (Exception e) {
             long timestamp = System.currentTimeMillis();
             Logger.error("Failed to give crate type %1 to player %2 at %3", type.name(), getName(), timestamp);
             if (Bukkit.getPlayer(uuid) != null) {
-                Bukkit.getPlayer(uuid).sendMessage(CC.RED + "An error occurred while trying to give you a " + type + "! Please open a bug report ticket in the discord, and send a screenshot of this! " + CC.GRAY + "(" + timestamp + ")" + CC.GOLD + " (4)");
+                Bukkit.getPlayer(uuid).sendMessage(CC.RED + "An error occurred while trying to give you " + (amount - success) + "x " + type + " crate(s) (" + amount + " total, " + success + "success)" + "! Please open a bug report ticket in the discord, and send a screenshot of this! " + CC.GRAY + "(" + timestamp + ")" + CC.GOLD + " (4)");
             }
         }
     }
+
     public void checkPremium() {
         if (!ConfigManager.isFreePremiumCrate()) return;
         //check if they have voted at least once a day in the last week
@@ -297,9 +308,10 @@ public class PlayerData {
         int daysVotedInARow = getDaysVotedInARow();
         if (!(daysVotedInARow >= daysNeeded)) return;
         Logger.debug("Player " + getName() + " has voted at least once a day in the last week, giving them a premium crate.");
+        int amount = CratesManager.getPremiumAmount(uuid);
         ValueMap map = new ValueMap();
         map.set("player", getName());
-        map.set("count", "1");
+        map.set("count", amount);
         map.set("type", "Premium");
         List<Component> messages = MessageManager.parse(ConfigManager.getCrateGainedMessage(), map);
         Player player = Bukkit.getPlayer(uuid);
@@ -310,8 +322,8 @@ public class PlayerData {
         }
         lastVotes.clear();
         if (crates == null) crates = new CopyOnWriteArrayList<>();
-        tryToAddCrate(CrateType.PREMIUM);
+        tryToAddCrate(CrateType.PREMIUM, amount);
         if (Bukkit.getPlayer(uuid) == null)
-            offlineEarned += 1;
+            offlineEarned += amount;
     }
 }

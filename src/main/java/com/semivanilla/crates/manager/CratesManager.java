@@ -41,15 +41,15 @@ public class CratesManager {
         return totalCrates.stream().filter(e -> e.getClass() == clazz).findFirst().orElse(null);
     }
 
-    private static CacheLoader<UUID, Integer> cacheLoader = new CacheLoader<>() {
+    private static CacheLoader<UUID, Integer> daysPremiumCacheLoader = new CacheLoader<>() {
         @Override
         public Integer load(UUID key) {
             return getDaysNeededForPremiumSkipCache(key);
         }
     };
-    private static LoadingCache<UUID, Integer> cache = com.google.common.cache.CacheBuilder.newBuilder()
+    private static LoadingCache<UUID, Integer> daysPremiumCache = com.google.common.cache.CacheBuilder.newBuilder()
             .expireAfterAccess(1, java.util.concurrent.TimeUnit.MINUTES)
-            .build(cacheLoader);
+            .build(daysPremiumCacheLoader);
 
     /**
      * <b color="red">BLOCKING!</b>
@@ -67,7 +67,7 @@ public class CratesManager {
                 LuckPerms api = provider.getProvider();
                 User user = api.getUserManager().loadUser(uuid).join(); // :grimacing:
                 Collection<Group> inheretedGroups = user.getInheritedGroups(user.getQueryOptions());
-                for (Pair<String, Integer> pair : ConfigManager.getFreePremiumCrateAmount()) {
+                for (Pair<String, Integer> pair : ConfigManager.getFreePremiumCrateDays()) {
                     String group = pair.getValue0();
                     int days = pair.getValue1();
                     for (Group g : inheretedGroups) {
@@ -88,6 +88,61 @@ public class CratesManager {
      * @return days voted needed for premium crate
      */
     public static int getDaysNeededForPremium(UUID uuid) {
-        return cache.getUnchecked(uuid);
+        if (!ConfigManager.isFreePremiumCrateDaysEnabled()) {
+            return ConfigManager.getFreePremiumCrateDaysDefault();
+        }
+        return daysPremiumCache.getUnchecked(uuid);
+    }
+    private static CacheLoader<UUID, Integer> premiumAmountCacheLoader = new CacheLoader<>() {
+        @Override
+        public Integer load(UUID key) {
+            return getPremiumAmountSkipCache(key);
+        }
+    };
+    private static LoadingCache<UUID, Integer> premiumAmountCache = com.google.common.cache.CacheBuilder.newBuilder()
+            .expireAfterAccess(1, java.util.concurrent.TimeUnit.MINUTES)
+            .build(premiumAmountCacheLoader);
+
+    /**
+     * <b color="red">BLOCKING!</b>
+     *
+     * @param uuid The uuid of the player
+     * @return days voted needed for premium crate
+     */
+    public static int getPremiumAmountSkipCache(UUID uuid) {
+        if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
+            RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
+            if (provider != null) {
+                if (!ConfigManager.isAsyncVoteProcessor()) {
+                    Logger.error("LuckPerms is enabled, but asyncVoteProcessor is disabled. This may cause lag!");
+                }
+                LuckPerms api = provider.getProvider();
+                User user = api.getUserManager().loadUser(uuid).join(); // :grimacing:
+                Collection<Group> inheretedGroups = user.getInheritedGroups(user.getQueryOptions());
+                for (Pair<String, Integer> pair : ConfigManager.getFreePremiumCrateAmount()) {
+                    String group = pair.getValue0();
+                    int amount = pair.getValue1();
+                    for (Group g : inheretedGroups) {
+                        if (g.getName().equalsIgnoreCase(group)) {
+                            return amount;
+                        }
+                    }
+                }
+            }
+        }
+        return 1;
+    }
+
+    /**
+     * <b color="red">BLOCKING!</b> (cached)
+     *
+     * @param uuid The uuid of the player
+     * @return days voted needed for premium crate
+     */
+    public static int getPremiumAmount(UUID uuid) {
+        if (!ConfigManager.isFreePremiumCrateAmountEnabled()) {
+            return ConfigManager.getFreePremiumCrateAmountDefault();
+        }
+        return premiumAmountCache.getUnchecked(uuid);
     }
 }
