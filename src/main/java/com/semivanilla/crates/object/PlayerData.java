@@ -167,7 +167,7 @@ public class PlayerData {
     public void addVote(LocalDate date) {
         if (lastVotes == null) lastVotes = new CopyOnWriteArrayList<>();
         lastVotes.add(date);
-        if (lastVotes.size() > 7)
+        if (lastVotes.size() > CratesManager.getDaysNeededForPremium(uuid))
             lastVotes.remove(0);
     }
 
@@ -279,7 +279,8 @@ public class PlayerData {
         if (!ConfigManager.isFreePremiumCrate()) return;
         //check if they have voted at least once a day in the last week
         if (lastVotes == null) lastVotes = new CopyOnWriteArrayList<>();
-        if (lastVotes.size() < 7)
+        int daysNeeded = CratesManager.getDaysNeededForPremium(uuid);
+        if (lastVotes.size() < daysNeeded)
             return;
         /*
         LocalDate temp = null;
@@ -294,7 +295,7 @@ public class PlayerData {
         }
          */
         int daysVotedInARow = getDaysVotedInARow();
-        if (!(daysVotedInARow >= 7)) return;
+        if (!(daysVotedInARow >= daysNeeded)) return;
         Logger.debug("Player " + getName() + " has voted at least once a day in the last week, giving them a premium crate.");
         ValueMap map = new ValueMap();
         map.set("player", getName());

@@ -1,6 +1,7 @@
 package com.semivanilla.crates.object;
 
 import com.semivanilla.crates.manager.ConfigManager;
+import com.semivanilla.crates.manager.CratesManager;
 import com.semivanilla.crates.manager.MessageManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,7 +34,7 @@ public class ItemConfig {
         ItemStack itemStack = new ItemStack(material);
         ItemMeta meta = itemStack.getItemMeta();
         ValueMap valMap = new ValueMap();
-        int maxDays = 7;
+        int maxDays = CratesManager.getDaysNeededForPremium(data.getUuid());
         valMap.set("count", count);
         valMap.set("votes", data.getVotesToday());
         valMap.set("max_votes", ConfigManager.getVoteServices().size());

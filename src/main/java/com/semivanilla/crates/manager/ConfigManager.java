@@ -4,13 +4,17 @@ import com.semivanilla.crates.Crates;
 import com.semivanilla.crates.loot.LootFile;
 import com.semivanilla.crates.object.ItemConfig;
 import lombok.Getter;
+import net.badbird5907.blib.objects.tuple.Pair;
+import net.badbird5907.blib.util.Logger;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ConfigManager {
 
@@ -40,6 +44,8 @@ public class ConfigManager {
     private static final List<LootFile> premiumLoot = new ArrayList<>();
     @Getter
     private static final List<LootFile> voteLoot = new ArrayList<>();
+    @Getter
+    private static final List<Pair<String, Integer>> freePremiumCrateAmount = new ArrayList<>();
     @Getter
     private static Sound tickingCenterSound = null, revealSound =  null;
     @Getter
@@ -90,7 +96,30 @@ public class ConfigManager {
         unclaimedItems.clear();
         unclaimedItems.addAll(getConfig().getStringList("menu.unclaimed-items"));
 
-        freePremiumCrate = getConfig().getBoolean("free-premium-crate", true);
+        freePremiumCrate = getConfig().getBoolean("free-premium-crate.enable", true);
+        freePremiumCrateAmount.clear();
+        if (freePremiumCrate) {
+            Map<String, Object> map = getConfig().getConfigurationSection("free-premium-crate.rules").getValues(false);
+            for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
+                String k = stringObjectEntry.getKey();
+                Object v = stringObjectEntry.getValue();
+                int i = -1;
+                if (v instanceof String) {
+                    i = Integer.parseInt((String) v);
+                } else if (v instanceof Integer) {
+                    i = (Integer) v;
+                } else {
+                    Logger.error("Invalid value for free-premium-crate.rules." + k + " in config.yml");
+                    continue;
+                }
+                freePremiumCrateAmount.add(new Pair<>(k, i));
+            }
+            freePremiumCrateAmount.sort((k,v)-> {
+                int i1 = k.getValue1();
+                int i2 = v.getValue1();
+                return Integer.compare(i1, i2);
+            });
+        }
 
         File lootFolder = new File(Crates.getInstance().getDataFolder(), "loot");
         if (!lootFolder.exists()) {

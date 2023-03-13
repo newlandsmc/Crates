@@ -15,6 +15,11 @@ services:
   - 'Test4'
   - 'Test5'
   - 'Test6'
+free-premium-crate:
+  enable: true
+  rules:
+    default: 7 # Days
+    diamond: 3
 menu:
   enable-animation: true # enables the 'animation' in the men
   khavalon: true
@@ -79,4 +84,3 @@ messages:
 vote-processor:
   async: true
   interval: 5
-free-premium-crate: true

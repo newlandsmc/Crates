@@ -86,6 +86,10 @@ public final class Crates extends JavaPlugin {
 
         CratesManager.init();
 
+        if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
+            getLogger().info("Using LuckPerms!");
+        }
+
         lastMidnight = new File(getDataFolder(), "lastmidnight.json");
         if (lastMidnight.exists()) {
             try {
@@ -133,7 +137,8 @@ public final class Crates extends JavaPlugin {
                 data.onVote();
             }
         };
-        if (ConfigManager.isAsyncVoteProcessor()) voteProcessor.runTaskTimerAsynchronously(this, 20, ConfigManager.getVoteProcessorInterval());
+        if (ConfigManager.isAsyncVoteProcessor())
+            voteProcessor.runTaskTimerAsynchronously(this, 20, ConfigManager.getVoteProcessorInterval());
         else voteProcessor.runTaskTimer(this, 20, ConfigManager.getVoteProcessorInterval());
         //storageProvider.init(this);
     }
