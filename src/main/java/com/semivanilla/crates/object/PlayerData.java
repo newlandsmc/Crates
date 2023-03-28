@@ -206,9 +206,9 @@ public class PlayerData {
         checkPremium();
         LocalDate timestamp = LocalDate.now();
         if (lastVotes == null) lastVotes = new CopyOnWriteArrayList<>();
-        if (lastVotes.stream().filter(d -> d.isEqual(timestamp)).findFirst().orElse(null) != null) //if they have voted today
-            return;
-        addVote(timestamp);
+        // if (lastVotes.stream().filter(d -> d.isEqual(timestamp)).findFirst().orElse(null) == null) //if they have not voted today
+        if (lastVotes.stream().noneMatch(d -> d.isEqual(timestamp))) //if they have not voted today
+            addVote(timestamp);
         save();
 
         Player player = Bukkit.getPlayer(uuid);
