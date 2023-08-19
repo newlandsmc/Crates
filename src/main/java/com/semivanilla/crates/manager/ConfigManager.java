@@ -36,6 +36,8 @@ public class ConfigManager {
     @Getter
     private static final List<String> voteMessage = new ArrayList<>();
     @Getter
+    private static final List<String> voteAmtBroadcast = new ArrayList<>();
+    @Getter
     private static final List<String> fullInventory = new ArrayList<>();
     @Getter
     private static final List<LootFile> dailyLoot = new ArrayList<>();
@@ -51,9 +53,10 @@ public class ConfigManager {
     private static int tickingCenterVolume = 1, revealVolume = 1, tickingCenterPitch = 1, revealPitch = 1;
     @Getter
     private static boolean asyncVoteProcessor = true;
-
     @Getter
     private static long voteProcessorInterval = 5, updateTicks = 2;
+    @Getter
+    private static int votedAmtNumber = -1;
 
     @Getter
     private static boolean enableAnimation, freePremiumCrate,
@@ -188,6 +191,13 @@ public class ConfigManager {
         crateGainedMessage.addAll(getConfig().getStringList("messages.crates-gained"));
         voteMessage.clear();
         voteMessage.addAll(getConfig().getStringList("messages.vote"));
+        voteAmtBroadcast.clear();
+        voteAmtBroadcast.addAll(getConfig().getStringList("messages.voted-amt"));
+        if (getConfig().getBoolean("voted-amt.enable", false)) {
+            votedAmtNumber = getConfig().getInt("voted-amt.amount");
+        } else {
+            votedAmtNumber = -1;
+        }
         fullInventory.clear();
         fullInventory.addAll(getConfig().getStringList("messages.inventory-full"));
         asyncVoteProcessor = getConfig().getBoolean("vote-processor.async", true);

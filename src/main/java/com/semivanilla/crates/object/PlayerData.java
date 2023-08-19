@@ -221,6 +221,16 @@ public class PlayerData {
         for (Component component : components) {
             player.sendMessage(component);
         }
+        if (votesToday == ConfigManager.getVotedAmtNumber()) {
+            ValueMap map1 = new ValueMap();
+            map1.set("player", player.getName());
+            map1.set("count", votesToday);
+            map1.set("type", "Vote");
+            List<Component> components_1 = MessageManager.parse(ConfigManager.getVoteMessage(), map);
+            for (Component component : components_1) {
+                Bukkit.broadcast(component);
+            }
+        }
     }
 
     public int getDaysVotedInARow() {

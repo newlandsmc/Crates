@@ -86,6 +86,11 @@ messages:
     - '<green>Thanks for voting! You completed a Vote Crate!'
   inventory-full:
     - '<red>Your inventory is full!'
+  voted-amt:
+    - '<green>{player} has voted {count} times!'
+voted-amt: # message is broadcast when a player votes on a number of sites in 1 day
+  enable: false
+  amount: 2
 vote-processor:
   async: true
   interval: 5
