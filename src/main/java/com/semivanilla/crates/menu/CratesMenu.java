@@ -19,6 +19,7 @@ import net.badbird5907.blib.util.Logger;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.time.LocalDate;
@@ -84,7 +85,7 @@ public class CratesMenu extends Menu {
         }
 
         @Override
-        public void onClick(Player player, int slot, ClickType clickType) {
+        public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
             if (unclaimedItems) {
                 Logger.debug("%1 is claiming unclaimed rewards for crates type %2", player.getName(), crate.getType());
                 ArrayList<ItemStack> items = data.getUnclaimedRewards().get(crate.getType());

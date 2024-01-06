@@ -21,6 +21,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
@@ -287,7 +288,7 @@ public class ClaimCratesMenu extends Menu { //really messy, will need to rewrite
     public Button getBackButton(Player player) {
         return new BackButton() {
             @Override
-            public void clicked(Player player, int slot, ClickType clickType) {
+            public void clicked(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
                 animationDone = true;
                 claiming = true;
                 centerTicksLeft = 0;
@@ -326,7 +327,7 @@ public class ClaimCratesMenu extends Menu { //really messy, will need to rewrite
         }
 
         @Override
-        public void onClick(Player player, int slot, ClickType clickType) {
+        public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
             if (!claiming)
                 return;
             if (player.getInventory().firstEmpty() == -1) {
@@ -374,7 +375,7 @@ public class ClaimCratesMenu extends Menu { //really messy, will need to rewrite
         }
 
         @Override
-        public void onClick(Player player, int slot, ClickType clickType) {
+        public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
             animationDone = true;
             tickingCenter = false;
             centerTicksLeft = 0;

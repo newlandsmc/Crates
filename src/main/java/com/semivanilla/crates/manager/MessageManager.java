@@ -46,7 +46,7 @@ public class MessageManager {
         }
         Script script = Compiler.compile(result);
         Section res = ss.run(script);
-        System.out.println("Res: " + res + " | " + res.text);
+        // System.out.println("Res: " + res + " | " + res.text);
         return MINI_MESSAGE.deserialize(res.toString());
     }
 
